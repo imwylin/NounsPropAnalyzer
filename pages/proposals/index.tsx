@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useProposalCount } from '../../hooks/useProposalCount'
-import { useProposalBatch } from '../../hooks/useProposalBatch'
+import { useBatchAnalysis } from '../../hooks/useBatchAnalysis'
 import { AnalysisTable } from '../../components/parser/AnalysisTable'
 import { FilterBar } from '../../components/parser/FilterBar'
 import { ExportControls } from '../../components/parser/ExportControls'
 import type { ParsedAnalysis } from '../../types/parser'
 import type { FilterState } from '../../components/parser/FilterBar'
+import styles from './proposals.module.css'
 
 /**
  * Main page for viewing and managing proposal analyses
@@ -13,10 +14,12 @@ import type { FilterState } from '../../components/parser/FilterBar'
 export default function ProposalsPage() {
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const { data: proposalCount } = useProposalCount()
-  const { data: proposals, isLoading, error } = useProposalBatch({
-    startId: 1,
-    batchSize: 10
-  })
+  const { 
+    data: analysisResults,
+    isLoading,
+    error,
+    progress
+  } = useBatchAnalysis()
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {
@@ -37,15 +40,16 @@ export default function ProposalsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="space-y-8">
+    <div className={styles.container}>
+      <div className={styles.content}>
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className={styles.header}>
+          <h1 className={styles.title}>
             Proposal Analysis
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className={styles.subtitle}>
             {proposalCount?.toString() || '0'} total proposals
+            {isLoading && ` (Analyzing: ${progress}%)`}
           </p>
         </div>
 
@@ -59,11 +63,12 @@ export default function ProposalsPage() {
         <ExportControls
           onExport={handleExport}
           disabled={selectedRows.length === 0}
+          progress={progress}
         />
 
         {/* Analysis Table */}
         <AnalysisTable
-          data={proposals as unknown as ParsedAnalysis[] || []}
+          data={analysisResults?.map(r => r.analysis) as ParsedAnalysis[] || []}
           onSelect={setSelectedRows}
           loading={isLoading}
           error={error as Error}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import styles from './ExportControls.module.css'
 
 type ExportFormat = 'csv' | 'xlsx'
 
@@ -33,26 +34,27 @@ export function ExportControls({
     }
   }
 
+  const buttonClass = (format: ExportFormat) => {
+    const baseClass = styles.button
+    const stateClass = disabled || isExporting ? styles.buttonDisabled : ''
+    const formatClass = format === 'csv' ? styles.buttonCsv : styles.buttonExcel
+    return `${baseClass} ${stateClass} ${formatClass}`.trim()
+  }
+
   return (
-    <div className="bg-white p-4 border border-gray-200 rounded-lg">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium">Export Data</h3>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>Export Data</h3>
         {isExporting && progress > 0 && (
-          <span className="text-sm text-gray-500">
-            {Math.round(progress)}%
-          </span>
+          <span className={styles.progress}>{Math.round(progress)}%</span>
         )}
       </div>
 
-      <div className="flex gap-4">
+      <div className={styles.buttons}>
         <button
           onClick={() => handleExport('csv')}
           disabled={disabled || isExporting}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors
-            ${disabled || isExporting
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
-            }`}
+          className={buttonClass('csv')}
         >
           Export CSV
         </button>
@@ -60,32 +62,22 @@ export function ExportControls({
         <button
           onClick={() => handleExport('xlsx')}
           disabled={disabled || isExporting}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors
-            ${disabled || isExporting
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-green-50 text-green-700 hover:bg-green-100'
-            }`}
+          className={buttonClass('xlsx')}
         >
           Export Excel
         </button>
       </div>
 
       {isExporting && (
-        <div className="mt-4">
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-500 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+        <div className={styles.progressBar}>
+          <div
+            className={styles.progressFill}
+            style={{ width: `${progress}%` }}
+          />
         </div>
       )}
 
-      {error && (
-        <p className="mt-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   )
-} 
+}

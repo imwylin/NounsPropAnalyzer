@@ -1,0 +1,59 @@
+.container {
+  @apply bg-white p-4 border border-gray-200 rounded-lg shadow-sm;
+}
+
+.header {
+  @apply flex items-center justify-between mb-4;
+}
+
+.title {
+  @apply text-lg font-medium text-gray-900;
+}
+
+.progress {
+  @apply text-sm text-gray-500;
+}
+
+.buttons {
+  @apply flex gap-4;
+}
+
+.button {
+  @apply px-4 py-2 rounded-md text-sm font-medium transition-colors;
+}
+
+.buttonDisabled {
+  @apply bg-gray-100 text-gray-400 cursor-not-allowed;
+}
+
+.buttonCsv {
+  @apply bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200;
+}
+
+.buttonExcel {
+  @apply bg-green-50 text-green-700 hover:bg-green-100 border border-green-200;
+}
+
+.progressBar {
+  @apply mt-4 h-2 bg-gray-200 rounded-full overflow-hidden;
+}
+
+.progressFill {
+  @apply h-full bg-blue-500 transition-all duration-300;
+}
+
+.error {
+  @apply mt-2 text-sm text-red-600;
+}
+
+.button:not(.buttonDisabled):hover {
+  @apply ring-2 ring-offset-1;
+}
+
+.buttonCsv:not(.buttonDisabled):hover {
+  @apply ring-blue-200;
+}
+
+.buttonExcel:not(.buttonDisabled):hover {
+  @apply ring-green-200;
+} 

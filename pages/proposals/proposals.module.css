@@ -1,0 +1,68 @@
+/* Layout */
+.container {
+  @apply max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8;
+}
+
+.content {
+  @apply space-y-8;
+}
+
+/* Header */
+.header {
+  @apply space-y-2;
+}
+
+.title {
+  @apply text-3xl font-bold text-gray-900;
+}
+
+.subtitle {
+  @apply text-sm text-gray-500;
+}
+
+/* Status */
+.error {
+  @apply text-red-500;
+}
+
+/* Loading */
+.loading {
+  @apply flex items-center justify-center min-h-[200px] text-gray-500;
+}
+
+/* Grid Layout */
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .gridContainer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .gridContainer {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Card */
+.card {
+  @apply bg-white p-6 rounded-lg border border-gray-200 shadow-sm;
+}
+
+/* Responsive */
+@screen sm {
+  .container {
+    @apply px-6;
+  }
+}
+
+@screen lg {
+  .container {
+    @apply px-8;
+  }
+} 

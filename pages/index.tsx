@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useProposalCount } from '../hooks/useProposalCount'
+import styles from './index.module.css'
 
 /**
  * Landing page for the Nouns 501c3 Analysis system
@@ -8,34 +9,34 @@ export default function HomePage() {
   const { data: proposalCount } = useProposalCount()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+    <div className={styles.container}>
+      <main className={styles.main}>
+        <div className={styles.content}>
+          <h1 className={styles.title}>
             Nouns DAO 501c3 Analysis
           </h1>
-          <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500">
+          <p className={styles.subtitle}>
             Automated analysis of DAO proposals for charitable compliance
           </p>
           
-          <div className="mt-12 space-y-4">
+          <div className={styles.actions}>
             <Link
               href="/proposals"
-              className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className={styles.primaryButton}
             >
               View Proposals ({proposalCount?.toString() || '0'})
             </Link>
           </div>
 
-          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={styles.features}>
             {/* Feature 1 */}
-            <div className="pt-6">
-              <div className="flow-root bg-white rounded-lg px-6 pb-8">
-                <div className="-mt-6">
-                  <h3 className="mt-8 text-lg font-medium text-gray-900 tracking-tight">
+            <div className={styles.feature}>
+              <div className={styles.featureCard}>
+                <div className={styles.featureContent}>
+                  <h3 className={styles.featureTitle}>
                     Automated Analysis
                   </h3>
-                  <p className="mt-5 text-base text-gray-500">
+                  <p className={styles.featureDescription}>
                     AI-powered analysis of proposal compliance with 501c3 requirements
                   </p>
                 </div>
@@ -43,13 +44,13 @@ export default function HomePage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="pt-6">
-              <div className="flow-root bg-white rounded-lg px-6 pb-8">
-                <div className="-mt-6">
-                  <h3 className="mt-8 text-lg font-medium text-gray-900 tracking-tight">
+            <div className={styles.feature}>
+              <div className={styles.featureCard}>
+                <div className={styles.featureContent}>
+                  <h3 className={styles.featureTitle}>
                     Risk Assessment
                   </h3>
-                  <p className="mt-5 text-base text-gray-500">
+                  <p className={styles.featureDescription}>
                     Evaluation of private benefit risk and mission alignment
                   </p>
                 </div>
@@ -57,13 +58,13 @@ export default function HomePage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="pt-6">
-              <div className="flow-root bg-white rounded-lg px-6 pb-8">
-                <div className="-mt-6">
-                  <h3 className="mt-8 text-lg font-medium text-gray-900 tracking-tight">
+            <div className={styles.feature}>
+              <div className={styles.featureCard}>
+                <div className={styles.featureContent}>
+                  <h3 className={styles.featureTitle}>
                     Export & Share
                   </h3>
-                  <p className="mt-5 text-base text-gray-500">
+                  <p className={styles.featureDescription}>
                     Export analysis results in CSV or Excel format
                   </p>
                 </div>

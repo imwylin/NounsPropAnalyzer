@@ -2,6 +2,7 @@ import { useProposalAnalysis } from '../../hooks/useProposalAnalysis'
 import { ComplianceIndicators } from './ComplianceIndicators'
 import { CharitableBreakdown } from './CharitableBreakdown'
 import type { Classification, RiskLevel } from '../../types/parser'
+import styles from './ProposalAnalysisDashboard.module.css'
 
 interface ProposalAnalysisDashboardProps {
   proposalId: number
@@ -25,7 +26,7 @@ export function ProposalAnalysisDashboard({
   // Loading state
   if (isLoading) {
     return (
-      <div className="p-6 text-center">
+      <div className={styles.loadingState}>
         <p>Analyzing proposal {proposalId}...</p>
       </div>
     )
@@ -34,7 +35,7 @@ export function ProposalAnalysisDashboard({
   // Error state
   if (isError) {
     return (
-      <div className="p-6 text-red-500">
+      <div className={styles.errorState}>
         <p>Error: {error?.message || 'Failed to load proposal analysis'}</p>
       </div>
     )
@@ -43,7 +44,7 @@ export function ProposalAnalysisDashboard({
   // No data state
   if (!data) {
     return (
-      <div className="p-6 text-center">
+      <div className={styles.loadingState}>
         <p>No analysis available for proposal {proposalId}</p>
       </div>
     )
@@ -52,20 +53,18 @@ export function ProposalAnalysisDashboard({
   const { analysis } = data
 
   return (
-    <div className="space-y-8 p-6">
+    <div className={styles.container}>
       {/* Proposal Header */}
-      <header className="space-y-2">
-        <h1 className="text-2xl font-bold">
+      <header className={styles.header}>
+        <h1 className={styles.title}>
           Proposal {proposalId}
         </h1>
-        <div className="flex items-center gap-4">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium
-            ${getClassificationColor(analysis?.classification)}`}>
+        <div className={styles.badges}>
+          <span className={`${styles.badge} ${getClassificationStyle(analysis?.classification)}`}>
             {analysis?.classification || 'Unclassified'}
           </span>
           {analysis?.risk_assessment && (
-            <span className={`px-3 py-1 rounded-full text-sm font-medium
-              ${getRiskLevelColor(analysis.risk_assessment.private_benefit_risk)}`}>
+            <span className={`${styles.badge} ${getRiskLevelStyle(analysis.risk_assessment.private_benefit_risk)}`}>
               {analysis.risk_assessment.private_benefit_risk} Risk
             </span>
           )}
@@ -74,7 +73,7 @@ export function ProposalAnalysisDashboard({
 
       {/* Analysis Content */}
       {analysis && (
-        <div className="space-y-6">
+        <div className={styles.content}>
           <ComplianceIndicators analysis={analysis} />
           <CharitableBreakdown analysis={analysis} />
         </div>
@@ -84,32 +83,32 @@ export function ProposalAnalysisDashboard({
 }
 
 // Utility functions for styling
-function getClassificationColor(classification?: Classification): string {
+function getClassificationStyle(classification?: Classification): string {
   switch (classification) {
     case 'CHARITABLE':
-      return 'bg-green-100 text-green-800'
+      return styles.charitable
     case 'OPERATIONAL':
-      return 'bg-blue-100 text-blue-800'
+      return styles.operational
     case 'MARKETING':
-      return 'bg-purple-100 text-purple-800'
+      return styles.marketing
     case 'PROGRAM_RELATED':
-      return 'bg-yellow-100 text-yellow-800'
+      return styles.programRelated
     case 'UNALLOWABLE':
-      return 'bg-red-100 text-red-800'
+      return styles.unallowable
     default:
-      return 'bg-gray-100 text-gray-800'
+      return ''
   }
 }
 
-function getRiskLevelColor(risk?: RiskLevel): string {
+function getRiskLevelStyle(risk?: RiskLevel): string {
   switch (risk) {
     case 'LOW':
-      return 'bg-green-100 text-green-800'
+      return styles.riskLow
     case 'MEDIUM':
-      return 'bg-yellow-100 text-yellow-800'
+      return styles.riskMedium
     case 'HIGH':
-      return 'bg-red-100 text-red-800'
+      return styles.riskHigh
     default:
-      return 'bg-gray-100 text-gray-800'
+      return ''
   }
 } 

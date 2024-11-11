@@ -1,0 +1,57 @@
+/* Layout */
+.container {
+  @apply min-h-screen bg-gray-50;
+}
+
+.main {
+  @apply max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8;
+}
+
+.content {
+  @apply text-center;
+}
+
+/* Header */
+.title {
+  @apply text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl;
+}
+
+.subtitle {
+  @apply max-w-xl mt-5 mx-auto text-xl text-gray-500;
+}
+
+/* Actions */
+.actions {
+  @apply mt-12 space-y-4;
+}
+
+.primaryButton {
+  @apply inline-flex items-center justify-center px-5 py-3 border border-transparent 
+    text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 
+    transition-colors duration-150;
+}
+
+/* Features */
+.features {
+  @apply mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.feature {
+  @apply pt-6;
+}
+
+.featureCard {
+  @apply flow-root bg-white rounded-lg px-6 pb-8 shadow-sm border border-gray-200;
+}
+
+.featureContent {
+  @apply -mt-6;
+}
+
+.featureTitle {
+  @apply mt-8 text-lg font-medium text-gray-900 tracking-tight;
+}
+
+.featureDescription {
+  @apply mt-5 text-base text-gray-500;
+} 

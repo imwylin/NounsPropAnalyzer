@@ -1,0 +1,80 @@
+/* Layout */
+.container {
+  @apply bg-white p-4 border border-gray-200 rounded-lg shadow-sm;
+}
+
+.grid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+/* Indicator Components */
+.indicator {
+  @apply flex flex-col space-y-2;
+}
+
+.label {
+  @apply text-sm font-medium text-gray-600;
+}
+
+.value {
+  @apply inline-flex px-2 py-1 rounded-full text-sm font-medium transition-colors;
+}
+
+/* Classification Status */
+.charitable {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.operational {
+  @apply bg-blue-100 text-blue-800 border border-blue-200;
+}
+
+.marketing {
+  @apply bg-purple-100 text-purple-800 border border-purple-200;
+}
+
+.programRelated {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+.unallowable {
+  @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+/* Risk Levels */
+.riskLow {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.riskMedium {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+.riskHigh {
+  @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+/* Hover States */
+.value:hover {
+  @apply ring-2 ring-offset-1;
+}
+
+.charitable:hover {
+  @apply ring-green-200;
+}
+
+.operational:hover {
+  @apply ring-blue-200;
+}
+
+.marketing:hover {
+  @apply ring-purple-200;
+}
+
+.programRelated:hover {
+  @apply ring-yellow-200;
+}
+
+.unallowable:hover {
+  @apply ring-red-200;
+} 

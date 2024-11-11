@@ -1,0 +1,81 @@
+/* Layout */
+.container {
+  @apply space-y-8 p-6 bg-white rounded-lg border border-gray-200 shadow-sm;
+}
+
+/* Header */
+.header {
+  @apply space-y-3 border-b border-gray-200 pb-4;
+}
+
+.title {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.badges {
+  @apply flex items-center gap-4 flex-wrap;
+}
+
+.badge {
+  @apply px-3 py-1 rounded-full text-sm font-medium transition-colors border;
+}
+
+/* Content */
+.content {
+  @apply space-y-6 pt-4;
+}
+
+/* States */
+.loadingState {
+  @apply p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200;
+}
+
+.errorState {
+  @apply p-6 text-center text-red-500 bg-red-50 rounded-lg border border-red-200;
+}
+
+/* Classification Colors */
+.charitable {
+  @apply bg-green-50 text-green-800 border-green-200 hover:bg-green-100;
+}
+
+.operational {
+  @apply bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100;
+}
+
+.marketing {
+  @apply bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100;
+}
+
+.programRelated {
+  @apply bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100;
+}
+
+.unallowable {
+  @apply bg-red-50 text-red-800 border-red-200 hover:bg-red-100;
+}
+
+/* Risk Level Colors */
+.riskLow {
+  @apply bg-green-50 text-green-800 border-green-200 hover:bg-green-100;
+}
+
+.riskMedium {
+  @apply bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100;
+}
+
+.riskHigh {
+  @apply bg-red-50 text-red-800 border-red-200 hover:bg-red-100;
+}
+
+/* Hover Effects */
+.badge:hover {
+  @apply ring-2 ring-offset-1;
+}
+
+/* Responsive */
+@screen sm {
+  .badges {
+    @apply flex-nowrap;
+  }
+} 

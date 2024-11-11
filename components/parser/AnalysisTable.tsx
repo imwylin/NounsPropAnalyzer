@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { ParsedAnalysis, Classification, RiskLevel } from '../../types/parser'
+import styles from './AnalysisTable.module.css'
 
 interface TableState {
   data: ParsedAnalysis[]
@@ -22,7 +23,6 @@ interface AnalysisTableProps {
 
 /**
  * Table component for displaying and managing parsed analysis data
- * Implements virtual scrolling for large datasets and column management
  */
 export function AnalysisTable({
   data,
@@ -31,7 +31,6 @@ export function AnalysisTable({
   loading = false,
   error = null
 }: AnalysisTableProps) {
-  // Local state management
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
   const [sortConfig, setSortConfig] = useState<TableState['sortConfig']>({
     key: 'id',
@@ -86,36 +85,28 @@ export function AnalysisTable({
     onSort?.(newConfig)
   }
 
-  // Render loading state
   if (loading) {
-    return (
-      <div className="min-h-[200px] flex items-center justify-center">
-        <p className="text-gray-500">Loading analysis data...</p>
-      </div>
-    )
+    return <div className={styles.loading}>Loading analysis data...</div>
   }
 
-  // Render error state
   if (error) {
     return (
-      <div className="min-h-[200px] flex items-center justify-center">
-        <p className="text-red-500">
-          {error instanceof Error ? error.message : 'Failed to load analysis data'}
-        </p>
+      <div className={styles.error}>
+        {error instanceof Error ? error.message : 'Failed to load analysis data'}
       </div>
     )
   }
 
   return (
-    <div className="overflow-hidden border border-gray-200 rounded-lg">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+    <div className={styles.container}>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead className={styles.thead}>
             <tr>
-              <th scope="col" className="relative w-12 px-6 py-3">
+              <th scope="col" className={styles.cellCheckbox}>
                 <input
                   type="checkbox"
-                  className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300"
+                  className={styles.checkbox}
                   checked={selectedRows.size === data.length}
                   onChange={handleSelectAll}
                 />
@@ -129,51 +120,45 @@ export function AnalysisTable({
                 <th
                   key={key}
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className={styles.headerCell}
                   onClick={() => handleSort(key as keyof ParsedAnalysis)}
                 >
-                  <div className="flex items-center space-x-1">
+                  <div className={styles.headerContent}>
                     <span>{label}</span>
                     {sortConfig.key === key && (
-                      <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                      <span className={styles.sortIndicator}>
+                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                      </span>
                     )}
                   </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className={styles.tbody}>
             {sortedData.map(row => (
               <tr
                 key={row.id}
                 onClick={() => handleSelectRow(row.id)}
-                className={`hover:bg-gray-50 cursor-pointer ${
-                  selectedRows.has(row.id) ? 'bg-blue-50' : ''
-                }`}
+                className={`${styles.row} ${selectedRows.has(row.id) ? styles.rowSelected : ''}`}
               >
-                <td className="relative w-12 px-6 py-4">
+                <td className={styles.cellCheckbox}>
                   <input
                     type="checkbox"
-                    className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300"
+                    className={styles.checkbox}
                     checked={selectedRows.has(row.id)}
                     onChange={(e) => e.stopPropagation()}
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {row.id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs rounded-full font-medium
-                    ${getClassificationColor(row.classification)}`}>
+                <td className={styles.cell}>{row.id}</td>
+                <td className={styles.cell}>
+                  <span className={styles.badge}>
                     {row.classification}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500 max-w-md truncate">
-                  {row.primary_purpose}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs rounded-full font-medium
-                    ${getRiskLevelColor(row.risk_assessment.private_benefit_risk)}`}>
+                <td className={styles.cell}>{row.primary_purpose}</td>
+                <td className={styles.cell}>
+                  <span className={styles.badge}>
                     {row.risk_assessment.private_benefit_risk}
                   </span>
                 </td>
@@ -184,31 +169,4 @@ export function AnalysisTable({
       </div>
     </div>
   )
-}
-
-// Utility functions for styling
-function getClassificationColor(classification: Classification): string {
-  switch (classification) {
-    case 'CHARITABLE':
-      return 'bg-green-100 text-green-800'
-    case 'OPERATIONAL':
-      return 'bg-blue-100 text-blue-800'
-    case 'MARKETING':
-      return 'bg-purple-100 text-purple-800'
-    case 'PROGRAM_RELATED':
-      return 'bg-yellow-100 text-yellow-800'
-    case 'UNALLOWABLE':
-      return 'bg-red-100 text-red-800'
-  }
-}
-
-function getRiskLevelColor(risk: RiskLevel): string {
-  switch (risk) {
-    case 'LOW':
-      return 'bg-green-100 text-green-800'
-    case 'MEDIUM':
-      return 'bg-yellow-100 text-yellow-800'
-    case 'HIGH':
-      return 'bg-red-100 text-red-800'
-  }
 } 

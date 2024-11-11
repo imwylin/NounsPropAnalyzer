@@ -1,4 +1,5 @@
 import type { ParsedAnalysis } from '../../types/parser'
+import styles from './CharitableBreakdown.module.css'
 
 interface CharitableBreakdownProps {
   analysis: ParsedAnalysis
@@ -9,17 +10,17 @@ interface CharitableBreakdownProps {
  */
 export function CharitableBreakdown({ analysis }: CharitableBreakdownProps) {
   return (
-    <div className="space-y-6">
+    <div className={styles.container}>
       {/* Allowable Elements */}
-      <section>
-        <h3 className="text-lg font-medium text-gray-900 mb-3">
+      <section className={styles.section}>
+        <h3 className={styles.sectionTitle}>
           Charitable Elements
         </h3>
-        <ul className="divide-y divide-gray-200">
+        <ul className={styles.list}>
           {analysis.allowable_elements.map((element, i) => (
-            <li key={i} className="py-3 flex items-start">
-              <span className="flex-shrink-0 h-5 w-5 text-green-500">✓</span>
-              <p className="ml-3 text-gray-700">{element}</p>
+            <li key={i} className={styles.listItem}>
+              <span className={`${styles.icon} ${styles.iconSuccess}`}>✓</span>
+              <p className={styles.text}>{element}</p>
             </li>
           ))}
         </ul>
@@ -27,15 +28,15 @@ export function CharitableBreakdown({ analysis }: CharitableBreakdownProps) {
 
       {/* Unallowable Elements */}
       {analysis.unallowable_elements.length > 0 && (
-        <section>
-          <h3 className="text-lg font-medium text-red-600 mb-3">
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitleRed}>
             Compliance Concerns
           </h3>
-          <ul className="divide-y divide-gray-200">
+          <ul className={styles.list}>
             {analysis.unallowable_elements.map((element, i) => (
-              <li key={i} className="py-3 flex items-start">
-                <span className="flex-shrink-0 h-5 w-5 text-red-500">✕</span>
-                <p className="ml-3 text-red-700">{element}</p>
+              <li key={i} className={styles.listItem}>
+                <span className={`${styles.icon} ${styles.iconError}`}>✕</span>
+                <p className={styles.textRed}>{element}</p>
               </li>
             ))}
           </ul>
@@ -44,15 +45,15 @@ export function CharitableBreakdown({ analysis }: CharitableBreakdownProps) {
 
       {/* Required Modifications */}
       {analysis.required_modifications.length > 0 && (
-        <section>
-          <h3 className="text-lg font-medium text-yellow-800 mb-3">
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitleYellow}>
             Required Modifications
           </h3>
-          <ul className="divide-y divide-gray-200">
+          <ul className={styles.list}>
             {analysis.required_modifications.map((modification, i) => (
-              <li key={i} className="py-3 flex items-start">
-                <span className="flex-shrink-0 h-5 w-5 text-yellow-500">!</span>
-                <p className="ml-3 text-yellow-800">{modification}</p>
+              <li key={i} className={styles.listItem}>
+                <span className={`${styles.icon} ${styles.iconWarning}`}>!</span>
+                <p className={styles.textYellow}>{modification}</p>
               </li>
             ))}
           </ul>

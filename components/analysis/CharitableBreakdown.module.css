@@ -1,0 +1,55 @@
+.container {
+  @apply space-y-6;
+}
+
+.section {
+  @apply space-y-4;
+}
+
+.sectionTitle {
+  @apply text-lg font-medium text-gray-900;
+}
+
+.sectionTitleRed {
+  @apply text-lg font-medium text-red-600;
+}
+
+.sectionTitleYellow {
+  @apply text-lg font-medium text-yellow-800;
+}
+
+.list {
+  @apply divide-y divide-gray-200;
+}
+
+.listItem {
+  @apply py-3 flex items-start;
+}
+
+.icon {
+  @apply flex-shrink-0 h-5 w-5;
+}
+
+.iconSuccess {
+  @apply text-green-500;
+}
+
+.iconError {
+  @apply text-red-500;
+}
+
+.iconWarning {
+  @apply text-yellow-500;
+}
+
+.text {
+  @apply ml-3 text-gray-700;
+}
+
+.textRed {
+  @apply ml-3 text-red-700;
+}
+
+.textYellow {
+  @apply ml-3 text-yellow-800;
+} 

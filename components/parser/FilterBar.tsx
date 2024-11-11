@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Classification, RiskLevel } from '../../types/parser'
+import styles from './FilterBar.module.css'
 
 export interface FilterState {
   classification?: Classification[]
@@ -54,21 +55,21 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
   }
 
   return (
-    <div className="bg-white p-4 border border-gray-200 rounded-lg space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Filters</h3>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>Filters</h3>
         <button
           onClick={handleClearFilters}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className={styles.clearButton}
         >
           Clear all
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={styles.filterGrid}>
         {/* Classification Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className={styles.filterGroup}>
+          <label className={styles.label}>
             Classification
           </label>
           <select
@@ -78,7 +79,7 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
               const values = Array.from(e.target.selectedOptions, option => option.value as Classification)
               handleFilterChange('classification', values)
             }}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className={styles.select}
           >
             {classifications.map(c => (
               <option key={c} value={c}>{c}</option>
@@ -87,14 +88,14 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
         </div>
 
         {/* Risk Level Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className={styles.filterGroup}>
+          <label className={styles.label}>
             Risk Level
           </label>
           <select
             value={filters.risk_level || ''}
             onChange={(e) => handleFilterChange('risk_level', e.target.value || undefined)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            className={styles.select}
           >
             <option value="">All</option>
             {riskLevels.map(level => (
@@ -104,11 +105,11 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
         </div>
 
         {/* Date Range Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className={styles.filterGroup}>
+          <label className={styles.label}>
             Date Range
           </label>
-          <div className="flex space-x-2">
+          <div className={styles.dateRange}>
             <input
               type="date"
               value={filters.date_range?.[0]?.toISOString().split('T')[0] || ''}
@@ -117,7 +118,7 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
                 const end = filters.date_range?.[1] || null
                 handleFilterChange('date_range', start && end ? [start, end] : null)
               }}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className={`${styles.input} ${styles.dateInput}`}
             />
             <input
               type="date"
@@ -127,23 +128,26 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
                 const end = e.target.value ? new Date(e.target.value) : null
                 handleFilterChange('date_range', start && end ? [start, end] : null)
               }}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className={`${styles.input} ${styles.dateInput}`}
             />
           </div>
         </div>
 
         {/* Search Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className={styles.filterGroup}>
+          <label className={styles.label}>
             Search
           </label>
-          <input
-            type="text"
-            value={filters.search || ''}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
-            placeholder="Search proposals..."
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={filters.search || ''}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+              placeholder="Search proposals..."
+              className={`${styles.input} ${styles.searchInput}`}
+            />
+            <span className={styles.searchIcon}>🔍</span>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,70 @@
+/* Container */
+.container {
+  @apply overflow-hidden border border-gray-200 rounded-lg;
+}
+
+.tableWrapper {
+  @apply overflow-x-auto;
+}
+
+/* Table Structure */
+.table {
+  @apply min-w-full divide-y divide-gray-200;
+}
+
+.thead {
+  @apply bg-gray-50;
+}
+
+.tbody {
+  @apply bg-white divide-y divide-gray-200;
+}
+
+/* Header */
+.headerCell {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100;
+}
+
+.headerContent {
+  @apply flex items-center space-x-1;
+}
+
+.sortIndicator {
+  @apply text-gray-400;
+}
+
+/* Rows */
+.row {
+  @apply hover:bg-gray-50 cursor-pointer transition-colors;
+}
+
+.rowSelected {
+  @apply bg-blue-50;
+}
+
+/* Cells */
+.cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
+
+.cellCheckbox {
+  @apply relative w-12 px-6 py-4;
+}
+
+.checkbox {
+  @apply absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300;
+}
+
+/* Status Indicators */
+.loading {
+  @apply min-h-[200px] flex items-center justify-center text-gray-500;
+}
+
+.error {
+  @apply min-h-[200px] flex items-center justify-center text-red-500;
+}
+
+/* Badge Styles */
+.badge {
+  @apply px-2 py-1 text-xs rounded-full font-medium;
+} 

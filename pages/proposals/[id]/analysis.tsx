@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import { ProposalAnalysisDashboard } from '../../../components/analysis/ProposalAnalysisDashboard'
+import styles from '../proposals.module.css'
 
 /**
  * Page for viewing detailed analysis of a single proposal
@@ -11,15 +12,17 @@ export default function ProposalAnalysisPage() {
   // Handle invalid ID
   if (!id || Array.isArray(id)) {
     return (
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <p className="text-red-500">Invalid proposal ID</p>
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <p className={styles.error}>Invalid proposal ID</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="space-y-8">
+    <div className={styles.container}>
+      <div className={styles.content}>
         <ProposalAnalysisDashboard proposalId={parseInt(id)} />
       </div>
     </div>

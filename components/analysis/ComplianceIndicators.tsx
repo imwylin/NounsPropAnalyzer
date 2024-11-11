@@ -1,7 +1,39 @@
 import type { ParsedAnalysis } from '../../types/parser'
+import styles from './ComplianceIndicators.module.css'
 
 interface ComplianceIndicatorsProps {
   analysis: ParsedAnalysis
+}
+
+// Utility functions for styling
+function getClassificationColor(classification: string): string {
+  switch (classification) {
+    case 'CHARITABLE':
+      return styles.charitable
+    case 'OPERATIONAL':
+      return styles.operational
+    case 'MARKETING':
+      return styles.marketing
+    case 'PROGRAM_RELATED':
+      return styles.programRelated
+    case 'UNALLOWABLE':
+      return styles.unallowable
+    default:
+      return ''
+  }
+}
+
+function getRiskLevelColor(risk: string): string {
+  switch (risk) {
+    case 'LOW':
+      return styles.riskLow
+    case 'MEDIUM':
+      return styles.riskMedium
+    case 'HIGH':
+      return styles.riskHigh
+    default:
+      return ''
+  }
 }
 
 /**
@@ -18,91 +50,48 @@ export function ComplianceIndicators({ analysis }: ComplianceIndicatorsProps) {
   } = analysis
 
   return (
-    <div className="bg-white p-4 border border-gray-200 rounded-lg">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className={styles.container}>
+      <div className={styles.grid}>
         {/* Classification */}
-        <div>
-          <div className="text-sm font-medium text-gray-500 mb-1">
+        <div className={styles.indicator}>
+          <div className={styles.label}>
             Classification
           </div>
-          <div className={`inline-flex px-2 py-1 rounded-full text-sm font-medium
-            ${getClassificationColor(classification)}`}>
+          <div className={`${styles.value} ${getClassificationColor(classification)}`}>
             {classification}
           </div>
         </div>
 
         {/* Private Benefit Risk */}
-        <div>
-          <div className="text-sm font-medium text-gray-500 mb-1">
+        <div className={styles.indicator}>
+          <div className={styles.label}>
             Private Benefit Risk
           </div>
-          <div className={`inline-flex px-2 py-1 rounded-full text-sm font-medium
-            ${getRiskLevelColor(private_benefit_risk)}`}>
+          <div className={`${styles.value} ${getRiskLevelColor(private_benefit_risk)}`}>
             {private_benefit_risk}
           </div>
         </div>
 
         {/* Mission Alignment */}
-        <div>
-          <div className="text-sm font-medium text-gray-500 mb-1">
+        <div className={styles.indicator}>
+          <div className={styles.label}>
             Mission Alignment
           </div>
-          <div className={`inline-flex px-2 py-1 rounded-full text-sm font-medium
-            ${getAlignmentColor(mission_alignment)}`}>
+          <div className={`${styles.value} ${getRiskLevelColor(mission_alignment)}`}>
             {mission_alignment}
           </div>
         </div>
 
         {/* Implementation Complexity */}
-        <div>
-          <div className="text-sm font-medium text-gray-500 mb-1">
+        <div className={styles.indicator}>
+          <div className={styles.label}>
             Complexity
           </div>
-          <div className={`inline-flex px-2 py-1 rounded-full text-sm font-medium
-            ${getComplexityColor(implementation_complexity)}`}>
+          <div className={`${styles.value} ${getRiskLevelColor(implementation_complexity)}`}>
             {implementation_complexity}
           </div>
         </div>
       </div>
     </div>
   )
-}
-
-// Utility functions for styling
-function getClassificationColor(classification: string): string {
-  const colors = {
-    CHARITABLE: 'bg-green-100 text-green-800',
-    OPERATIONAL: 'bg-blue-100 text-blue-800',
-    MARKETING: 'bg-purple-100 text-purple-800',
-    PROGRAM_RELATED: 'bg-yellow-100 text-yellow-800',
-    UNALLOWABLE: 'bg-red-100 text-red-800'
-  }
-  return colors[classification as keyof typeof colors] || 'bg-gray-100 text-gray-800'
-}
-
-function getRiskLevelColor(risk: string): string {
-  const colors = {
-    LOW: 'bg-green-100 text-green-800',
-    MEDIUM: 'bg-yellow-100 text-yellow-800',
-    HIGH: 'bg-red-100 text-red-800'
-  }
-  return colors[risk as keyof typeof colors] || 'bg-gray-100 text-gray-800'
-}
-
-function getAlignmentColor(alignment: string): string {
-  const colors = {
-    STRONG: 'bg-green-100 text-green-800',
-    MODERATE: 'bg-yellow-100 text-yellow-800',
-    WEAK: 'bg-red-100 text-red-800'
-  }
-  return colors[alignment as keyof typeof colors] || 'bg-gray-100 text-gray-800'
-}
-
-function getComplexityColor(complexity: string): string {
-  const colors = {
-    LOW: 'bg-green-100 text-green-800',
-    MEDIUM: 'bg-yellow-100 text-yellow-800',
-    HIGH: 'bg-red-100 text-red-800'
-  }
-  return colors[complexity as keyof typeof colors] || 'bg-gray-100 text-gray-800'
 } 
