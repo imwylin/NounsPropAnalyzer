@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import type { ParsedAnalysis, Classification, RiskLevel } from '../../types/parser'
+import type { ParsedAnalysis } from '../../types/parser'
 import styles from './AnalysisTable.module.css'
 
 interface TableState {
