@@ -1,70 +1,122 @@
 /* Container */
 .container {
-  @apply overflow-hidden border border-gray-200 rounded-lg;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
 }
 
 .tableWrapper {
-  @apply overflow-x-auto;
+  overflow-x: auto;
 }
 
 /* Table Structure */
 .table {
-  @apply min-w-full divide-y divide-gray-200;
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
 }
 
 .thead {
-  @apply bg-gray-50;
+  background: #f9fafb;
 }
 
 .tbody {
-  @apply bg-white divide-y divide-gray-200;
+  background: white;
+}
+
+.tbody tr {
+  border-top: 1px solid #e5e7eb;
 }
 
 /* Header */
 .headerCell {
-  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100;
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.headerCell:hover {
+  background: #f3f4f6;
 }
 
 .headerContent {
-  @apply flex items-center space-x-1;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .sortIndicator {
-  @apply text-gray-400;
+  color: #9ca3af;
 }
 
 /* Rows */
 .row {
-  @apply hover:bg-gray-50 cursor-pointer transition-colors;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.row:hover {
+  background: #f9fafb;
 }
 
 .rowSelected {
-  @apply bg-blue-50;
+  background: #eff6ff;
 }
 
 /* Cells */
 .cell {
-  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  color: #111827;
+  white-space: nowrap;
 }
 
 .cellCheckbox {
-  @apply relative w-12 px-6 py-4;
+  position: relative;
+  width: 3rem;
+  padding: 1rem 1.5rem;
 }
 
 .checkbox {
-  @apply absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300;
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  cursor: pointer;
 }
 
 /* Status Indicators */
 .loading {
-  @apply min-h-[200px] flex items-center justify-center text-gray-500;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
 }
 
 .error {
-  @apply min-h-[200px] flex items-center justify-center text-red-500;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
 }
 
 /* Badge Styles */
 .badge {
-  @apply px-2 py-1 text-xs rounded-full font-medium;
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
 } 

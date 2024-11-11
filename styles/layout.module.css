@@ -1,0 +1,56 @@
+/* Page Container */
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Section */
+.section {
+  margin-bottom: 2rem;
+}
+
+/* Card */
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .mainContent {
+    padding: 2rem 1.5rem;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mainContent {
+    padding: 2rem 2rem;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+} 

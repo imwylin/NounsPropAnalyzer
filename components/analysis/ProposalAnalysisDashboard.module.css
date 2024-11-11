@@ -1,81 +1,125 @@
 /* Layout */
 .container {
-  @apply space-y-8 p-6 bg-white rounded-lg border border-gray-200 shadow-sm;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* Header */
 .header {
-  @apply space-y-3 border-b border-gray-200 pb-4;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .title {
-  @apply text-2xl font-bold text-gray-900;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .badges {
-  @apply flex items-center gap-4 flex-wrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
 }
 
 .badge {
-  @apply px-3 py-1 rounded-full text-sm font-medium transition-colors border;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 150ms ease;
 }
 
 /* Content */
 .content {
-  @apply space-y-6 pt-4;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 1rem;
 }
 
 /* States */
 .loadingState {
-  @apply p-6 text-center text-gray-500 bg-white rounded-lg border border-gray-200;
+  padding: 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
 }
 
 .errorState {
-  @apply p-6 text-center text-red-500 bg-red-50 rounded-lg border border-red-200;
+  padding: 1.5rem;
+  text-align: center;
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 0.5rem;
+  border: 1px solid #fecaca;
 }
 
 /* Classification Colors */
 .charitable {
-  @apply bg-green-50 text-green-800 border-green-200 hover:bg-green-100;
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .operational {
-  @apply bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100;
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }
 
 .marketing {
-  @apply bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100;
+  background: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
 }
 
 .programRelated {
-  @apply bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100;
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
 }
 
 .unallowable {
-  @apply bg-red-50 text-red-800 border-red-200 hover:bg-red-100;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 /* Risk Level Colors */
 .riskLow {
-  @apply bg-green-50 text-green-800 border-green-200 hover:bg-green-100;
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .riskMedium {
-  @apply bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100;
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
 }
 
 .riskHigh {
-  @apply bg-red-50 text-red-800 border-red-200 hover:bg-red-100;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 /* Hover Effects */
 .badge:hover {
-  @apply ring-2 ring-offset-1;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
 }
 
 /* Responsive */
-@screen sm {
+@media (min-width: 640px) {
   .badges {
-    @apply flex-nowrap;
+    flex-wrap: nowrap;
   }
 } 

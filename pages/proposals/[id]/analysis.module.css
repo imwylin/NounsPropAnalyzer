@@ -11,36 +11,24 @@
   gap: 2rem;
 }
 
-/* Header */
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.subtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-/* Status */
+/* Error State */
 .error {
+  padding: 1.5rem;
+  text-align: center;
   color: #dc2626;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
 }
 
-/* Loading */
+/* Loading State */
 .loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
+  padding: 1.5rem;
+  text-align: center;
   color: #6b7280;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
 }
 
 /* Responsive */
