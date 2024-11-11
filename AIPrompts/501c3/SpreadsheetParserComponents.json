@@ -1,0 +1,184 @@
+{
+  "PARSER_COMPONENT_PROTOCOL": {
+    "version": "1.0",
+    "protocol_scope": "component_implementation",
+    "protocol_purpose": "define_modular_parser_interface_components",
+    
+    "component_hierarchy": {
+      "scope": "file_system_organization",
+      "purpose": "establish_component_structure_and_relationships",
+      "base_path": "components/parser/",
+      "definitions": {
+        "AnalysisTable": {
+          "path": "AnalysisTable/index.tsx",
+          "purpose": "display_and_manage_parsed_analyses",
+          "responsibility": "data_presentation_and_interaction"
+        },
+        "ExportControls": {
+          "path": "ExportControls/index.tsx",
+          "purpose": "manage_export_operations",
+          "responsibility": "export_trigger_and_format_selection"
+        },
+        "FilterBar": {
+          "path": "FilterBar/index.tsx",
+          "purpose": "filter_configuration_interface",
+          "responsibility": "data_filtering_and_search"
+        },
+        "StatusIndicator": {
+          "path": "StatusIndicator/index.tsx",
+          "purpose": "operation_status_display",
+          "responsibility": "user_feedback_and_progress"
+        }
+      }
+    },
+
+    "type_definitions": {
+      "scope": "typescript_types",
+      "purpose": "define_component_interfaces_and_data_structures",
+      "file_path": "components/parser/types.ts",
+      "types": {
+        "TableState": {
+          "data": "ParsedAnalysis[]",
+          "loading": "boolean",
+          "error": "string | null",
+          "selectedRows": "string[]",
+          "sortConfig": {
+            "key": "keyof ParsedAnalysis",
+            "direction": ["asc", "desc"]
+          },
+          "filters": {
+            "classification": "Classification?",
+            "risk_level": "RiskLevel?",
+            "date_range": "[Date, Date]?"
+          }
+        },
+        "ExportState": {
+          "format": "ExportFormat",
+          "progress": "number",
+          "status": ["idle", "processing", "complete", "error"]
+        },
+        "FilterConfig": {
+          "dynamic_key": {
+            "type": ["select", "date", "text"],
+            "options": "string[]?",
+            "multiple": "boolean?"
+          }
+        }
+      }
+    },
+
+    "state_management": {
+      "scope": "data_flow_control",
+      "purpose": "manage_component_state_and_updates",
+      "implementation": {
+        "pattern": "context_reducer",
+        "file_path": "components/parser/store.ts",
+        "actions": {
+          "SET_DATA": "update_full_dataset",
+          "UPDATE_FILTERS": "modify_active_filters",
+          "SET_SORT": "update_sort_configuration",
+          "SELECT_ROWS": "modify_row_selection",
+          "SET_EXPORT_CONFIG": "update_export_settings",
+          "SET_ERROR": "update_error_state"
+        }
+      }
+    },
+
+    "component_specifications": {
+      "scope": "component_implementation_details",
+      "purpose": "define_individual_component_behavior",
+      "specifications": {
+        "AnalysisTable": {
+          "features": [
+            "virtual_scrolling",
+            "column_resizing",
+            "fixed_header",
+            "row_selection"
+          ],
+          "props": {
+            "data": "ParsedAnalysis[]",
+            "onSelect": "(rows: string[]) => void",
+            "onSort": "(config: SortConfig) => void",
+            "loading": "boolean?",
+            "error": "string?"
+          }
+        },
+        "ExportControls": {
+          "features": [
+            "format_selection",
+            "progress_indicator",
+            "cancel_option"
+          ],
+          "props": {
+            "onExport": "(format: ExportFormat) => Promise<void>",
+            "disabled": "boolean?",
+            "progress": "number?"
+          }
+        },
+        "FilterBar": {
+          "features": [
+            "filter_composition",
+            "date_range_picker",
+            "multi_select"
+          ],
+          "props": {
+            "config": "FilterConfig",
+            "onChange": "(filters: FilterState) => void",
+            "onClear": "() => void"
+          }
+        },
+        "StatusIndicator": {
+          "features": [
+            "auto_hide",
+            "progress_display",
+            "error_display"
+          ],
+          "props": {
+            "status": ["idle", "processing", "complete", "error"],
+            "message": "string?",
+            "progress": "number?"
+          }
+        }
+      }
+    },
+
+    "performance_requirements": {
+      "scope": "optimization_rules",
+      "purpose": "ensure_efficient_component_operation",
+      "rules": {
+        "data_handling": {
+          "virtualization": "required_above_1000_items",
+          "debounce": "filter_changes_250ms",
+          "memoization": "sorted_data_and_filtered_results",
+          "batch_updates": "selection_changes"
+        },
+        "memory_management": {
+          "cleanup_triggers": {
+            "filters": "unmount",
+            "selection": "data_change",
+            "parsed_data": "export_complete"
+          }
+        }
+      }
+    },
+
+    "integration_protocol": {
+      "scope": "component_assembly",
+      "purpose": "define_integration_sequence_and_patterns",
+      "sequence": {
+        "1": "initialize_store",
+        "2": "mount_table",
+        "3": "add_filters",
+        "4": "add_export",
+        "5": "add_status"
+      },
+      "data_flow": {
+        "input": "raw_analysis_string",
+        "process": "parse_response",
+        "update": "store_update",
+        "render": "display_results",
+        "export": "file_generation"
+      }
+    }
+  }
+}

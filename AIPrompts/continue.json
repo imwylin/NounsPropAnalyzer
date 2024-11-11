@@ -1,0 +1,38 @@
+{
+    "CONTINUATION_PROMPT": {
+      "context": "PropAnalyzerMasterInstructions.json deployment continuation",
+      "prompt_version": "1.0",
+      "prompt_type": "deployment_continuation",
+      "prompt_text": "Continue implementing the deployment protocol from PropAnalyzerMasterInstructions.json. First:\n\n1. Confirm the last completed section from the protocol\n2. Show current directory and status\n3. List any pending items or errors\n4. Resume execution with the next step\n\nContinue executing commands and showing their outputs in the same format as before.",
+      "expected_response_format": {
+        "structure": [
+          {
+            "section": "status_report",
+            "components": [
+              "Last completed protocol section",
+              "Current working directory",
+              "Pending actions",
+              "Any existing errors"
+            ]
+          },
+          {
+            "section": "continuation",
+            "components": [
+              {
+                "command_execution": "```bash\n[command]\n```",
+                "command_output": "```\n[output]\n```",
+                "verification": "Confirmation of expected results",
+                "progress_update": "Status of current section"
+              }
+            ]
+          }
+        ],
+        "requirements": [
+          "Maintain consistent format from initial deployment",
+          "Show all command outputs",
+          "Continue verification process",
+          "Report any errors immediately"
+        ]
+      }
+    }
+  }

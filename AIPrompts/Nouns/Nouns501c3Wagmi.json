@@ -1,0 +1,142 @@
+{
+  "NOUNS_WAGMI_V2_PROTOCOL": {
+    "version": "2.0",
+    "protocol_scope": "proposal_data_fetching",
+    "protocol_purpose": "efficiently_fetch_and_process_proposals_for_501c3_analysis",
+
+    "wagmi_update_configuration": {
+      "scope": "wagmi_setup_modification",
+      "purpose": "update existing wagmi configuration for proposal fetching",
+      "file_path": "src/wagmi.ts",
+      "modifications": {
+        "imports_to_add": [
+          "import { NOUNS_DAO_ABI, NOUNS_DAO_ADDRESS } from './contracts/nounsDao'",
+          "import { QueryClient } from '@tanstack/react-query'",
+          "import { http } from 'wagmi/transports'"
+        ],
+        "config_updates": {
+          "target": "export const config = createConfig({",
+          "required_properties": [
+            {
+              "name": "chains",
+              "value": "[mainnet]",
+              "required": true
+            },
+            {
+              "name": "transports",
+              "value": `{
+                [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_URL)
+              }`,
+              "required": true
+            },
+            {
+              "name": "ssr",
+              "value": "true",
+              "required": true
+            }
+          ]
+        },
+        "query_client_addition": {
+          "code": `
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 3_600_000,
+      staleTime: 300_000,
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+    }
+  }
+})`
+        }
+      }
+    },
+
+    "proposal_fetching": {
+      "scope": "data_retrieval",
+      "purpose": "batch_fetch_proposal_data",
+      "file_path": "src/hooks/useProposals.ts",
+      "implementations": {
+        "get_total_proposals": {
+          "hook": "useReadContract",
+          "implementation": `
+            const { data: proposalCount } = useReadContract({
+              abi: NOUNS_DAO_ABI,
+              address: NOUNS_DAO_ADDRESS,
+              functionName: 'proposalCount'
+            })`
+        },
+        "batch_fetch_proposals": {
+          "hook": "useReadContracts",
+          "implementation": `
+            const { data: proposals } = useReadContracts({
+              contracts: batchIds.map(id => ({
+                abi: NOUNS_DAO_ABI,
+                address: NOUNS_DAO_ADDRESS,
+                functionName: 'proposals',
+                args: [id]
+              })),
+              query: {
+                enabled: batchIds.length > 0
+              }
+            })`
+        },
+        "fetch_proposal_actions": {
+          "hook": "useReadContracts",
+          "implementation": `
+            const { data: actions } = useReadContracts({
+              contracts: proposalIds.map(id => ({
+                abi: NOUNS_DAO_ABI,
+                address: NOUNS_DAO_ADDRESS,
+                functionName: 'getActions',
+                args: [id]
+              })),
+              query: {
+                enabled: proposalIds.length > 0
+              }
+            })`
+        }
+      }
+    },
+
+    "file_structure_updates": {
+      "new_files": [
+        {
+          "path": "src/contracts/nounsDao.ts",
+          "purpose": "Contract constants and types",
+          "content": "Import ABI and address from existing NounsDAOProxy.ts"
+        },
+        {
+          "path": "src/hooks/useProposals.ts",
+          "purpose": "Proposal fetching hooks",
+          "imports": [
+            "import { useReadContract, useReadContracts } from 'wagmi'",
+            "import { NOUNS_DAO_ABI, NOUNS_DAO_ADDRESS } from '../contracts/nounsDao'"
+          ]
+        }
+      ],
+      "verify_paths": [
+        "src/wagmi.ts",
+        "src/contracts/nounsDao.ts",
+        "src/hooks/useProposals.ts"
+      ]
+    },
+
+    "performance_optimizations": {
+      "scope": "fetching_efficiency",
+      "purpose": "optimize data retrieval",
+      "configurations": {
+        "batch_size": 10,
+        "query_config": {
+          "staleTime": 300000,
+          "cacheTime": 3600000,
+          "refetchOnMount": false
+        },
+        "error_handling": {
+          "retry_attempts": 3,
+          "backoff_delay": 1000
+        }
+      }
+    }
+  }
+}

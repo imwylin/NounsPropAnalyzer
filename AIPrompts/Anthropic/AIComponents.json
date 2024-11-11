@@ -1,0 +1,94 @@
+{
+  "AI_COMPONENT_STANDARDIZATION": {
+    "file_structure": {
+      "base_path": "components/ai/",
+      "components": [
+        {
+          "name": "Chat",
+          "files": ["Chat.tsx", "Chat.module.css"],
+          "purpose": "Main container and state management"
+        },
+        {
+          "name": "MessageList",
+          "files": ["MessageList.tsx", "MessageList.module.css"],
+          "purpose": "Scrollable message display"
+        },
+        {
+          "name": "Message",
+          "files": ["Message.tsx", "Message.module.css"],
+          "purpose": "Individual message styling"
+        },
+        {
+          "name": "Input",
+          "files": ["Input.tsx", "Input.module.css"],
+          "purpose": "Message input and submission"
+        }
+      ]
+    },
+    "css_modules_standards": {
+      "naming": {
+        "pattern": "lowercase with hyphens",
+        "scope": "component-specific"
+      },
+      "core_classes": {
+        "container": "Basic flex container",
+        "message": "Message bubble base",
+        "input": "Input element base",
+        "button": "Submit button base"
+      },
+      "shared_variables": {
+        "colors": [
+          "--ai-primary: #2D7FF9",
+          "--ai-background: #fff",
+          "--ai-text: #111",
+          "--ai-border: #eee"
+        ],
+        "spacing": [
+          "--ai-spacing-sm: 0.5rem",
+          "--ai-spacing-md: 1rem",
+          "--ai-spacing-lg: 1.5rem"
+        ]
+      }
+    },
+    "responsive_rules": {
+      "approach": "mobile-first",
+      "breakpoint": "40rem",
+      "key_rules": [
+        "max-width: min(90%, 40rem)",
+        "height: min(80vh, 600px)",
+        "padding: var(--ai-spacing-md)"
+      ]
+    },
+    "minimal_styling": {
+      "principles": [
+        "Use flexbox for layout",
+        "Minimal transitions only",
+        "System fonts",
+        "No decorative elements",
+        "Simple color differentiation for messages"
+      ],
+      "critical_styles": {
+        "message_list": "scrollable container with flex-grow: 1",
+        "message": "rounded corners + color differentiation",
+        "input": "full width + simple border",
+        "button": "minimal hover state"
+      }
+    },
+    "accessibility_core": {
+      "required": [
+        "role='log' on message list",
+        "aria-label on input",
+        "loading indicators",
+        "keyboard submission"
+      ]
+    },
+    "component_communication": {
+      "pattern": "prop drilling acceptable for simplicity",
+      "key_props": [
+        "messages[]",
+        "onSend()",
+        "loading"
+      ]
+    }
+  }
+}

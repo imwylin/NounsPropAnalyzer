@@ -1,0 +1,269 @@
+{
+  "AI_AGENT_SETUP_PROTOCOL": {
+    "version": "1.0",
+    "purpose": "Guide AI agent through complete system setup and integration",
+    "system_overview": {
+      "components": [
+        "Nouns DAO contract integration",
+        "501c3 analysis parser",
+        "Rainbow Kit wallet connection",
+        "React component system",
+        "Data transformation layer"
+      ],
+      "required_knowledge": [
+        "TypeScript/React development",
+        "Smart contract interaction",
+        "501c3 compliance analysis",
+        "Data parsing and transformation"
+      ]
+    },
+
+    "initialization_sequence": {
+      "pre_setup_verification": {
+        "verify_documents": [
+          "SpreadsheetParser.json",
+          "AIComponents.json",
+          "Anthropicinstall.json",
+          "NounsDAOProxy.ts",
+          "Nouns501c3.json",
+          "Nouns501c3Components.json",
+          "Nouns501c3Wagmi.json",
+          "Nouns501ProposalScraper.json"
+        ],
+        "verify_environment": {
+          "node_version": ">=16.0.0",
+          "npm_version": ">=7.0.0",
+          "git_initialized": true
+        }
+      },
+      
+      "project_setup": {
+        "directory_creation": {
+          "command": "mkdir -p nouns-501c3-analysis",
+          "subfolders": [
+            "components/{analysis,parser,ai}",
+            "hooks",
+            "utils/{nouns,parser}",
+            "types",
+            "pages/proposals",
+            "config"
+          ]
+        },
+        "package_initialization": {
+          "command": "npm init -y",
+          "package_json_updates": {
+            "name": "nouns-501c3-analysis",
+            "version": "1.0.0",
+            "private": true,
+            "scripts": {
+              "dev": "next dev",
+              "build": "next build",
+              "start": "next start",
+              "lint": "next lint"
+            }
+          }
+        }
+      },
+
+      "dependency_installation": {
+        "core_packages": [
+          "next",
+          "react",
+          "react-dom",
+          "typescript",
+          "@types/react",
+          "@types/node"
+        ],
+        "integration_packages": [
+          "@rainbow-me/rainbowkit",
+          "wagmi",
+          "viem",
+          "@anthropic-ai/sdk",
+          "@tanstack/react-query"
+        ],
+        "install_command": "npm install {packages}",
+        "verify_installation": "npm list"
+      }
+    },
+
+    "type_system_implementation": {
+      "sequence": [
+        {
+          "file": "types/nouns.ts",
+          "source": "NounsDAOProxy.ts",
+          "required_types": [
+            "Proposal",
+            "VoteReceipt",
+            "ProposalActions"
+          ]
+        },
+        {
+          "file": "types/parser.ts",
+          "source": "SpreadsheetParser.json",
+          "required_types": [
+            "RawAnalysis",
+            "ParsedAnalysis",
+            "Classification",
+            "RiskAssessment"
+          ]
+        }
+      ]
+    },
+
+    "integration_layer_setup": {
+      "sequence": [
+        {
+          "component": "wagmi_configuration",
+          "source": "Nouns501c3Wagmi.json",
+          "target": "config/wagmi.ts"
+        },
+        {
+          "component": "proposal_scraper",
+          "source": "Nouns501ProposalScraper.json",
+          "target": "utils/nouns/dataFetcher.ts"
+        },
+        {
+          "component": "parser_implementation",
+          "source": "SpreadsheetParser.json",
+          "target": "utils/parser/responseParser.ts"
+        }
+      ]
+    },
+
+    "component_implementation": {
+      "analysis_components": {
+        "source": "Nouns501c3Components.json",
+        "components": [
+          "ProposalAnalysisDashboard",
+          "ComplianceIndicators",
+          "CharitableBreakdown"
+        ]
+      },
+      "parser_components": {
+        "source": "SpreadsheetParser.json",
+        "components": [
+          "AnalysisTable",
+          "ExportControls",
+          "FilterBar"
+        ]
+      },
+      "ai_components": {
+        "source": "AIComponents.json",
+        "components": [
+          "Chat",
+          "MessageList",
+          "Message",
+          "Input"
+        ]
+      }
+    },
+
+    "hook_implementation": {
+      "core_hooks": {
+        "source": "Nouns501c3Wagmi.json",
+        "hooks": [
+          "useProposalCount",
+          "useProposalBatch",
+          "useProposalAnalysis"
+        ]
+      },
+      "analysis_hooks": {
+        "source": "Nouns501c3Components.json",
+        "hooks": [
+          "useComplianceMetrics"
+        ]
+      }
+    },
+
+    "page_implementation": {
+      "pages": [
+        {
+          "path": "pages/index.tsx",
+          "purpose": "Landing page with system overview"
+        },
+        {
+          "path": "pages/proposals/index.tsx",
+          "purpose": "Proposal listing with analysis summary"
+        },
+        {
+          "path": "pages/proposals/[id]/analysis.tsx",
+          "purpose": "Detailed proposal analysis view"
+        }
+      ]
+    },
+
+    "environment_configuration": {
+      "required_variables": [
+        {
+          "name": "NEXT_PUBLIC_RPC_URL",
+          "description": "Ethereum RPC endpoint"
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "description": "API key for AI analysis"
+        },
+        {
+          "name": "NEXT_PUBLIC_WALLETCONNECT_ID",
+          "description": "WalletConnect project ID"
+        }
+      ],
+      "env_file_creation": {
+        "command": "touch .env.local",
+        "template_source": "Anthropicinstall.json"
+      }
+    },
+
+    "verification_and_testing": {
+      "build_verification": {
+        "commands": [
+          "npm run build",
+          "npm run lint"
+        ],
+        "expected_output": {
+          "build": "Build completed successfully",
+          "lint": "No linting errors found"
+        }
+      },
+      "component_verification": {
+        "verify_exports": [
+          "utils/nouns/dataFetcher.ts",
+          "utils/parser/responseParser.ts",
+          "components/analysis/index.ts"
+        ],
+        "verify_types": [
+          "types/nouns.ts",
+          "types/parser.ts"
+        ]
+      }
+    },
+
+    "documentation_generation": {
+      "required_docs": [
+        {
+          "file": "docs/setup.md",
+          "content": [
+            "Installation instructions",
+            "Environment configuration",
+            "Development workflow"
+          ]
+        },
+        {
+          "file": "docs/architecture.md",
+          "content": [
+            "System overview",
+            "Component hierarchy",
+            "Data flow"
+          ]
+        },
+        {
+          "file": "docs/analysis.md",
+          "content": [
+            "501c3 analysis process",
+            "Classification criteria",
+            "Risk assessment framework"
+          ]
+        }
+      ]
+    }
+  }
+}

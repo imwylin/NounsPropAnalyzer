@@ -1,0 +1,162 @@
+{
+  "NOUNS_501C3_PROTOCOL": {
+    "version": "1.0",
+    "protocol_scope": "integrate_nouns_proposals_with_501c3_analysis",
+    "protocol_purpose": "analyze_dao_proposals_for_charitable_compliance",
+
+    "component_hierarchy": {
+      "scope": "dedicated_analysis_components",
+      "purpose": "charitable_analysis_interface",
+      "base_path": "components/analysis/",
+      "definitions": {
+        "ProposalAnalysisDashboard": {
+          "path": "Dashboard/index.tsx",
+          "purpose": "unified_view_of_proposal_and_analysis",
+          "features": [
+            "proposal_details",
+            "charitable_classification",
+            "risk_metrics",
+            "export_functions"
+          ]
+        },
+        "ComplianceIndicators": {
+          "path": "ComplianceIndicators/index.tsx",
+          "purpose": "visual_charitable_status",
+          "features": [
+            "classification_badge",
+            "risk_level_indicators",
+            "mission_alignment_score"
+          ]
+        },
+        "CharitableBreakdown": {
+          "path": "CharitableBreakdown/index.tsx",
+          "purpose": "detailed_501c3_analysis",
+          "features": [
+            "allowable_elements_list",
+            "unallowable_elements_list",
+            "modification_requirements"
+          ]
+        }
+      }
+    },
+
+    "hooks_implementation": {
+      "scope": "proposal_analysis_hooks",
+      "purpose": "combine_dao_and_charitable_data",
+      "file_path": "hooks/analysis/",
+      "definitions": {
+        "useProposalAnalysis": {
+          "purpose": "fetch_and_analyze_proposal",
+          "inputs": {
+            "proposalId": "number",
+            "includeVotes": "boolean"
+          },
+          "operations": [
+            "fetch_proposal_data",
+            "analyze_charitable_impact",
+            "assess_risks"
+          ]
+        },
+        "useComplianceMetrics": {
+          "purpose": "calculate_501c3_metrics",
+          "inputs": {
+            "proposalDetails": "ProcessedProposal",
+            "analysis": "ParsedAnalysis"
+          }
+        }
+      }
+    },
+
+    "data_transformations": {
+      "scope": "proposal_to_analysis_conversion",
+      "purpose": "prepare_dao_data_for_501c3_analysis",
+      "transforms": {
+        "description_to_purpose": {
+          "source": "proposal.description",
+          "target": "analysis.primary_purpose",
+          "rules": [
+            "extract_main_objective",
+            "identify_beneficiaries",
+            "assess_public_benefit"
+          ]
+        },
+        "actions_to_elements": {
+          "source": "proposal.actions",
+          "target": [
+            "analysis.allowable_elements",
+            "analysis.unallowable_elements"
+          ],
+          "rules": [
+            "categorize_expenditures",
+            "identify_private_benefit",
+            "flag_compliance_issues"
+          ]
+        },
+        "votes_to_risk": {
+          "source": [
+            "proposal.forVotes",
+            "proposal.againstVotes"
+          ],
+          "target": "analysis.risk_assessment",
+          "rules": [
+            "assess_community_support",
+            "evaluate_contention",
+            "calculate_risk_level"
+          ]
+        }
+      }
+    },
+
+    "export_configurations": {
+      "scope": "compliance_reporting",
+      "purpose": "generate_501c3_documentation",
+      "formats": {
+        "detailed_analysis": {
+          "fields": [
+            "proposal_id",
+            "submission_date",
+            "classification",
+            "charitable_purpose",
+            "compliance_issues",
+            "required_changes",
+            "risk_metrics"
+          ]
+        },
+        "summary_report": {
+          "fields": [
+            "total_proposals",
+            "charitable_percentage",
+            "risk_distribution",
+            "compliance_rate"
+          ]
+        }
+      }
+    },
+
+    "page_implementations": {
+      "analysis_dashboard": {
+        "path": "pages/proposals/analysis/[id].tsx",
+        "components": [
+          "ProposalAnalysisDashboard",
+          "ComplianceIndicators",
+          "CharitableBreakdown"
+        ],
+        "data_flow": [
+          "fetch_proposal",
+          "perform_analysis",
+          "display_results",
+          "enable_export"
+        ]
+      },
+      "batch_analysis": {
+        "path": "pages/proposals/analysis/batch.tsx",
+        "features": [
+          "multi_proposal_selection",
+          "bulk_analysis",
+          "comparative_metrics",
+          "export_options"
+        ]
+      }
+    }
+  }
+}

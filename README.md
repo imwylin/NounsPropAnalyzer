@@ -1,29 +1,42 @@
-This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Next.js](https://nextjs.org/) project bootstrapped with [`create-rainbowkit`](/packages/create-rainbowkit).
+# Nouns DAO 501c3 Analysis
 
-## Getting Started
+Automated analysis system for evaluating Nouns DAO proposals against 501c3 compliance requirements.
 
-First, run the development server:
+## Features
 
+- AI-powered analysis of proposal compliance
+- Risk assessment and mission alignment evaluation
+- Detailed breakdown of charitable elements
+- Export functionality for analysis results
+
+## Documentation
+
+- [Setup Guide](docs/setup.md)
+- [Architecture Overview](docs/architecture.md)
+- [Analysis Process](docs/analysis.md)
+- [Deployment Checklist](docs/deployment-checklist.md)
+
+## Quick Start
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Configure environment:
+- Copy `.env.local.example` to `.env.local`
+- Add required API keys
+
+3. Start development server:
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Please read our [contributing guidelines](CONTRIBUTING.md) before submitting pull requests.
 
-## Learn More
+## License
 
-To learn more about this stack, take a look at the following resources:
-
-- [RainbowKit Documentation](https://rainbowkit.com) - Learn how to customize your wallet connection flow.
-- [wagmi Documentation](https://wagmi.sh) - Learn how to interact with Ethereum.
-- [Next.js Documentation](https://nextjs.org/docs) - Learn how to build a Next.js application.
-
-You can check out [the RainbowKit GitHub repository](https://github.com/rainbow-me/rainbowkit) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+MIT License - see [LICENSE](LICENSE) for details.

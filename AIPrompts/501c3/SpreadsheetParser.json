@@ -1,0 +1,167 @@
+{
+  "AI_PARSER_PROTOCOL": {
+    "version": "1.0",
+    "purpose": "response_parsing_for_501c3_analysis",
+    "output": "tabular_data_structure",
+
+    "execution_sequence": {
+      "order": [
+        "type_system_implementation",
+        "parser_core_setup",
+        "export_utility_implementation",
+        "validation_system_setup"
+      ]
+    },
+
+    "type_system_implementation": {
+      "file_path": "utils/parser/types.ts",
+      "scope": "global",
+      "purpose": "type_definitions",
+      "declare_types": {
+        "RawAnalysis": {
+          "pattern": "ANALYSIS:::START(.*)ANALYSIS:::END",
+          "extraction_method": "regex"
+        },
+        "ParsedAnalysis": {
+          "id": "string",
+          "timestamp": "string",
+          "classification": "Classification",
+          "primary_purpose": "string",
+          "allowable_elements": "string[]",
+          "unallowable_elements": "string[]",
+          "required_modifications": "string[]",
+          "risk_assessment": "RiskAssessment",
+          "key_considerations": "string[]"
+        },
+        "Classification": [
+          "CHARITABLE",
+          "OPERATIONAL",
+          "MARKETING",
+          "PROGRAM_RELATED",
+          "UNALLOWABLE"
+        ],
+        "RiskAssessment": {
+          "private_benefit_risk": "RiskLevel",
+          "mission_alignment": "AlignmentLevel",
+          "implementation_complexity": "ComplexityLevel"
+        },
+        "RiskLevel": ["LOW", "MEDIUM", "HIGH"],
+        "AlignmentLevel": ["STRONG", "MODERATE", "WEAK"],
+        "ComplexityLevel": ["LOW", "MEDIUM", "HIGH"],
+        "ExportFormat": ["csv", "xlsx"]
+      }
+    },
+
+    "parser_core_implementation": {
+      "file_path": "utils/parser/responseParser.ts",
+      "scope": "internal",
+      "purpose": "parsing_logic",
+      "parsing_sequence": [
+        {
+          "step": 1,
+          "action": "extract_raw_text",
+          "method": "regex_match",
+          "pattern": "ANALYSIS:::START(.*)ANALYSIS:::END"
+        },
+        {
+          "step": 2,
+          "action": "parse_json",
+          "validation": "strict",
+          "error_handling": "throw"
+        },
+        {
+          "step": 3,
+          "action": "transform_data",
+          "operations": [
+            "flatten_nested_objects",
+            "join_arrays",
+            "normalize_enums"
+          ]
+        }
+      ],
+      "field_transformations": {
+        "arrays": "comma_separated_string",
+        "enums": "direct_mapping",
+        "nested_objects": "dot_notation"
+      }
+    },
+
+    "export_utility_implementation": {
+      "file_path": "utils/parser/exportUtils.ts",
+      "scope": "external",
+      "purpose": "export_functionality",
+      "column_structure": [
+        {"field": "id", "header": "Proposal ID"},
+        {"field": "timestamp", "header": "Analysis Date"},
+        {"field": "classification", "header": "Classification"},
+        {"field": "primary_purpose", "header": "Primary Purpose"},
+        {"field": "allowable_elements", "header": "Allowable Elements"},
+        {"field": "unallowable_elements", "header": "Unallowable Elements"},
+        {"field": "required_modifications", "header": "Required Modifications"},
+        {"field": "risk_assessment.private_benefit_risk", "header": "Private Benefit Risk"},
+        {"field": "risk_assessment.mission_alignment", "header": "Mission Alignment"},
+        {"field": "risk_assessment.implementation_complexity", "header": "Implementation Complexity"},
+        {"field": "key_considerations", "header": "Key Considerations"}
+      ],
+      "export_configurations": {
+        "csv": {
+          "delimiter": ",",
+          "encoding": "UTF-8",
+          "newline": "\n",
+          "quote_strings": true
+        },
+        "xlsx": {
+          "sheet_name": "Proposal Analysis",
+          "auto_width": true,
+          "header_style": {
+            "bold": true,
+            "fill": "#f0f0f0"
+          }
+        }
+      }
+    },
+
+    "validation_protocols": {
+      "required_validations": [
+        "field_presence",
+        "type_correctness",
+        "enum_values",
+        "data_format"
+      ],
+      "error_handling": {
+        "missing_required": "throw",
+        "invalid_type": "throw",
+        "invalid_enum": "throw",
+        "missing_optional": "null"
+      },
+      "performance_rules": {
+        "batch_size": 100,
+        "memory_limit": "100MB",
+        "stream_threshold": "1000_rows"
+      }
+    },
+
+    "integration_points": {
+      "input_requirements": {
+        "format": "string",
+        "encoding": "UTF-8",
+        "validation": "ANALYSIS:::START/END markers"
+      },
+      "output_guarantees": {
+        "format": "tabular",
+        "types": "normalized",
+        "nulls": "explicit"
+      },
+      "error_contracts": {
+        "validation_error": {
+          "type": "Error",
+          "message": "Validation failed: {reason}"
+        },
+        "parse_error": {
+          "type": "Error",
+          "message": "Parse failed: {reason}"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "NOUNS_DATA_INTEGRATION_PROTOCOL": {
+    "version": "1.0",
+    "protocol_scope": "create bridge between nouns dao contract and 501c3 parser",
+    "protocol_purpose": "enable automated analysis of proposal data via established parser",
+
+    "execution_sequence": {
+      "scope": "define order of operations",
+      "purpose": "ensure correct initialization and data flow",
+      "order": [
+        "contract_integration",
+        "data_fetching",
+        "transformation_layer",
+        "parser_integration"
+      ]
+    },
+
+    "type_system_implementation": {
+      "scope": "define typescript interfaces",
+      "purpose": "ensure type safety between contract and parser",
+      "file_path": "types/nouns.ts",
+      "types": {
+        "RawProposalData": {
+          "extends": "Proposal",
+          "adds": {
+            "description": "string",
+            "actions": "ProposalActions"
+          }
+        },
+        "ProcessedProposal": {
+          "id": "string",
+          "timestamp": "string",
+          "details": "string",
+          "actions": "ProposalActions",
+          "state": {
+            "executed": "boolean",
+            "canceled": "boolean",
+            "votes": {
+              "for": "bigint",
+              "against": "bigint",
+              "abstain": "bigint"
+            }
+          }
+        }
+      }
+    },
+
+    "data_fetching_implementation": {
+      "scope": "contract data retrieval",
+      "purpose": "efficient batch loading of proposal data",
+      "file_path": "utils/nouns/dataFetcher.ts",
+      "hooks": {
+        "useProposalCount": {
+          "contract": "NOUNS_DAO_ADDRESS",
+          "function": "proposalCount",
+          "return": "bigint"
+        },
+        "useProposalBatch": {
+          "input": "startId: number, batchSize: number",
+          "operations": [
+            "fetch_proposals",
+            "fetch_actions",
+            "combine_data"
+          ]
+        }
+      },
+      "batch_config": {
+        "size": 10,
+        "concurrent_requests": 3,
+        "retry_attempts": 2
+      }
+    },
+
+    "transformation_layer": {
+      "scope": "data preparation",
+      "purpose": "convert contract data to parser format",
+      "file_path": "utils/nouns/transformer.ts",
+      "operations": {
+        "sequence": [
+          {
+            "step": "extract_description",
+            "source": "proposal.description",
+            "target": "processed.details"
+          },
+          {
+            "step": "format_actions",
+            "source": "proposal.actions",
+            "target": "processed.actions"
+          },
+          {
+            "step": "normalize_votes",
+            "source": ["forVotes", "againstVotes", "abstainVotes"],
+            "target": "processed.state.votes"
+          }
+        ]
+      }
+    },
+
+    "parser_integration": {
+      "scope": "data processing",
+      "purpose": "feed transformed data into parser system",
+      "file_path": "utils/nouns/parserBridge.ts",
+      "input_adapter": {
+        "function": "adaptForParser",
+        "transforms": [
+          "format_proposal_as_analysis",
+          "add_analysis_markers",
+          "validate_structure"
+        ]
+      },
+      "batch_processor": {
+        "function": "processBatch",
+        "operations": [
+          "transform_batch",
+          "parse_batch",
+          "store_results"
+        ]
+      }
+    },
+
+    "implementation_entry": {
+      "scope": "page implementation",
+      "purpose": "create data flow in next.js page",
+      "file_path": "pages/proposals/index.tsx",
+      "sequence": {
+        "1": "get_proposal_count",
+        "2": "fetch_batches",
+        "3": "transform_data",
+        "4": "parse_results",
+        "5": "display_table"
+      },
+      "requirements": {
+        "imports": [
+          "useProposalCount",
+          "useProposalBatch",
+          "transformProposal",
+          "parseAnalysis",
+          "AnalysisTable"
+        ],
+        "state_management": [
+          "useState<ProcessedProposal[]>",
+          "useState<boolean>",
+          "useEffect"
+        ]
+      }
+    },
+
+    "error_handling": {
+      "scope": "fault tolerance",
+      "purpose": "ensure system reliability",
+      "strategies": {
+        "contract_errors": {
+          "method": "retry_with_backoff",
+          "max_attempts": 3,
+          "backoff_ms": 1000
+        },
+        "transform_errors": {
+          "method": "skip_invalid",
+          "logging": "console.error"
+        },
+        "parse_errors": {
+          "method": "log_and_continue",
+          "fallback": "null"
+        }
+      }
+    },
+
+    "performance_requirements": {
+      "scope": "system optimization",
+      "purpose": "maintain efficiency at scale",
+      "rules": {
+        "batch_size": 10,
+        "concurrent_fetches": 3,
+        "memory_threshold": "100MB",
+        "cache_duration": "5_minutes"
+      }
+    }
+  }
+}

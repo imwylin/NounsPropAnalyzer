@@ -1,0 +1,210 @@
+{
+  "AI_AGENT_INSTALLATION_PROTOCOL": {
+    "VERSION": "1.0",
+    "TARGET_FRAMEWORK": "next.js",
+    "CONFIGURATION": "pages_router",
+    "LANGUAGE": "typescript",
+    "PACKAGE": "@anthropic-ai/sdk",
+
+    "EXECUTION_SEQUENCE": {
+      "WHAT": "Defines strict order of operations for system installation and setup",
+      "WHY": "Prevents dependency conflicts and ensures correct initialization sequence",
+      "order": [
+        "dependency_installation",
+        "environment_configuration",
+        "type_system_implementation",
+        "utility_layer_setup",
+        "api_layer_implementation",
+        "component_layer_implementation"
+      ]
+    },
+
+    "DEPENDENCY_INSTALLATION": {
+      "WHAT": "Required packages and installation commands for system functionality",
+      "WHY": "Establishes foundational requirements for any code execution",
+      "required_packages": {
+        "primary": [
+          {
+            "name": "@anthropic-ai/sdk",
+            "purpose": "core_functionality"
+          }
+        ],
+        "dev": [
+          {
+            "name": "@types/node",
+            "purpose": "typescript_support"
+          }
+        ]
+      },
+      "installation_command": "npm install @anthropic-ai/sdk\nnpm install --save-dev @types/node"
+    },
+
+    "ENVIRONMENT_CONFIGURATION": {
+      "WHAT": "Environment variables and security settings for API access",
+      "WHY": "Ensures secure API key management and system configuration",
+      "file_path": ".env.local",
+      "required_variables": [
+        {
+          "key": "ANTHROPIC_API_KEY",
+          "type": "string",
+          "security_level": "high",
+          "source": "anthropic_dashboard"
+        }
+      ]
+    },
+
+    "TYPE_SYSTEM_IMPLEMENTATION": {
+      "WHAT": "TypeScript type definitions for API interactions",
+      "WHY": "Enables strict type checking and structured data validation",
+      "file_info": {
+        "path": "types/anthropic.d.ts",
+        "purpose": "type_definitions",
+        "scope": "global"
+      },
+      "declare_types": {
+        "message": {
+          "role": ["user", "assistant"],
+          "content": "string"
+        },
+        "response": {
+          "id": "string",
+          "type": "string",
+          "role": "string",
+          "content": "string",
+          "model": "string",
+          "stop_reason": "string | null",
+          "stop_sequence": "string | null",
+          "usage": {
+            "input_tokens": "number",
+            "output_tokens": "number"
+          }
+        },
+        "error": {
+          "error": {
+            "type": "string",
+            "message": "string"
+          }
+        }
+      }
+    },
+
+    "UTILITY_LAYER_SETUP": {
+      "WHAT": "Core functions for Anthropic API interactions",
+      "WHY": "Centralizes reusable API interaction logic",
+      "file_info": {
+        "path": "utils/anthropic.ts",
+        "purpose": "core_functionality",
+        "scope": "server"
+      },
+      "import_requirements": [
+        {
+          "package": "@anthropic-ai/sdk",
+          "entity": "Anthropic"
+        }
+      ],
+      "configuration": {
+        "model_identifier": "claude-3-sonnet-20240229",
+        "default_parameters": {
+          "max_tokens": 4096,
+          "temperature": 0.7
+        }
+      },
+      "function_definition": {
+        "name": "generateResponse",
+        "input": "messages: AnthropicMessage[]",
+        "output": "Promise<AnthropicResponse>",
+        "error_handling": true
+      }
+    },
+
+    "API_LAYER_IMPLEMENTATION": {
+      "WHAT": "Server-side endpoint setup for handling Anthropic requests",
+      "WHY": "Creates secure bridge between client and Anthropic API",
+      "file_info": {
+        "path": "pages/api/chat.ts",
+        "purpose": "request_handling",
+        "scope": "server"
+      },
+      "endpoint_configuration": {
+        "method": "POST",
+        "path": "/api/chat",
+        "input_validation": [
+          {
+            "check": "method === POST"
+          },
+          {
+            "check": "messages is Array"
+          }
+        ],
+        "error_handling": {
+          "405": "method_not_allowed",
+          "500": "internal_server_error"
+        }
+      },
+      "response_protocol": {
+        "success": {
+          "status": 200,
+          "body": "AnthropicResponse"
+        },
+        "error": {
+          "status": [405, 500],
+          "body": "AnthropicError"
+        }
+      }
+    },
+
+    "COMPONENT_LAYER_IMPLEMENTATION": {
+      "WHAT": "Client-side React component structure for chat interface",
+      "WHY": "Defines UI patterns and state management for user interactions",
+      "file_info": {
+        "path": "components/ChatInterface.tsx",
+        "purpose": "user_interface",
+        "scope": "client"
+      },
+      "state_management": {
+        "messages": "AnthropicMessage[]",
+        "input": "string",
+        "loading": "boolean"
+      },
+      "interaction_flow": [
+        "capture_user_input",
+        "update_message_state",
+        "send_api_request",
+        "handle_response",
+        "update_ui"
+      ],
+      "error_handling": {
+        "network_errors": "console.error",
+        "api_errors": "throw"
+      },
+      "state_updates": {
+        "pre_request": [
+          "setLoading(true)",
+          "append_message"
+        ],
+        "post_request": [
+          "setLoading(false)",
+          "clear_input",
+          "append_response"
+        ]
+      }
+    },
+
+    "VALIDATION_PROTOCOLS": {
+      "WHAT": "Security, performance, and type safety verification rules",
+      "WHY": "Ensures system integrity and error prevention",
+      "security_checks": [
+        "api_key_validation",
+        "input_sanitization",
+        "type_safety",
+        "response_validation"
+      ],
+      "performance_optimization": [
+        "state_updates",
+        "memory_management",
+        "error_boundaries",
+        "loading_states"
+      ]
+    }
+  }
+}

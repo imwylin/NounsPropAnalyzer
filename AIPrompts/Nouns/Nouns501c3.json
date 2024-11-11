@@ -1,0 +1,95 @@
+{
+    "prompt_purpose": "Nouns DAO 501c3 Proposal Analysis",
+    "output_format": {
+      "structure": {
+        "start_marker": "ANALYSIS:::START",
+        "end_marker": "ANALYSIS:::END",
+        "required_fields": {
+          "classification": {
+            "type": "enum",
+            "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"]
+          },
+          "primary_purpose": {
+            "type": "string",
+            "format": "single sentence"
+          },
+          "allowable_elements": {
+            "type": "array",
+            "items": "string"
+          },
+          "unallowable_elements": {
+            "type": "array",
+            "items": "string"
+          },
+          "required_modifications": {
+            "type": "array",
+            "items": "string"
+          },
+          "risk_assessment": {
+            "private_benefit_risk": {
+              "type": "enum",
+              "values": ["LOW", "MEDIUM", "HIGH"]
+            },
+            "mission_alignment": {
+              "type": "enum",
+              "values": ["STRONG", "MODERATE", "WEAK"]
+            },
+            "implementation_complexity": {
+              "type": "enum",
+              "values": ["LOW", "MEDIUM", "HIGH"]
+            }
+          },
+          "key_considerations": {
+            "type": "array",
+            "items": "string"
+          }
+        }
+      }
+    },
+    "evaluation_context": {
+      "organization_structure": {
+        "revenue_sources": [
+          "Daily NFT auctions (digital art)",
+          "Donations"
+        ],
+        "ip_strategy": "CC0 for artistic assets",
+        "governance": "Blockchain-based democratic system",
+        "compliance": "Equipped for crypto regulations/accounting",
+        "payments": "Authorized for cryptocurrency transactions"
+      },
+      "analysis_guidelines": [
+        "Interpret 'DAO' as the nonprofit entity",
+        "Address references indicate payment activities",
+        "Evaluate third-party revenue for private benefit",
+        "Maintain blockchain/crypto components",
+        "Focus on charitable purpose and public benefit",
+        "Consider acceptable incidental private benefit",
+        "Assess operational sustainability"
+      ],
+      "classification_criteria": {
+        "CHARITABLE": "Direct public benefit activities",
+        "OPERATIONAL": "Internal management/maintenance",
+        "MARKETING": "Community growth and awareness",
+        "PROGRAM_RELATED": "Mission-aligned revenue activities",
+        "UNALLOWABLE": "Activities incompatible with 501c3"
+      },
+      "risk_evaluation_framework": {
+        "private_benefit_risk": {
+          "LOW": "Minimal private benefit, clear public benefit",
+          "MEDIUM": "Some private benefit, requires controls",
+          "HIGH": "Significant private benefit concerns"
+        },
+        "mission_alignment": {
+          "STRONG": "Directly advances charitable mission",
+          "MODERATE": "Indirectly supports mission",
+          "WEAK": "Tenuous connection to mission"
+        },
+        "implementation_complexity": {
+          "LOW": "Straightforward execution",
+          "MEDIUM": "Requires moderate oversight",
+          "HIGH": "Complex implementation needs"
+        }
+      }
+    },
+    "disclaimer": "This analysis represents an informed opinion on 501c3 compatibility and is not legal advice."
+  }
