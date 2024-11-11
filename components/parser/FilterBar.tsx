@@ -6,14 +6,6 @@ export interface FilterState {
   classification?: Classification[]
   risk_level?: RiskLevel
   date_range?: [Date, Date] | null
-  search?: string
-}
-
-interface FilterValue {
-  classification?: Classification[]
-  risk_level?: RiskLevel
-  date_range?: [Date, Date] | null
-  search?: string
 }
 
 interface FilterBarProps {
@@ -23,7 +15,7 @@ interface FilterBarProps {
 
 /**
  * Component for filtering analysis data
- * Supports classification, risk level, date range, and text search filters
+ * Supports classification, risk level, and date range filters
  */
 export function FilterBar({ onChange, onClear }: FilterBarProps) {
   const [filters, setFilters] = useState<FilterState>({})
@@ -40,7 +32,7 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
   // Risk level options
   const riskLevels: RiskLevel[] = ['LOW', 'MEDIUM', 'HIGH']
 
-  const handleFilterChange = (key: keyof FilterState, value: FilterValue[keyof FilterValue]) => {
+  const handleFilterChange = (key: keyof FilterState, value: any) => {
     const newFilters = { ...filters, [key]: value }
     if (value === '' || value === null) {
       delete newFilters[key]
@@ -118,7 +110,7 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
                 const end = filters.date_range?.[1] || null
                 handleFilterChange('date_range', start && end ? [start, end] : null)
               }}
-              className={`${styles.input} ${styles.dateInput}`}
+              className={styles.input}
             />
             <input
               type="date"
@@ -128,25 +120,8 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
                 const end = e.target.value ? new Date(e.target.value) : null
                 handleFilterChange('date_range', start && end ? [start, end] : null)
               }}
-              className={`${styles.input} ${styles.dateInput}`}
+              className={styles.input}
             />
-          </div>
-        </div>
-
-        {/* Search Filter */}
-        <div className={styles.filterGroup}>
-          <label className={styles.label}>
-            Search
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={filters.search || ''}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              placeholder="Search proposals..."
-              className={`${styles.input} ${styles.searchInput}`}
-            />
-            <span className={styles.searchIcon}>🔍</span>
           </div>
         </div>
       </div>

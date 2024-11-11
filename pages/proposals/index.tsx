@@ -14,6 +14,8 @@ import styles from './proposals.module.css'
 export default function ProposalsPage() {
   const [selectedRows, setSelectedRows] = useState<string[]>([])
   const { data: proposalCount } = useProposalCount()
+  
+  // Automatically analyze all proposals
   const { 
     data: analysisResults,
     isLoading,
@@ -21,17 +23,37 @@ export default function ProposalsPage() {
     progress
   } = useBatchAnalysis()
 
-  // Handle filter changes
-  const handleFilterChange = (filters: FilterState) => {
-    // TODO: Implement filtering logic
-    console.log('Filters updated:', filters)
-  }
+  // Filter the analysis results
+  const [activeFilters, setActiveFilters] = useState<FilterState>({})
 
-  // Handle filter clear
-  const handleFilterClear = () => {
-    // TODO: Implement filter clear logic
-    console.log('Filters cleared')
-  }
+  const filteredResults = analysisResults?.filter(result => {
+    if (!result?.analysis) return false
+
+    // Apply classification filter
+    if (activeFilters.classification?.length) {
+      if (!activeFilters.classification.includes(result.analysis.classification)) {
+        return false
+      }
+    }
+
+    // Apply risk level filter
+    if (activeFilters.risk_level) {
+      if (result.analysis.risk_assessment.private_benefit_risk !== activeFilters.risk_level) {
+        return false
+      }
+    }
+
+    // Apply date range filter
+    if (activeFilters.date_range && result.proposal.startBlock) {
+      const proposalDate = new Date(Number(result.proposal.startBlock) * 1000) // Convert block timestamp to date
+      const [start, end] = activeFilters.date_range
+      if (proposalDate < start || proposalDate > end) {
+        return false
+      }
+    }
+
+    return true
+  })
 
   // Handle export
   const handleExport = async (format: 'csv' | 'xlsx') => {
@@ -55,8 +77,8 @@ export default function ProposalsPage() {
 
         {/* Filters */}
         <FilterBar
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
+          onChange={setActiveFilters}
+          onClear={() => setActiveFilters({})}
         />
 
         {/* Export Controls */}
@@ -68,7 +90,7 @@ export default function ProposalsPage() {
 
         {/* Analysis Table */}
         <AnalysisTable
-          data={analysisResults?.map(r => r.analysis) as ParsedAnalysis[] || []}
+          data={filteredResults?.map(r => r.analysis) as ParsedAnalysis[] || []}
           onSelect={setSelectedRows}
           loading={isLoading}
           error={error as Error}
