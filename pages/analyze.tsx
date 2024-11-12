@@ -1,21 +1,17 @@
 import { useState } from 'react'
 import { useProposalDescription } from '../hooks/useSubgraphProposals'
 import { analyzeProposal } from '../utils/ai/analyzeProposal'
+import type { AIAnalysisResult } from '../types/graphql'
 import styles from './analyze.module.css'
 
-interface AnalysisResult {
+interface AnalysisResultWithMeta extends AIAnalysisResult {
   proposalId: string
   timestamp: string
-  is501c3Compliant: boolean
-  category: string
-  riskLevel: 'Low' | 'Medium' | 'High'
-  reasoning: string
-  recommendations: string
 }
 
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
-  const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([])
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   
@@ -32,7 +28,7 @@ export default function AnalyzePage() {
 
     try {
       const aiResult = await analyzeProposal(description)
-      const result: AnalysisResult = {
+      const result: AnalysisResultWithMeta = {
         proposalId,
         timestamp: new Date().toISOString(),
         ...aiResult
@@ -47,15 +43,32 @@ export default function AnalyzePage() {
   }
 
   const handleExport = () => {
-    const headers = ['Timestamp', 'Proposal ID', 'Compliant', 'Category', 'Risk Level', 'Reasoning', 'Recommendations']
+    const headers = [
+      'Timestamp',
+      'Proposal ID',
+      'Classification',
+      'Primary Purpose',
+      'Allowable Elements',
+      'Unallowable Elements',
+      'Required Modifications',
+      'Private Benefit Risk',
+      'Mission Alignment',
+      'Implementation Complexity',
+      'Key Considerations'
+    ]
+
     const rows = analysisResults.map(result => [
       result.timestamp,
       result.proposalId,
-      result.is501c3Compliant.toString(),
-      result.category,
-      result.riskLevel,
-      result.reasoning,
-      result.recommendations
+      result.classification,
+      result.primary_purpose,
+      result.allowable_elements.join('; '),
+      result.unallowable_elements.join('; '),
+      result.required_modifications.join('; '),
+      result.risk_assessment.private_benefit_risk,
+      result.risk_assessment.mission_alignment,
+      result.risk_assessment.implementation_complexity,
+      result.key_considerations.join('; ')
     ])
 
     const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
@@ -119,48 +132,125 @@ export default function AnalyzePage() {
             </button>
           </div>
           
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>ID</th>
-                  <th>Compliant</th>
-                  <th>Category</th>
-                  <th>Risk</th>
-                  <th>Reasoning</th>
-                  <th>Recommendations</th>
-                </tr>
-              </thead>
-              <tbody>
-                {analysisResults.map((result, index) => (
-                  <tr key={index}>
-                    <td>{new Date(result.timestamp).toLocaleString()}</td>
-                    <td>{result.proposalId}</td>
-                    <td>
-                      <span className={result.is501c3Compliant ? styles.tagSuccess : styles.tagError}>
-                        {result.is501c3Compliant ? 'Yes' : 'No'}
-                      </span>
-                    </td>
-                    <td>{result.category}</td>
-                    <td>
-                      <span className={
-                        result.riskLevel === 'Low' ? styles.tagSuccess :
-                        result.riskLevel === 'Medium' ? styles.tagWarning :
-                        styles.tagError
-                      }>
-                        {result.riskLevel}
-                      </span>
-                    </td>
-                    <td>{result.reasoning}</td>
-                    <td>{result.recommendations}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {analysisResults.map((result, index) => (
+            <div key={index} className={styles.analysisCard}>
+              <div className={styles.cardHeader}>
+                <h3>Proposal {result.proposalId}</h3>
+                <span className={styles.timestamp}>
+                  {new Date(result.timestamp).toLocaleString()}
+                </span>
+              </div>
+
+              <div className={styles.mainInfo}>
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>Classification:</span>
+                  <span className={getClassificationStyle(result.classification)}>
+                    {result.classification}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.label}>Primary Purpose:</span>
+                  <span>{result.primary_purpose}</span>
+                </div>
+              </div>
+
+              <div className={styles.riskAssessment}>
+                <div className={getRiskStyle(result.risk_assessment.private_benefit_risk)}>
+                  Private Benefit Risk: {result.risk_assessment.private_benefit_risk}
+                </div>
+                <div className={getAlignmentStyle(result.risk_assessment.mission_alignment)}>
+                  Mission Alignment: {result.risk_assessment.mission_alignment}
+                </div>
+                <div className={getComplexityStyle(result.risk_assessment.implementation_complexity)}>
+                  Implementation: {result.risk_assessment.implementation_complexity}
+                </div>
+              </div>
+
+              <div className={styles.lists}>
+                <div className={styles.listSection}>
+                  <h4>Allowable Elements</h4>
+                  <ul>
+                    {result.allowable_elements.map((element, i) => (
+                      <li key={i}>{element}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className={styles.listSection}>
+                  <h4>Unallowable Elements</h4>
+                  <ul>
+                    {result.unallowable_elements.map((element, i) => (
+                      <li key={i}>{element}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className={styles.listSection}>
+                  <h4>Required Modifications</h4>
+                  <ul>
+                    {result.required_modifications.map((mod, i) => (
+                      <li key={i}>{mod}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className={styles.listSection}>
+                  <h4>Key Considerations</h4>
+                  <ul>
+                    {result.key_considerations.map((consideration, i) => (
+                      <li key={i}>{consideration}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
   )
+}
+
+function getClassificationStyle(classification: AIAnalysisResult['classification']) {
+  switch (classification) {
+    case 'CHARITABLE':
+      return styles.tagSuccess
+    case 'UNALLOWABLE':
+      return styles.tagError
+    default:
+      return styles.tagWarning
+  }
+}
+
+function getRiskStyle(risk: 'LOW' | 'MEDIUM' | 'HIGH') {
+  switch (risk) {
+    case 'LOW':
+      return styles.tagSuccess
+    case 'HIGH':
+      return styles.tagError
+    default:
+      return styles.tagWarning
+  }
+}
+
+function getAlignmentStyle(alignment: 'STRONG' | 'MODERATE' | 'WEAK') {
+  switch (alignment) {
+    case 'STRONG':
+      return styles.tagSuccess
+    case 'WEAK':
+      return styles.tagError
+    default:
+      return styles.tagWarning
+  }
+}
+
+function getComplexityStyle(complexity: 'LOW' | 'MEDIUM' | 'HIGH') {
+  switch (complexity) {
+    case 'LOW':
+      return styles.tagSuccess
+    case 'HIGH':
+      return styles.tagError
+    default:
+      return styles.tagWarning
+  }
 } 

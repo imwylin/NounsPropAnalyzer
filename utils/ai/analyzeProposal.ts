@@ -1,10 +1,4 @@
-export interface AIAnalysisResult {
-  is501c3Compliant: boolean
-  category: string
-  riskLevel: 'Low' | 'Medium' | 'High'
-  reasoning: string
-  recommendations: string
-}
+import type { AIAnalysisResult } from '../../types/graphql'
 
 export async function analyzeProposal(description: string): Promise<AIAnalysisResult> {
   const response = await fetch('/api/analyze', {
