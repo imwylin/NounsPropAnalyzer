@@ -65,31 +65,49 @@ ANALYSIS:::END`
       throw new Error('Failed to parse analysis response')
     }
     
+    // Helper function to safely extract list items
+    const extractList = (text: string, section: string) => {
+      const sectionRegex = new RegExp(`${section}:\\s*\\n((?:[-•]\\s*.+\\n?)+)`, 'i')
+      const match = text.match(sectionRegex)
+      if (!match) return []
+      return match[1]
+        .split('\n')
+        .filter(Boolean)
+        .map(s => s.replace(/^[-•]\s*/, '').trim())
+    }
+
     const analysis = analysisMatch[1]
 
-    // Parse the structured response
-    const classification = analysis.match(/CLASSIFICATION: (\w+)/)?.[1] as AIAnalysisResult['classification']
-    const primary_purpose = analysis.match(/PRIMARY_PURPOSE: (.+)/)?.[1] || ''
-    const allowable_elements = analysis.match(/ALLOWABLE_ELEMENTS:\n((?:- .+\n?)+)/)?.[1].split('\n').filter(Boolean).map(s => s.replace('- ', ''))
-    const unallowable_elements = analysis.match(/UNALLOWABLE_ELEMENTS:\n((?:- .+\n?)+)/)?.[1].split('\n').filter(Boolean).map(s => s.replace('- ', ''))
-    const required_modifications = analysis.match(/REQUIRED_MODIFICATIONS:\n((?:- .+\n?)+)/)?.[1].split('\n').filter(Boolean).map(s => s.replace('- ', ''))
-    const private_benefit_risk = analysis.match(/PRIVATE_BENEFIT_RISK: (\w+)/)?.[1] as AIAnalysisResult['risk_assessment']['private_benefit_risk']
-    const mission_alignment = analysis.match(/MISSION_ALIGNMENT: (\w+)/)?.[1] as AIAnalysisResult['risk_assessment']['mission_alignment']
-    const implementation_complexity = analysis.match(/IMPLEMENTATION_COMPLEXITY: (\w+)/)?.[1] as AIAnalysisResult['risk_assessment']['implementation_complexity']
-    const key_considerations = analysis.match(/KEY_CONSIDERATIONS:\n((?:- .+\n?)+)/)?.[1].split('\n').filter(Boolean).map(s => s.replace('- ', ''))
+    // Parse the structured response with more flexible patterns
+    const classification = analysis.match(/CLASSIFICATION:\s*(\w+)/i)?.[1] as AIAnalysisResult['classification']
+    const primary_purpose = analysis.match(/PRIMARY_PURPOSE:\s*(.+?)(?=\n|$)/i)?.[1]?.trim() || ''
+    
+    const allowable_elements = extractList(analysis, 'ALLOWABLE_ELEMENTS')
+    const unallowable_elements = extractList(analysis, 'UNALLOWABLE_ELEMENTS')
+    const required_modifications = extractList(analysis, 'REQUIRED_MODIFICATIONS')
+    const key_considerations = extractList(analysis, 'KEY_CONSIDERATIONS')
+
+    const private_benefit_risk = analysis.match(/PRIVATE_BENEFIT_RISK:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['private_benefit_risk']
+    const mission_alignment = analysis.match(/MISSION_ALIGNMENT:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['mission_alignment']
+    const implementation_complexity = analysis.match(/IMPLEMENTATION_COMPLEXITY:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['implementation_complexity']
+
+    // Validate required fields
+    if (!classification || !private_benefit_risk || !mission_alignment || !implementation_complexity) {
+      throw new Error('Missing required fields in analysis response')
+    }
 
     const result: AIAnalysisResult = {
       classification,
       primary_purpose,
-      allowable_elements: allowable_elements || [],
-      unallowable_elements: unallowable_elements || [],
-      required_modifications: required_modifications || [],
+      allowable_elements,
+      unallowable_elements,
+      required_modifications,
       risk_assessment: {
         private_benefit_risk,
         mission_alignment,
         implementation_complexity
       },
-      key_considerations: key_considerations || []
+      key_considerations
     }
 
     res.status(200).json(result)
