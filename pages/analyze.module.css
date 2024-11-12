@@ -1,0 +1,105 @@
+.container {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+.inputSection {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.input {
+  flex: 1;
+  max-width: 200px;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.preview {
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.preview h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.tableContainer {
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table th {
+  background-color: #f9fafb;
+  font-weight: 500;
+}
+
+.table tr:hover {
+  background-color: #f9fafb;
+}
+
+.exportButton {
+  padding: 0.5rem 1rem;
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.exportButton:hover {
+  background-color: #047857;
+} 
