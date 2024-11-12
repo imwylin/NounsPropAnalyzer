@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useProposalDescription } from '../hooks/useSubgraphProposals'
-import styles from './analyze.module.css'
 import { analyzeProposal } from '../utils/ai/analyzeProposal'
+import styles from './analyze.module.css'
 
 interface AnalysisResult {
   proposalId: string
@@ -22,14 +22,8 @@ export default function AnalyzePage() {
   const { 
     data: description,
     isLoading,
-    refetch: fetchDescription,
     error 
   } = useProposalDescription(proposalId)
-
-  const handleFetchDescription = async () => {
-    if (!proposalId.trim()) return
-    await fetchDescription()
-  }
 
   const handleAnalyze = async () => {
     if (!description) return
@@ -38,13 +32,11 @@ export default function AnalyzePage() {
 
     try {
       const aiResult = await analyzeProposal(description)
-      
       const result: AnalysisResult = {
         proposalId,
         timestamp: new Date().toISOString(),
         ...aiResult
       }
-      
       setAnalysisResults(prev => [result, ...prev])
     } catch (error) {
       console.error('Analysis failed:', error)
@@ -90,13 +82,13 @@ export default function AnalyzePage() {
           placeholder="Enter Proposal ID"
           className={styles.input}
         />
-          <button
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className={styles.analyzeButton}
-          >
-            {isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
-          </button>
+        <button 
+          onClick={handleAnalyze}
+          disabled={!description || isAnalyzing || isLoading}
+          className={styles.analyzeButton}
+        >
+          {isLoading ? 'Loading...' : isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
+        </button>
       </div>
 
       {error && (

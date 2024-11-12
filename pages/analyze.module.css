@@ -20,13 +20,16 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  max-width: 400px;
 }
 
 .input {
-  flex: 1;
-  padding: 0.5rem;
+  width: 150px;
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  text-align: center;
+  font-size: 1.1rem;
 }
 
 .button {
