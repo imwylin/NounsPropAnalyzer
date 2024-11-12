@@ -139,6 +139,13 @@ export const NOUNS_DAO_ABI = [
       "stateMutability": "view",
       "type": "function"
     },
+    {
+      "inputs": [{"internalType": "uint256", "name": "proposalId", "type": "uint256"}],
+      "name": "proposalDescriptions",
+      "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+      "stateMutability": "view",
+      "type": "function"
+    },
     
     // Write Functions
     {

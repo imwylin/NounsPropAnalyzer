@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useReadContract } from 'wagmi'
 import { nounsDAOContract } from '../config/wagmi'
 import { ParsedAnalysis } from '../types/parser'
+import { Proposal, ProposalActions } from '../config/NounsDAOProxy'
+import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
 import styles from './analyze.module.css'
 
 export default function AnalyzePage() {
@@ -9,6 +12,20 @@ export default function AnalyzePage() {
   const [analyses, setAnalyses] = useState<ParsedAnalysis[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState('')
+
+  // Get proposal data
+  const { data: proposal, isLoading: isLoadingProposal } = useReadContract({
+    ...nounsDAOContract,
+    functionName: 'proposals',
+    args: proposalId ? [BigInt(proposalId)] : undefined,
+  }) as { data: Proposal | undefined, isLoading: boolean }
+
+  // Get proposal actions with proper typing
+  const { data: actions, isLoading: isLoadingActions } = useReadContract({
+    ...nounsDAOContract,
+    functionName: 'getActions',
+    args: proposalId ? [BigInt(proposalId)] : undefined,
+  }) as { data: ProposalActions | undefined, isLoading: boolean }
 
   // Get proposal description
   const { data: description, isLoading: isLoadingDescription } = useReadContract({
@@ -18,12 +35,11 @@ export default function AnalyzePage() {
   }) as { data: string | undefined, isLoading: boolean }
 
   const handleAnalyze = async () => {
-    if (!description || isAnalyzing) return
+    if (!proposal || !description || isAnalyzing) return
     setError('')
     setIsAnalyzing(true)
 
     try {
-      // First check if we already analyzed this proposal
       const existingAnalysis = analyses.find(a => a.id === proposalId)
       if (existingAnalysis) {
         setError('This proposal has already been analyzed')
@@ -35,7 +51,8 @@ export default function AnalyzePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           proposalId: parseInt(proposalId),
-          description: description as string,
+          description: description,
+          actions: actions
         })
       })
 
@@ -99,6 +116,8 @@ export default function AnalyzePage() {
     document.body.removeChild(link)
   }
 
+  const isLoading = isLoadingProposal || isLoadingActions || isLoadingDescription
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -118,21 +137,43 @@ export default function AnalyzePage() {
           />
           <button
             onClick={handleAnalyze}
-            disabled={!description || isAnalyzing || isLoadingDescription}
+            disabled={!proposal || !description || isAnalyzing || isLoading}
             className={styles.button}
           >
-            {isAnalyzing ? 'Analyzing...' : isLoadingDescription ? 'Loading...' : 'Analyze'}
+            {isAnalyzing ? 'Analyzing...' : isLoading ? 'Loading...' : 'Analyze'}
           </button>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
 
-        {description && (
+        {proposal && description && (
           <div className={styles.preview}>
             <h3>Proposal {proposalId}</h3>
             <div className={styles.proposalDetails}>
-              <p><strong>Description:</strong></p>
-              <pre className={styles.description}>{description as string}</pre>
+              <p><strong>Proposer:</strong> {proposal.proposer}</p>
+              <p><strong>Status:</strong> {proposal.executed ? 'Executed' : proposal.canceled ? 'Canceled' : 'Active'}</p>
+              <p><strong>Votes:</strong> For: {proposal.forVotes.toString()}, Against: {proposal.againstVotes.toString()}</p>
+              <div className={styles.description}>
+                <h4>Description:</h4>
+                <ReactMarkdown 
+                  remarkPlugins={[remarkBreaks]}
+                  className={styles.markdown}
+                >
+                  {description}
+                </ReactMarkdown>
+              </div>
+              {actions && (
+                <div className={styles.transactions}>
+                  <h4>Proposed Transactions:</h4>
+                  {actions.targets.map((target: string, i: number) => (
+                    <div key={i} className={styles.transaction}>
+                      <p>Target: {target}</p>
+                      <p>Value: {actions.values[i].toString()} ETH</p>
+                      <p>Signature: {actions.signatures[i]}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

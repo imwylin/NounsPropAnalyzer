@@ -148,4 +148,37 @@
   font-weight: 600;
   text-align: left;
   padding: 0.75rem;
+}
+
+.markdown {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+.description {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  margin: 1rem 0;
+}
+
+.transactions {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+}
+
+.transaction {
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  margin: 0.5rem 0;
+  background: white;
+}
+
+.transaction p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
 } 
