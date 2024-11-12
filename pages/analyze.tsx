@@ -38,13 +38,18 @@ export default function AnalyzePage() {
     setErrorDetails(null)
 
     try {
-      const aiResult = await analyzeProposal(description)
-      const result: AnalysisResultWithMeta = {
-        proposalId,
-        timestamp: new Date().toISOString(),
-        ...aiResult
-      }
-      setAnalysisResults(prev => [result, ...prev])
+      const analysisPromises = Array(3).fill(null).map(async () => {
+        const aiResult = await analyzeProposal(description)
+        return {
+          proposalId,
+          timestamp: new Date().toISOString(),
+          ...aiResult
+        }
+      })
+
+      const results = await Promise.all(analysisPromises)
+      
+      setAnalysisResults(prev => [...results, ...prev])
     } catch (error) {
       console.error('Analysis failed:', error)
       if (error instanceof Error) {
