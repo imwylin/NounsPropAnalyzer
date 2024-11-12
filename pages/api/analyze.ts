@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Anthropic } from '@anthropic-ai/sdk'
 import type { ParsedAnalysis } from '../../types/parser'
-import type { Proposal, ProposalActions } from '../../types/nouns'
 import systemPrompt from '../../AIPrompts/systemprompt.json'
 
 // Initialize Anthropic client
@@ -11,7 +10,7 @@ const anthropic = new Anthropic({
 
 interface AnalyzeRequest {
   proposalId: number
-  proposal: Proposal & { actions: ProposalActions }
+  description: string
 }
 
 /**
@@ -26,7 +25,7 @@ export default async function handler(
   }
 
   try {
-    const { proposalId, proposal } = req.body as AnalyzeRequest
+    const { proposalId, description } = req.body as AnalyzeRequest
 
     // Format proposal data for analysis
     const analysisPrompt = `
@@ -36,11 +35,11 @@ export default async function handler(
       ${JSON.stringify(systemPrompt.evaluation_context, null, 2)}
 
       Analyze the following proposal according to these guidelines:
-      ${JSON.stringify(systemPrompt.analysis_guidelines, null, 2)}
+      ${JSON.stringify(systemPrompt.evaluation_context.analysis_guidelines, null, 2)}
 
       Proposal ID: ${proposalId}
-      Proposal Details:
-      ${JSON.stringify(proposal, null, 2)}
+      Proposal Description:
+      ${description}
 
       Provide your analysis in the following format:
       ${JSON.stringify(systemPrompt.output_format, null, 2)}

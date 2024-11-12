@@ -13,6 +13,8 @@ interface FilterBarProps {
   onClear: () => void
 }
 
+type FilterValue = string | string[] | [Date, Date] | null | undefined;
+
 /**
  * Component for filtering analysis data
  * Supports classification, risk level, and date range filters
@@ -32,7 +34,7 @@ export function FilterBar({ onChange, onClear }: FilterBarProps) {
   // Risk level options
   const riskLevels: RiskLevel[] = ['LOW', 'MEDIUM', 'HIGH']
 
-  const handleFilterChange = (key: keyof FilterState, value: any) => {
+  const handleFilterChange = (key: keyof FilterState, value: FilterValue) => {
     const newFilters = { ...filters, [key]: value }
     if (value === '' || value === null) {
       delete newFilters[key]

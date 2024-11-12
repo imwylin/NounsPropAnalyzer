@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useProposalCount } from '../hooks/useProposalCount'
+import { useProposalCount } from '../hooks/useProposals'
 import styles from './index.module.css'
 
 /**

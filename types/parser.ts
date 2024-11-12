@@ -9,13 +9,8 @@ export interface RiskAssessment {
   implementation_complexity: ComplexityLevel
 }
 
-export interface RawAnalysis {
-  raw: string
-}
-
 export interface ParsedAnalysis {
   id: string
-  timestamp: string
   classification: Classification
   primary_purpose: string
   allowable_elements: string[]

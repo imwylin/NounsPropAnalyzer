@@ -115,10 +115,12 @@ export function AnalysisTable({
                 { key: 'id', label: 'ID' },
                 { key: 'classification', label: 'Classification' },
                 { key: 'primary_purpose', label: 'Purpose' },
-                { key: 'risk_assessment', label: 'Risk Level' }
+                { key: 'risk_assessment', label: 'Risk Level' },
+                { key: 'risk_assessment', label: 'Mission Alignment' },
+                { key: 'risk_assessment', label: 'Complexity' }
               ].map(({ key, label }) => (
                 <th
-                  key={key}
+                  key={`${key}-${label}`}
                   scope="col"
                   className={styles.headerCell}
                   onClick={() => handleSort(key as keyof ParsedAnalysis)}
@@ -152,14 +154,24 @@ export function AnalysisTable({
                 </td>
                 <td className={styles.cell}>{row.id}</td>
                 <td className={styles.cell}>
-                  <span className={styles.badge}>
+                  <span className={`${styles.badge} ${styles[row.classification.toLowerCase()]}`}>
                     {row.classification}
                   </span>
                 </td>
                 <td className={styles.cell}>{row.primary_purpose}</td>
                 <td className={styles.cell}>
-                  <span className={styles.badge}>
+                  <span className={`${styles.badge} ${styles[`risk${row.risk_assessment.private_benefit_risk}`]}`}>
                     {row.risk_assessment.private_benefit_risk}
+                  </span>
+                </td>
+                <td className={styles.cell}>
+                  <span className={`${styles.badge} ${styles[`alignment${row.risk_assessment.mission_alignment}`]}`}>
+                    {row.risk_assessment.mission_alignment}
+                  </span>
+                </td>
+                <td className={styles.cell}>
+                  <span className={`${styles.badge} ${styles[`complexity${row.risk_assessment.implementation_complexity}`]}`}>
+                    {row.risk_assessment.implementation_complexity}
                   </span>
                 </td>
               </tr>

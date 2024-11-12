@@ -1,5 +1,5 @@
 import type { Proposal, ProposalActions } from '../../types/nouns'
-import { NOUNS_CONTRACT } from '../../config/wagmi'
+import { nounsDAOContract } from '../../config/wagmi'
 
 /**
  * Fetches proposal data from the Nouns DAO contract
@@ -14,7 +14,7 @@ export async function fetchProposal(id: number): Promise<Proposal> {
         id: 1,
         method: 'eth_call',
         params: [{
-          to: NOUNS_CONTRACT.address,
+          to: nounsDAOContract.address,
           data: `0x013cf08b${id.toString(16).padStart(64, '0')}` // proposals(uint256)
         }, 'latest']
       })
@@ -45,7 +45,7 @@ export async function fetchProposalActions(id: number): Promise<ProposalActions>
         id: 1,
         method: 'eth_call',
         params: [{
-          to: NOUNS_CONTRACT.address,
+          to: nounsDAOContract.address,
           data: `0x${id.toString(16).padStart(64, '0')}` // getActions(uint256)
         }, 'latest']
       })

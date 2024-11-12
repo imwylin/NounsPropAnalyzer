@@ -24,4 +24,20 @@ export interface ProposalActions {
   values: bigint[]
   signatures: string[]
   calldatas: string[]
+}
+
+export interface ProposalData extends Proposal {
+  actions: ProposalActions
+}
+
+export interface ProposalWithDescription {
+  id: string | number;
+  description: string;
+  // ... other proposal properties
+}
+
+export type UseProposalsReturn = {
+  data: ProposalWithDescription[] | undefined;
+  isLoading: boolean;
+  // ... other properties returned by the hook
 } 

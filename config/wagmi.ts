@@ -1,14 +1,14 @@
 import { useClient } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { QueryClient } from '@tanstack/react-query'
-import { NOUNS_DAO_ABI, NOUNS_DAO_ADDRESS } from '../contracts/nounsDao'
+import { NOUNS_DAO_ABI, NOUNS_DAO_ADDRESS } from './NounsDAOProxy'
 import { createConfig, http } from 'wagmi'
 
 // Configure wagmi client
 export const config = createConfig({
   chains: [mainnet],
   transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_URL)
+    [mainnet.id]: http()
   },
   ssr: true
 })
@@ -26,7 +26,7 @@ export const queryClient = new QueryClient({
 })
 
 // Export contract constants for reuse
-export const NOUNS_CONTRACT = {
+export const nounsDAOContract = {
   address: NOUNS_DAO_ADDRESS,
   abi: NOUNS_DAO_ABI
 } as const 
