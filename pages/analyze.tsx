@@ -17,6 +17,12 @@ interface AnalysisErrorDetails {
   expected?: string[]
 }
 
+interface AnalysisResult {
+  status: 'fulfilled' | 'rejected'
+  value?: AnalysisResultWithMeta
+  reason?: Error
+}
+
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
@@ -38,26 +44,39 @@ export default function AnalyzePage() {
     setErrorDetails(null)
 
     try {
-      const results = await Promise.allSettled(
-        Array(3).fill(null).map(async () => {
-          const aiResult = await analyzeProposal(description)
-          return {
-            proposalId,
-            timestamp: new Date().toISOString(),
-            ...aiResult
+      const results: AnalysisResult[] = []
+      for (let i = 0; i < 3; i++) {
+        try {
+          if (i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 2000))
           }
-        })
-      )
+          
+          const aiResult = await analyzeProposal(description)
+          results.push({
+            status: 'fulfilled',
+            value: {
+              proposalId,
+              timestamp: new Date().toISOString(),
+              ...aiResult
+            }
+          })
+        } catch (error) {
+          results.push({
+            status: 'rejected',
+            reason: error instanceof Error ? error : new Error('Unknown error')
+          })
+        }
+      }
       
       const successfulResults = results
-        .filter((result): result is PromiseFulfilledResult<AnalysisResultWithMeta> => 
-          result.status === 'fulfilled'
+        .filter((result): result is { status: 'fulfilled', value: AnalysisResultWithMeta } => 
+          result.status === 'fulfilled' && !!result.value
         )
         .map(result => result.value)
 
       const errors = results
-        .filter((result): result is PromiseRejectedResult => 
-          result.status === 'rejected'
+        .filter((result): result is { status: 'rejected', reason: Error } => 
+          result.status === 'rejected' && !!result.reason
         )
         .map(result => result.reason)
 
