@@ -268,4 +268,15 @@
 
 .listSection li:last-child {
   border-bottom: none;
-} 
+}
+
+.description :global(img) {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.description :global(p img) {
+  margin: 0; /* Remove margin if image is inside a paragraph */
+}
