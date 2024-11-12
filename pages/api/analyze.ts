@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import type { AIAnalysisResult } from '../../types/graphql'
+import systemPrompt from '../../AIPrompts/systemprompt.json'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -21,35 +22,12 @@ export default async function handler(
   }
 
   try {
-    const prompt = `You are analyzing Nouns DAO proposals for 501(c)(3) compliance. Consider charitable intent, public benefit, and potential risks.
-
-Context:
-The Nouns DAO is transitioning to a 501(c)(3) organization. Revenue comes from daily NFT auctions and donations. All artistic assets are CC0. The organization uses blockchain-based democratic governance and can handle crypto transactions/accounting.
+    const prompt = `${JSON.stringify(systemPrompt, null, 2)}
 
 Proposal to Analyze:
 ${description}
 
-Provide your analysis in this exact format:
-ANALYSIS:::START
-CLASSIFICATION: [CHARITABLE/OPERATIONAL/MARKETING/PROGRAM_RELATED/UNALLOWABLE]
-PRIMARY_PURPOSE: [Single sentence description]
-ALLOWABLE_ELEMENTS: 
-- [element 1]
-- [element 2]
-UNALLOWABLE_ELEMENTS:
-- [element 1]
-- [element 2]
-REQUIRED_MODIFICATIONS:
-- [modification 1]
-- [modification 2]
-RISK_ASSESSMENT:
-PRIVATE_BENEFIT_RISK: [LOW/MEDIUM/HIGH]
-MISSION_ALIGNMENT: [STRONG/MODERATE/WEAK]
-IMPLEMENTATION_COMPLEXITY: [LOW/MEDIUM/HIGH]
-KEY_CONSIDERATIONS:
-- [consideration 1]
-- [consideration 2]
-ANALYSIS:::END`
+Remember to follow the exact output format specified above.`
 
     const response = await anthropic.messages.create({
       model: 'claude-3-sonnet-20240229',
@@ -87,9 +65,10 @@ ANALYSIS:::END`
     const required_modifications = extractList(analysis, 'REQUIRED_MODIFICATIONS')
     const key_considerations = extractList(analysis, 'KEY_CONSIDERATIONS')
 
-    const private_benefit_risk = analysis.match(/PRIVATE_BENEFIT_RISK:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['private_benefit_risk']
-    const mission_alignment = analysis.match(/MISSION_ALIGNMENT:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['mission_alignment']
-    const implementation_complexity = analysis.match(/IMPLEMENTATION_COMPLEXITY:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['implementation_complexity']
+    const risk_assessment = analysis.match(/RISK_ASSESSMENT:\s*\n([\s\S]*?)(?=\n\w|$)/i)?.[1]
+    const private_benefit_risk = risk_assessment?.match(/PRIVATE_BENEFIT_RISK:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['private_benefit_risk']
+    const mission_alignment = risk_assessment?.match(/MISSION_ALIGNMENT:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['mission_alignment']
+    const implementation_complexity = risk_assessment?.match(/IMPLEMENTATION_COMPLEXITY:\s*(\w+)/i)?.[1] as AIAnalysisResult['risk_assessment']['implementation_complexity']
 
     // Validate required fields
     if (!classification || !private_benefit_risk || !mission_alignment || !implementation_complexity) {
