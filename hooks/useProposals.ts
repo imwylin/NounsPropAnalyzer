@@ -2,9 +2,13 @@ import { useReadContract } from 'wagmi'
 import { nounsDAOContract } from '../config/wagmi'
 import type { Proposal } from '../config/NounsDAOProxy'
 import { type Address } from 'viem'
+import { useState, useEffect } from 'react'
+import type { ParsedAnalysis } from '../types/parser'
 
-export interface ProposalWithDescription extends Proposal {
+export interface ProposalWithAnalysis {
+  proposal: Proposal
   description: string
+  analysis: ParsedAnalysis | null
 }
 
 export function useProposalCount() {
@@ -17,33 +21,68 @@ export function useProposalCount() {
 
 export function useProposals() {
   const { data: count } = useProposalCount()
+  const [proposals, setProposals] = useState<ProposalWithAnalysis[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   
-  // Get proposal metadata with proper typing
-  const { data: proposal, isLoading: isLoadingProposal } = useReadContract({
-    ...nounsDAOContract,
-    functionName: 'proposals',
-    args: count ? [BigInt(count.toString())] : undefined,
-  }) as { data: Proposal | undefined, isLoading: boolean }
+  useEffect(() => {
+    if (!count) return
 
-  // Get proposal description
-  const { data: description, isLoading: isLoadingDescription } = useReadContract({
-    ...nounsDAOContract,
-    functionName: 'proposalDescriptions',
-    args: count ? [BigInt(count.toString())] : undefined,
-  }) as { data: string | undefined, isLoading: boolean }
+    const fetchAndAnalyzeProposals = async () => {
+      setIsLoading(true)
+      const results: ProposalWithAnalysis[] = []
 
-  if (!proposal || !description) {
-    return { data: undefined, isLoading: isLoadingProposal || isLoadingDescription }
-  }
+      try {
+        for (let i = 1; i <= Number(count); i++) {
+          // Fetch proposal data
+          const { data: proposal } = await useReadContract({
+            ...nounsDAOContract,
+            functionName: 'proposals',
+            args: [BigInt(i)],
+          })
 
-  const proposalData: ProposalWithDescription = {
-    ...proposal,
-    description
-  }
+          // Fetch proposal description
+          const { data: description } = await useReadContract({
+            ...nounsDAOContract,
+            functionName: 'proposalDescriptions',
+            args: [BigInt(i)],
+          })
+
+          if (!proposal || !description) continue
+
+          // Analyze proposal
+          const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              proposalId: i,
+              description: description as string
+            })
+          })
+
+          if (!response.ok) throw new Error(`Failed to analyze proposal ${i}`)
+          const analysis = await response.json()
+
+          results.push({
+            proposal: proposal as Proposal,
+            description: description as string,
+            analysis
+          })
+        }
+
+        setProposals(results)
+      } catch (err) {
+        console.error('Failed to fetch and analyze proposals:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchAndAnalyzeProposals()
+  }, [count])
 
   return {
-    data: proposalData,
-    description, // Expose description separately for analysis
-    isLoading: isLoadingProposal || isLoadingDescription 
+    data: proposals,
+    isLoading,
+    progress: count ? Math.round((proposals.length / Number(count)) * 100) : 0
   }
 } 
