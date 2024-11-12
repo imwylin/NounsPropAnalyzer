@@ -1,86 +1,64 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Anthropic } from '@anthropic-ai/sdk'
-import type { ParsedAnalysis } from '../../types/parser'
-import systemPrompt from '../../AIPrompts/systemprompt.json'
+import Anthropic from '@anthropic-ai/sdk'
+import type { AIAnalysisResult } from '../../utils/ai/analyzeProposal'
 
-// Initialize Anthropic client
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
+  apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-interface AnalyzeRequest {
-  proposalId: number
-  description: string
-}
-
-/**
- * API route for analyzing proposals using Claude
- */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ParsedAnalysis | { error: string }>
+  res: NextApiResponse
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  const { description } = req.body
+
+  if (!description) {
+    return res.status(400).json({ error: 'Description is required' })
+  }
+
   try {
-    const { proposalId, description } = req.body as AnalyzeRequest
+    const prompt = `Analyze this Nouns DAO proposal for 501(c)(3) compliance. Consider charitable intent, public benefit, and potential risks.
 
-    // Format proposal data for analysis
-    const analysisPrompt = `
-      You are analyzing Nouns DAO proposals for 501c3 compliance.
-      
-      Context:
-      ${JSON.stringify(systemPrompt.evaluation_context, null, 2)}
+Proposal:
+${description}
 
-      Analyze the following proposal according to these guidelines:
-      ${JSON.stringify(systemPrompt.evaluation_context.analysis_guidelines, null, 2)}
+Provide a structured analysis in this exact format:
+COMPLIANT: [true/false]
+CATEGORY: [category name]
+RISK_LEVEL: [Low/Medium/High]
+REASONING: [detailed explanation]
+RECOMMENDATIONS: [specific suggestions]`
 
-      Proposal ID: ${proposalId}
-      Proposal Description:
-      ${description}
-
-      Provide your analysis in the following format:
-      ${JSON.stringify(systemPrompt.output_format, null, 2)}
-
-      ${systemPrompt.disclaimer}
-    `.trim()
-
-    // Get analysis from Claude
-    const message = await anthropic.messages.create({
+    const response = await anthropic.messages.create({
       model: 'claude-3-sonnet-20240229',
-      max_tokens: 4096,
-      temperature: 0.7,
-      messages: [{
-        role: 'user',
-        content: analysisPrompt
-      }]
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }],
     })
 
-    // Extract analysis from response
-    const content = message.content[0].text
-    const analysisMatch = content.match(/ANALYSIS:::START([\s\S]*?)ANALYSIS:::END/)
-    if (!analysisMatch) {
-      throw new Error('Failed to parse analysis response')
+    const content = response.content[0].text
+
+    // Parse the response
+    const compliant = /COMPLIANT: (true|false)/i.exec(content)?.[1] === 'true'
+    const category = /CATEGORY: (.+)/i.exec(content)?.[1] || 'Uncategorized'
+    const riskLevel = /RISK_LEVEL: (Low|Medium|High)/i.exec(content)?.[1] as 'Low' | 'Medium' | 'High' || 'Medium'
+    const reasoning = /REASONING: (.+)/i.exec(content)?.[1] || 'No reasoning provided'
+    const recommendations = /RECOMMENDATIONS: (.+)/i.exec(content)?.[1] || 'No recommendations provided'
+
+    const result: AIAnalysisResult = {
+      is501c3Compliant: compliant,
+      category,
+      riskLevel,
+      reasoning,
+      recommendations,
     }
 
-    // Parse and validate the analysis JSON
-    const analysis: ParsedAnalysis = JSON.parse(analysisMatch[1].trim())
-
-    // Validate required fields from system prompt
-    const requiredFields = Object.keys(systemPrompt.output_format.structure.required_fields)
-    for (const field of requiredFields) {
-      if (!(field in analysis)) {
-        throw new Error(`Missing required field in analysis: ${field}`)
-      }
-    }
-
-    return res.status(200).json(analysis)
-  } catch (err) {
-    console.error('Analysis failed:', err)
-    return res.status(500).json({
-      error: err instanceof Error ? err.message : 'Failed to analyze proposal'
-    })
+    res.status(200).json(result)
+  } catch (error) {
+    console.error('Analysis failed:', error)
+    res.status(500).json({ error: 'Analysis failed' })
   }
 } 
