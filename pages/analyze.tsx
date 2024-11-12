@@ -16,6 +16,7 @@ export default function AnalyzePage() {
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true)
   
   const { 
     data: description,
@@ -120,8 +121,16 @@ export default function AnalyzePage() {
 
       {description && (
         <div className={styles.section}>
-          <h2 className={styles.subtitle}>Proposal Description</h2>
-          <div className={styles.description}>
+          <div className={styles.descriptionHeader}>
+            <h2 className={styles.subtitle}>Proposal Description</h2>
+            <button 
+              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              className={styles.toggleButton}
+            >
+              {isDescriptionExpanded ? 'Collapse' : 'Expand'}
+            </button>
+          </div>
+          <div className={`${styles.description} ${isDescriptionExpanded ? '' : styles.collapsed}`}>
             <ReactMarkdown remarkPlugins={[remarkBreaks]}>
               {description}
             </ReactMarkdown>

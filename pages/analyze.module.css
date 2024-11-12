@@ -280,3 +280,34 @@
 .description :global(p img) {
   margin: 0; /* Remove margin if image is inside a paragraph */
 }
+
+.descriptionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toggleButton {
+  padding: 0.25rem 0.75rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.toggleButton:hover {
+  background: #e5e7eb;
+}
+
+.description {
+  max-height: none;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.description.collapsed {
+  max-height: 0;
+}
