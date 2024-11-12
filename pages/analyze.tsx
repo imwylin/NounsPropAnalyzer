@@ -8,42 +8,56 @@ export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analyses, setAnalyses] = useState<ParsedAnalysis[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [error, setError] = useState('')
 
   // Get proposal description
-  const { data: description } = useReadContract({
+  const { data: description, isLoading: isLoadingDescription } = useReadContract({
     ...nounsDAOContract,
     functionName: 'proposalDescriptions',
     args: proposalId ? [BigInt(proposalId)] : undefined,
-  }) as { data: string | undefined }
+  }) as { data: string | undefined, isLoading: boolean }
 
   const handleAnalyze = async () => {
     if (!description || isAnalyzing) return
+    setError('')
     setIsAnalyzing(true)
 
     try {
+      // First check if we already analyzed this proposal
+      const existingAnalysis = analyses.find(a => a.id === proposalId)
+      if (existingAnalysis) {
+        setError('This proposal has already been analyzed')
+        return
+      }
+
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           proposalId: parseInt(proposalId),
-          description: description as string
+          description: description as string,
         })
       })
 
-      if (!response.ok) throw new Error('Analysis failed')
-      const analysis: ParsedAnalysis = await response.json()
+      if (!response.ok) {
+        const error = await response.text()
+        throw new Error(error || 'Analysis failed')
+      }
       
+      const analysis: ParsedAnalysis = await response.json()
       setAnalyses(prev => [...prev, analysis])
     } catch (err) {
       console.error('Analysis failed:', err)
+      setError(err instanceof Error ? err.message : 'Analysis failed')
     } finally {
       setIsAnalyzing(false)
     }
   }
 
   const handleExport = () => {
+    // Define CSV headers based on the ParsedAnalysis type
     const headers = [
-      'ID',
+      'Proposal ID',
       'Classification',
       'Primary Purpose',
       'Risk Level',
@@ -55,6 +69,7 @@ export default function AnalyzePage() {
       'Key Considerations'
     ]
 
+    // Convert analyses to CSV rows
     const rows = analyses.map(a => [
       a.id,
       a.classification,
@@ -62,56 +77,78 @@ export default function AnalyzePage() {
       a.risk_assessment.private_benefit_risk,
       a.risk_assessment.mission_alignment,
       a.risk_assessment.implementation_complexity,
-      a.allowable_elements.join('; '),
-      a.unallowable_elements.join('; '),
-      a.required_modifications.join('; '),
-      a.key_considerations.join('; ')
+      a.allowable_elements.join('|'),
+      a.unallowable_elements.join('|'),
+      a.required_modifications.join('|'),
+      a.key_considerations.join('|')
     ])
 
+    // Create and download CSV
     const csv = [
       headers.join(','),
-      ...rows.map(r => r.join(','))
+      ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
     ].join('\n')
 
-    const blob = new Blob([csv], { type: 'text/csv' })
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'proposal-analyses.csv'
-    a.click()
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `nouns-proposal-analyses-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Manual Proposal Analysis</h1>
+        <h1 className={styles.title}>Proposal Analysis Dashboard</h1>
 
         <div className={styles.inputSection}>
           <input
             type="number"
             value={proposalId}
-            onChange={(e) => setProposalId(e.target.value)}
+            onChange={(e) => {
+              setError('')
+              setProposalId(e.target.value)
+            }}
             placeholder="Enter proposal ID"
             className={styles.input}
+            min="0"
           />
           <button
             onClick={handleAnalyze}
-            disabled={!description || isAnalyzing}
+            disabled={!description || isAnalyzing || isLoadingDescription}
             className={styles.button}
           >
-            {isAnalyzing ? 'Analyzing...' : 'Analyze'}
+            {isAnalyzing ? 'Analyzing...' : isLoadingDescription ? 'Loading...' : 'Analyze'}
           </button>
         </div>
 
+        {error && <div className={styles.error}>{error}</div>}
+
         {description && (
           <div className={styles.preview}>
-            <h3>Proposal Description:</h3>
-            <p>{description as string}</p>
+            <h3>Proposal {proposalId}</h3>
+            <div className={styles.proposalDetails}>
+              <p><strong>Description:</strong></p>
+              <pre className={styles.description}>{description as string}</pre>
+            </div>
           </div>
         )}
 
         {analyses.length > 0 && (
           <>
+            <div className={styles.analysisHeader}>
+              <h3>Analysis Results ({analyses.length})</h3>
+              <button
+                onClick={handleExport}
+                className={styles.exportButton}
+              >
+                Export to CSV
+              </button>
+            </div>
+
             <div className={styles.tableContainer}>
               <table className={styles.table}>
                 <thead>
@@ -121,6 +158,7 @@ export default function AnalyzePage() {
                     <th>Risk Level</th>
                     <th>Mission Alignment</th>
                     <th>Primary Purpose</th>
+                    <th>Required Modifications</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -131,18 +169,12 @@ export default function AnalyzePage() {
                       <td>{analysis.risk_assessment.private_benefit_risk}</td>
                       <td>{analysis.risk_assessment.mission_alignment}</td>
                       <td>{analysis.primary_purpose}</td>
+                      <td>{analysis.required_modifications.length}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
-            <button
-              onClick={handleExport}
-              className={styles.exportButton}
-            >
-              Export to CSV
-            </button>
           </>
         )}
       </div>
