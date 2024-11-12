@@ -48,16 +48,22 @@ export interface ProposalDescriptionResponse {
   }
 }
 
+export type Classification = 'CHARITABLE' | 'OPERATIONAL' | 'MARKETING' | 'PROGRAM_RELATED' | 'UNALLOWABLE'
+export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH'
+export type MissionAlignment = 'STRONG' | 'MODERATE' | 'WEAK'
+
+export interface RiskAssessment {
+  private_benefit_risk: RiskLevel
+  mission_alignment: MissionAlignment
+  implementation_complexity: RiskLevel
+}
+
 export interface AIAnalysisResult {
-  classification: 'CHARITABLE' | 'OPERATIONAL' | 'MARKETING' | 'PROGRAM_RELATED' | 'UNALLOWABLE'
+  classification: Classification
   primary_purpose: string
   allowable_elements: string[]
   unallowable_elements: string[]
   required_modifications: string[]
-  risk_assessment: {
-    private_benefit_risk: 'LOW' | 'MEDIUM' | 'HIGH'
-    mission_alignment: 'STRONG' | 'MODERATE' | 'WEAK'
-    implementation_complexity: 'LOW' | 'MEDIUM' | 'HIGH'
-  }
+  risk_assessment: RiskAssessment
   key_considerations: string[]
 } 

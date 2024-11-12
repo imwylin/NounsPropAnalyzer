@@ -54,28 +54,32 @@ export default function AnalyzePage() {
       'Allowable Elements',
       'Unallowable Elements',
       'Required Modifications',
-      'Private Benefit Risk',
-      'Mission Alignment',
-      'Implementation Complexity',
+      'Risk Assessment - Private Benefit Risk',
+      'Risk Assessment - Mission Alignment',
+      'Risk Assessment - Implementation Complexity',
       'Key Considerations'
     ]
 
     const rows = analysisResults.map(result => [
-      result.timestamp,
+      new Date(result.timestamp).toISOString(),
       result.proposalId,
       result.classification,
       result.primary_purpose,
-      result.allowable_elements.join('; '),
-      result.unallowable_elements.join('; '),
-      result.required_modifications.join('; '),
+      `"${result.allowable_elements.join(';\n')}"`,
+      `"${result.unallowable_elements.join(';\n')}"`,
+      `"${result.required_modifications.join(';\n')}"`,
       result.risk_assessment.private_benefit_risk,
       result.risk_assessment.mission_alignment,
       result.risk_assessment.implementation_complexity,
-      result.key_considerations.join('; ')
+      `"${result.key_considerations.join(';\n')}"`
     ])
 
-    const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
+    const csv = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
