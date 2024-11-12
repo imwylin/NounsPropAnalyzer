@@ -1,65 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useProposalCount } from './useProposalCount'
 import { useProposalBatch } from './useProposalBatch'
-import { useProposalAnalysis } from './useProposalAnalysis'
+import type { ProposalWithAnalysis } from './useProposalAnalysis'
 import type { Proposal, ProposalActions } from '../types/nouns'
+import type { ParsedAnalysis } from '../types/parser'
 
-// Props interface
 interface UseBatchAnalysisProps {
   batchSize?: number
   enabled?: boolean
 }
 
-// Base proposal types
 interface ProposalWithActions extends Proposal {
   actions: ProposalActions
-}
-
-// Analysis data types
-type Classification = 'CHARITABLE' | 'OPERATIONAL' | 'MARKETING' | 'PROGRAM_RELATED' | 'UNALLOWABLE'
-type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH'
-type AlignmentLevel = 'STRONG' | 'MODERATE' | 'WEAK'
-
-interface RiskAssessment {
-  private_benefit_risk: RiskLevel
-  mission_alignment: AlignmentLevel
-  implementation_complexity: RiskLevel
-}
-
-interface AnalysisData {
-  classification: Classification
-  primary_purpose: string
-  allowable_elements: string[]
-  unallowable_elements: string[]
-  required_modifications: string[]
-  risk_assessment: RiskAssessment
-  key_considerations: string[]
-}
-
-// Combined types
-interface ProposalWithAnalysis {
-  proposal: ProposalWithActions
-  analysis: AnalysisData
-}
-
-// Hook result types
-interface BatchResult {
-  data?: ProposalWithActions[]
-  isLoading: boolean
-  error?: Error
-}
-
-interface AnalysisResult {
-  data?: ProposalWithAnalysis
-  isLoading: boolean
-  error?: Error
-}
-
-interface BatchAnalysisResult {
-  data: ProposalWithAnalysis[]
-  isLoading: boolean
-  error?: Error
-  progress: number
 }
 
 /**
@@ -68,8 +20,10 @@ interface BatchAnalysisResult {
 export function useBatchAnalysis({
   batchSize = 10,
   enabled = true
-}: UseBatchAnalysisProps = {}): BatchAnalysisResult {
+}: UseBatchAnalysisProps = {}) {
   const { data: proposalCount } = useProposalCount()
+  const [analysisResults, setAnalysisResults] = useState<ProposalWithAnalysis[]>([])
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const totalProposals = proposalCount ? Number(proposalCount) : 0
 
   // Calculate number of batches needed
@@ -85,43 +39,67 @@ export function useBatchAnalysis({
       startId: batch.startId,
       batchSize: batch.size,
       enabled
-    }) as BatchResult
+    })
   )
 
-  // Analyze each proposal
-  const analysisResults = batchResults.flatMap(batch => {
-    const proposals = batch.data
-    return (proposals || []).map(proposal => 
-      useProposalAnalysis({
-        proposalId: Number(proposal.id),
-        enabled: enabled && !!proposal
-      }) as AnalysisResult
-    )
-  })
+  // Analyze proposals through Claude
+  useEffect(() => {
+    const analyzeProposals = async () => {
+      if (!enabled || isAnalyzing) return
+      
+      setIsAnalyzing(true)
+      
+      try {
+        // Get all available proposals
+        const proposals = batchResults
+          .map(batch => batch.data)
+          .flat()
+          .filter((p): p is ProposalWithActions => !!p)
 
-  // Combine results
-  const isLoading = batchResults.some(batch => batch.isLoading) ||
-    analysisResults.some(analysis => analysis.isLoading)
+        // Analyze each proposal
+        const results = await Promise.all(
+          proposals.map(async (proposal) => {
+            try {
+              const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  proposalId: Number(proposal.id),
+                  proposal
+                })
+              })
 
-  const error = batchResults.find(batch => batch.error)?.error ||
-    analysisResults.find(analysis => analysis.error)?.error
+              if (!response.ok) throw new Error('Analysis failed')
+              
+              const analysis: ParsedAnalysis = await response.json()
+              return { proposal, analysis }
+            } catch (err) {
+              console.error(`Failed to analyze proposal ${proposal.id}:`, err)
+              return { proposal, analysis: null }
+            }
+          })
+        )
 
-  const data = analysisResults
-    .filter((result): result is AnalysisResult & { data: ProposalWithAnalysis } => 
-      result.data !== undefined && result.data !== null
-    )
-    .map(result => result.data)
-    .sort((a, b) => {
-      if (!a.proposal?.id || !b.proposal?.id) return 0
-      return Number(b.proposal.id) - Number(a.proposal.id)
-    })
+        setAnalysisResults(results)
+      } catch (err) {
+        console.error('Batch analysis failed:', err)
+      } finally {
+        setIsAnalyzing(false)
+      }
+    }
+
+    analyzeProposals()
+  }, [enabled, batchResults, isAnalyzing])
+
+  const isLoading = batchResults.some(batch => batch.isLoading) || isAnalyzing
+  const error = batchResults.find(batch => batch.error)?.error
 
   return {
-    data,
+    data: analysisResults,
     isLoading,
     error,
     progress: isLoading ? 
-      Math.round((analysisResults.filter(r => r.data).length / totalProposals) * 100) : 
+      Math.round((analysisResults.length / totalProposals) * 100) : 
       100
   }
 }

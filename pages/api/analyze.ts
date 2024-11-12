@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { Anthropic } from '@anthropic-ai/sdk'
 import type { ParsedAnalysis } from '../../types/parser'
 import type { Proposal, ProposalActions } from '../../types/nouns'
+import systemPrompt from '../../AIPrompts/systemprompt.json'
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -29,21 +30,22 @@ export default async function handler(
 
     // Format proposal data for analysis
     const analysisPrompt = `
-      Please analyze this Nouns DAO proposal for 501c3 compliance.
+      You are analyzing Nouns DAO proposals for 501c3 compliance.
       
+      Context:
+      ${JSON.stringify(systemPrompt.evaluation_context, null, 2)}
+
+      Analyze the following proposal according to these guidelines:
+      ${JSON.stringify(systemPrompt.analysis_guidelines, null, 2)}
+
       Proposal ID: ${proposalId}
-      
-      Details:
+      Proposal Details:
       ${JSON.stringify(proposal, null, 2)}
-      
-      Provide a structured analysis following these requirements:
-      - Classify the proposal (CHARITABLE/OPERATIONAL/MARKETING/PROGRAM_RELATED/UNALLOWABLE)
-      - Identify allowable and unallowable elements
-      - Assess risks (private benefit, mission alignment, implementation complexity)
-      - Suggest required modifications if needed
-      - List key considerations
-      
-      Format your response as a JSON object between ANALYSIS:::START and ANALYSIS:::END markers.
+
+      Provide your analysis in the following format:
+      ${JSON.stringify(systemPrompt.output_format, null, 2)}
+
+      ${systemPrompt.disclaimer}
     `.trim()
 
     // Get analysis from Claude
@@ -64,8 +66,16 @@ export default async function handler(
       throw new Error('Failed to parse analysis response')
     }
 
-    // Parse the analysis JSON
+    // Parse and validate the analysis JSON
     const analysis: ParsedAnalysis = JSON.parse(analysisMatch[1].trim())
+
+    // Validate required fields from system prompt
+    const requiredFields = Object.keys(systemPrompt.output_format.structure.required_fields)
+    for (const field of requiredFields) {
+      if (!(field in analysis)) {
+        throw new Error(`Missing required field in analysis: ${field}`)
+      }
+    }
 
     return res.status(200).json(analysis)
   } catch (err) {
