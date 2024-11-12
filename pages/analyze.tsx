@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
 import { useProposalDescription } from '../hooks/useSubgraphProposals'
 import { analyzeProposal } from '../utils/ai/analyzeProposal'
 import type { AIAnalysisResult } from '../types/graphql'
@@ -119,7 +121,11 @@ export default function AnalyzePage() {
       {description && (
         <div className={styles.section}>
           <h2 className={styles.subtitle}>Proposal Description</h2>
-          <div className={styles.description}>{description}</div>
+          <div className={styles.description}>
+            <ReactMarkdown remarkPlugins={[remarkBreaks]}>
+              {description}
+            </ReactMarkdown>
+          </div>
         </div>
       )}
 

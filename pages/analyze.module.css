@@ -63,8 +63,61 @@
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 4px;
-  white-space: pre-wrap;
   margin-bottom: 1rem;
+}
+
+.description :global(p) {
+  margin-bottom: 1rem;
+}
+
+.description :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.description :global(a) {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.description :global(ul),
+.description :global(ol) {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.description :global(li) {
+  margin: 0.5rem 0;
+}
+
+.description :global(h1),
+.description :global(h2),
+.description :global(h3),
+.description :global(h4) {
+  margin: 1.5rem 0 1rem;
+  font-weight: 600;
+}
+
+.description :global(code) {
+  background: #e5e7eb;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.description :global(pre) {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.description :global(blockquote) {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #4b5563;
 }
 
 .analyzeButton {
