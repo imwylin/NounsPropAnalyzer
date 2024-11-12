@@ -12,13 +12,13 @@ const queryClient = new QueryClient()
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config}>
         <RainbowKitProvider>
           <Navbar />
           <Component {...pageProps} />
         </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
   )
 } 

@@ -1,99 +1,97 @@
 import { useRouter } from 'next/router'
-import { useProposals } from '../../../hooks/useProposals'
-import { ProposalAnalysisDashboard } from '../../../components/analysis/ProposalAnalysisDashboard'
-import styles from '../proposals.module.css'
-import { useState, useEffect } from 'react'
-import type { ParsedAnalysis } from '../../../types/parser'
+import { useProposal } from '../../../hooks/useSubgraphProposals'
+import { formatDistanceToNow } from 'date-fns'
 
-const DEFAULT_ANALYSIS: ParsedAnalysis = {
-  id: '0',
-  classification: 'OPERATIONAL',
-  primary_purpose: 'Loading...',
-  allowable_elements: [],
-  unallowable_elements: [],
-  required_modifications: [],
-  risk_assessment: {
-    private_benefit_risk: 'LOW',
-    mission_alignment: 'MODERATE',
-    implementation_complexity: 'LOW'
-  },
-  key_considerations: []
-}
-
-const ERROR_ANALYSIS: ParsedAnalysis = {
-  id: '0',
-  classification: 'UNALLOWABLE',
-  primary_purpose: 'Error loading analysis',
-  allowable_elements: [],
-  unallowable_elements: [],
-  required_modifications: [],
-  risk_assessment: {
-    private_benefit_risk: 'HIGH',
-    mission_alignment: 'WEAK',
-    implementation_complexity: 'HIGH'
-  },
-  key_considerations: []
-}
-
-/**
- * Page for viewing detailed analysis of a single proposal
- */
-export default function ProposalAnalysisPage() {
+export default function ProposalAnalysis() {
   const router = useRouter()
   const { id } = router.query
-  const { data: proposals, isLoading } = useProposals()
-  const [analysis, setAnalysis] = useState<ParsedAnalysis>(DEFAULT_ANALYSIS)
-  const [error, setError] = useState<Error | null>(null)
+  const { data: proposal, isLoading, error } = useProposal(id as string)
 
-  // Find the specific proposal we want to analyze
-  const currentProposal = proposals?.find(
-    p => p.proposal.id === (id ? BigInt(id.toString()) : undefined)
-  )
-
-  // Fetch analysis when proposal data is available
-  useEffect(() => {
-    if (!id || Array.isArray(id) || !currentProposal) return
-
-    const fetchAnalysis = async () => {
-      try {
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            proposalId: parseInt(id),
-            description: currentProposal.description
-          })
-        })
-
-        if (!response.ok) throw new Error('Failed to analyze proposal')
-        const analysisData: ParsedAnalysis = await response.json()
-        setAnalysis(analysisData)
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to analyze proposal'))
-        setAnalysis(ERROR_ANALYSIS)
-      }
-    }
-
-    fetchAnalysis()
-  }, [id, currentProposal])
-
-  // Handle invalid ID
-  if (!id || Array.isArray(id)) {
-    return (
-      <div className={styles.container}>
-        <p className={styles.error}>Invalid proposal ID</p>
-      </div>
-    )
-  }
+  if (isLoading) return <div>Loading proposal...</div>
+  if (error) return <div>Error loading proposal</div>
+  if (!proposal) return <div>Proposal not found</div>
+  const totalVotes = BigInt(proposal.forVotes) + BigInt(proposal.againstVotes) + BigInt(proposal.abstainVotes)
+  const forPercentage = totalVotes > 0 ? (Number(BigInt(proposal.forVotes) * BigInt(100)) / Number(totalVotes)).toFixed(2) : '0'
+  const againstPercentage = totalVotes > 0 ? (Number(BigInt(proposal.againstVotes) * BigInt(100)) / Number(totalVotes)).toFixed(2) : '0'
+  const abstainPercentage = totalVotes > 0 ? (Number(BigInt(proposal.abstainVotes) * BigInt(100)) / Number(totalVotes)).toFixed(2) : '0'
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <ProposalAnalysisDashboard 
-          analysis={analysis}
-          isLoading={isLoading && analysis === DEFAULT_ANALYSIS}
-          error={error}
-        />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">
+        {proposal.title}
+      </h1>
+      
+      <div className="bg-white shadow rounded-lg p-6 space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Status & Timeline</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-gray-600">Status</p>
+              <p className="font-medium">{proposal.status}</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Created</p>
+              <p className="font-medium">
+                {formatDistanceToNow(new Date(Number(proposal.createdTimestamp) * 1000), { addSuffix: true })}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-600">Start Block</p>
+              <p className="font-medium">{proposal.startBlock}</p>
+            </div>
+            <div>
+              <p className="text-gray-600">End Block</p>
+              <p className="font-medium">{proposal.endBlock}</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Voting Results</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-gray-600">For</p>
+              <p className="font-medium">{forPercentage}% ({proposal.forVotes})</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Against</p>
+              <p className="font-medium">{againstPercentage}% ({proposal.againstVotes})</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Abstain</p>
+              <p className="font-medium">{abstainPercentage}% ({proposal.abstainVotes})</p>
+            </div>
+            <div>
+              <p className="text-gray-600">Quorum Required</p>
+              <p className="font-medium">{proposal.quorumVotes}</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Description</h2>
+          <div className="whitespace-pre-wrap bg-gray-50 p-4 rounded">
+            {proposal.description}
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Recent Votes</h2>
+          <div className="space-y-2">
+            {proposal.votes.slice(0, 10).map((vote) => (
+              <div key={vote.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+                <span className="font-mono">{vote.voter.slice(0, 6)}...{vote.voter.slice(-4)}</span>
+                <span className={vote.support ? 'text-green-600' : 'text-red-600'}>
+                  {vote.support ? '✅ For' : '❌ Against'}
+                </span>
+                <span>{vote.votes} votes</span>
+                <span className="text-gray-500 text-sm">
+                  {formatDistanceToNow(new Date(Number(vote.timestamp) * 1000), { addSuffix: true })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

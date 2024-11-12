@@ -1,224 +1,181 @@
 import { useState } from 'react'
-import { useReadContract } from 'wagmi'
-import { nounsDAOContract } from '../config/wagmi'
-import { ParsedAnalysis } from '../types/parser'
-import { Proposal, ProposalActions } from '../config/NounsDAOProxy'
-import ReactMarkdown from 'react-markdown'
-import remarkBreaks from 'remark-breaks'
+import { useProposalDescription } from '../hooks/useSubgraphProposals'
 import styles from './analyze.module.css'
+import { analyzeProposal } from '../utils/ai/analyzeProposal'
+
+interface AnalysisResult {
+  proposalId: string
+  timestamp: string
+  is501c3Compliant: boolean
+  category: string
+  riskLevel: 'Low' | 'Medium' | 'High'
+  reasoning: string
+  recommendations: string
+}
 
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
-  const [analyses, setAnalyses] = useState<ParsedAnalysis[]>([])
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [error, setError] = useState('')
+  const [analysisError, setAnalysisError] = useState<string | null>(null)
+  
+  const { 
+    data: description,
+    isLoading,
+    refetch: fetchDescription,
+    error 
+  } = useProposalDescription(proposalId)
 
-  // Get proposal data
-  const { data: proposal, isLoading: isLoadingProposal } = useReadContract({
-    ...nounsDAOContract,
-    functionName: 'proposals',
-    args: proposalId ? [BigInt(proposalId)] : undefined,
-  }) as { data: Proposal | undefined, isLoading: boolean }
-
-  // Get proposal actions with proper typing
-  const { data: actions, isLoading: isLoadingActions } = useReadContract({
-    ...nounsDAOContract,
-    functionName: 'getActions',
-    args: proposalId ? [BigInt(proposalId)] : undefined,
-  }) as { data: ProposalActions | undefined, isLoading: boolean }
-
-  // Get proposal description
-  const { data: description, isLoading: isLoadingDescription } = useReadContract({
-    ...nounsDAOContract,
-    functionName: 'proposalDescriptions',
-    args: proposalId ? [BigInt(proposalId)] : undefined,
-  }) as { data: string | undefined, isLoading: boolean }
+  const handleFetchDescription = async () => {
+    if (!proposalId.trim()) return
+    await fetchDescription()
+  }
 
   const handleAnalyze = async () => {
-    if (!proposal || !description || isAnalyzing) return
-    setError('')
+    if (!description) return
     setIsAnalyzing(true)
+    setAnalysisError(null)
 
     try {
-      const existingAnalysis = analyses.find(a => a.id === proposalId)
-      if (existingAnalysis) {
-        setError('This proposal has already been analyzed')
-        return
-      }
-
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          proposalId: parseInt(proposalId),
-          description: description,
-          actions: actions
-        })
-      })
-
-      if (!response.ok) {
-        const error = await response.text()
-        throw new Error(error || 'Analysis failed')
+      const aiResult = await analyzeProposal(description)
+      
+      const result: AnalysisResult = {
+        proposalId,
+        timestamp: new Date().toISOString(),
+        ...aiResult
       }
       
-      const analysis: ParsedAnalysis = await response.json()
-      setAnalyses(prev => [...prev, analysis])
-    } catch (err) {
-      console.error('Analysis failed:', err)
-      setError(err instanceof Error ? err.message : 'Analysis failed')
+      setAnalysisResults(prev => [result, ...prev])
+    } catch (error) {
+      console.error('Analysis failed:', error)
+      setAnalysisError(error instanceof Error ? error.message : 'Analysis failed')
     } finally {
       setIsAnalyzing(false)
     }
   }
 
   const handleExport = () => {
-    // Define CSV headers based on the ParsedAnalysis type
-    const headers = [
-      'Proposal ID',
-      'Classification',
-      'Primary Purpose',
-      'Risk Level',
-      'Mission Alignment',
-      'Implementation Complexity',
-      'Allowable Elements',
-      'Unallowable Elements',
-      'Required Modifications',
-      'Key Considerations'
-    ]
-
-    // Convert analyses to CSV rows
-    const rows = analyses.map(a => [
-      a.id,
-      a.classification,
-      a.primary_purpose,
-      a.risk_assessment.private_benefit_risk,
-      a.risk_assessment.mission_alignment,
-      a.risk_assessment.implementation_complexity,
-      a.allowable_elements.join('|'),
-      a.unallowable_elements.join('|'),
-      a.required_modifications.join('|'),
-      a.key_considerations.join('|')
+    const headers = ['Timestamp', 'Proposal ID', 'Compliant', 'Category', 'Risk Level', 'Reasoning', 'Recommendations']
+    const rows = analysisResults.map(result => [
+      result.timestamp,
+      result.proposalId,
+      result.is501c3Compliant.toString(),
+      result.category,
+      result.riskLevel,
+      result.reasoning,
+      result.recommendations
     ])
 
-    // Create and download CSV
-    const csv = [
-      headers.join(','),
-      ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
-    ].join('\n')
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', `nouns-proposal-analyses-${new Date().toISOString().split('T')[0]}.csv`)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `nouns-501c3-analysis-${new Date().toISOString()}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
-
-  const isLoading = isLoadingProposal || isLoadingActions || isLoadingDescription
 
   return (
     <div className={styles.container}>
-      <div className={styles.content}>
-        <h1 className={styles.title}>Proposal Analysis Dashboard</h1>
+      <h1 className={styles.title}>501(c)(3) Compliance Analyzer</h1>
+      
+      <div className={styles.inputGroup}>
+        <input
+          type="text"
+          value={proposalId}
+          onChange={(e) => setProposalId(e.target.value)}
+          placeholder="Enter Proposal ID"
+          className={styles.input}
+        />
+        <button 
+          onClick={handleFetchDescription}
+          disabled={!proposalId.trim() || isLoading}
+          className={styles.button}
+        >
+          {isLoading ? 'Loading...' : 'Fetch Description'}
+        </button>
+      </div>
 
-        <div className={styles.inputSection}>
-          <input
-            type="number"
-            value={proposalId}
-            onChange={(e) => {
-              setError('')
-              setProposalId(e.target.value)
-            }}
-            placeholder="Enter proposal ID"
-            className={styles.input}
-            min="0"
-          />
+      {error && (
+        <div className={styles.error}>
+          Error: {error.message}
+        </div>
+      )}
+
+      {analysisError && (
+        <div className={styles.error}>
+          Analysis Error: {analysisError}
+        </div>
+      )}
+
+      {description && (
+        <div className={styles.section}>
+          <h2 className={styles.subtitle}>Proposal Description</h2>
+          <div className={styles.description}>{description}</div>
           <button
             onClick={handleAnalyze}
-            disabled={!proposal || !description || isAnalyzing || isLoading}
-            className={styles.button}
+            disabled={isAnalyzing}
+            className={styles.analyzeButton}
           >
-            {isAnalyzing ? 'Analyzing...' : isLoading ? 'Loading...' : 'Analyze'}
+            {isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
           </button>
         </div>
+      )}
 
-        {error && <div className={styles.error}>{error}</div>}
-
-        {proposal && description && (
-          <div className={styles.preview}>
-            <h3>Proposal {proposalId}</h3>
-            <div className={styles.proposalDetails}>
-              <p><strong>Proposer:</strong> {proposal.proposer}</p>
-              <p><strong>Status:</strong> {proposal.executed ? 'Executed' : proposal.canceled ? 'Canceled' : 'Active'}</p>
-              <p><strong>Votes:</strong> For: {proposal.forVotes.toString()}, Against: {proposal.againstVotes.toString()}</p>
-              <div className={styles.description}>
-                <h4>Description:</h4>
-                <ReactMarkdown 
-                  remarkPlugins={[remarkBreaks]}
-                  className={styles.markdown}
-                >
-                  {description}
-                </ReactMarkdown>
-              </div>
-              {actions && (
-                <div className={styles.transactions}>
-                  <h4>Proposed Transactions:</h4>
-                  {actions.targets.map((target: string, i: number) => (
-                    <div key={i} className={styles.transaction}>
-                      <p>Target: {target}</p>
-                      <p>Value: {actions.values[i].toString()} ETH</p>
-                      <p>Signature: {actions.signatures[i]}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+      {analysisResults.length > 0 && (
+        <div className={styles.section}>
+          <div className={styles.resultsHeader}>
+            <h2 className={styles.subtitle}>Analysis Results</h2>
+            <button onClick={handleExport} className={styles.exportButton}>
+              Export to CSV
+            </button>
           </div>
-        )}
-
-        {analyses.length > 0 && (
-          <>
-            <div className={styles.analysisHeader}>
-              <h3>Analysis Results ({analyses.length})</h3>
-              <button
-                onClick={handleExport}
-                className={styles.exportButton}
-              >
-                Export to CSV
-              </button>
-            </div>
-
-            <div className={styles.tableContainer}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Classification</th>
-                    <th>Risk Level</th>
-                    <th>Mission Alignment</th>
-                    <th>Primary Purpose</th>
-                    <th>Required Modifications</th>
+          
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>ID</th>
+                  <th>Compliant</th>
+                  <th>Category</th>
+                  <th>Risk</th>
+                  <th>Reasoning</th>
+                  <th>Recommendations</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analysisResults.map((result, index) => (
+                  <tr key={index}>
+                    <td>{new Date(result.timestamp).toLocaleString()}</td>
+                    <td>{result.proposalId}</td>
+                    <td>
+                      <span className={result.is501c3Compliant ? styles.tagSuccess : styles.tagError}>
+                        {result.is501c3Compliant ? 'Yes' : 'No'}
+                      </span>
+                    </td>
+                    <td>{result.category}</td>
+                    <td>
+                      <span className={
+                        result.riskLevel === 'Low' ? styles.tagSuccess :
+                        result.riskLevel === 'Medium' ? styles.tagWarning :
+                        styles.tagError
+                      }>
+                        {result.riskLevel}
+                      </span>
+                    </td>
+                    <td>{result.reasoning}</td>
+                    <td>{result.recommendations}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {analyses.map(analysis => (
-                    <tr key={analysis.id}>
-                      <td>{analysis.id}</td>
-                      <td>{analysis.classification}</td>
-                      <td>{analysis.risk_assessment.private_benefit_risk}</td>
-                      <td>{analysis.risk_assessment.mission_alignment}</td>
-                      <td>{analysis.primary_purpose}</td>
-                      <td>{analysis.required_modifications.length}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-      </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 

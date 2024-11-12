@@ -2,6 +2,7 @@
   "name": "nouns-501c3-analysis",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,6 +13,7 @@
     "@anthropic-ai/sdk": "^0.17.1",
     "@rainbow-me/rainbowkit": "^2.0.1",
     "@tanstack/react-query": "^5.24.1",
+    "graphql-request": "^7.1.2",
     "next": "14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

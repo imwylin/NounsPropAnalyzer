@@ -1,80 +1,38 @@
-import { useState } from 'react'
-import { useProposals } from '../../hooks/useProposals'
-import { AnalysisTable } from '../../components/parser/AnalysisTable'
-import { FilterBar } from '../../components/parser/FilterBar'
-import { ExportControls } from '../../components/parser/ExportControls'
-import type { FilterState } from '../../components/parser/FilterBar'
-import styles from './proposals.module.css'
+import { useProposals } from '../../hooks/useSubgraphProposals'
+import Link from 'next/link'
 
 /**
  * Main page for viewing and managing proposal analyses
  */
 export default function ProposalsPage() {
-  const [selectedRows, setSelectedRows] = useState<string[]>([])
-  const { data: proposals, isLoading, progress } = useProposals()
+  const { data: proposals, isLoading, error } = useProposals()
 
-  // Filter the analysis results
-  const [activeFilters, setActiveFilters] = useState<FilterState>({})
-
-  const filteredResults = proposals?.filter(p => {
-    if (!p.analysis) return false
-
-    // Apply classification filter
-    if (activeFilters.classification?.length) {
-      if (!activeFilters.classification.includes(p.analysis.classification)) {
-        return false
-      }
-    }
-
-    // Apply risk level filter
-    if (activeFilters.risk_level) {
-      if (p.analysis.risk_assessment.private_benefit_risk !== activeFilters.risk_level) {
-        return false
-      }
-    }
-
-    return true
-  })
-
-  // Handle export
-  const handleExport = async (format: 'csv' | 'xlsx') => {
-    // TODO: Implement export logic
-    console.log('Exporting as:', format)
-  }
+  if (isLoading) return <div>Loading proposals...</div>
+  if (error) return <div>Error loading proposals</div>
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        {/* Header */}
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            Proposal Analysis
-          </h1>
-          <p className={styles.subtitle}>
-            {proposals?.length || 0} total proposals
-            {isLoading && ` (Analyzing: ${progress}%)`}
-          </p>
-        </div>
-
-        {/* Filters */}
-        <FilterBar
-          onChange={setActiveFilters}
-          onClear={() => setActiveFilters({})}
-        />
-
-        {/* Export Controls */}
-        <ExportControls
-          onExport={handleExport}
-          disabled={selectedRows.length === 0}
-          progress={progress}
-        />
-
-        {/* Analysis Table */}
-        <AnalysisTable
-          data={filteredResults?.map(p => p.analysis).filter((a): a is NonNullable<typeof a> => a !== null) || []}
-          onSelect={setSelectedRows}
-          loading={isLoading}
-        />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Nouns Proposals</h1>
+      <div className="space-y-4">
+        {proposals?.map((proposal) => (
+          <div key={proposal.id} className="border p-4 rounded-lg">
+            <div className="flex justify-between items-start">
+              <h2 className="text-xl font-semibold">Proposal {proposal.id}</h2>
+              <span className="px-2 py-1 rounded text-sm bg-gray-100">
+                {proposal.status}
+              </span>
+            </div>
+            <p className="mt-2 text-gray-700">
+              {proposal.description.split('\n')[0]} {/* Show first line of description */}
+            </p>
+            <Link 
+              href={`/proposals/${proposal.id}/analysis`}
+              className="mt-2 text-blue-600 hover:underline"
+            >
+              View Analysis →
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   )
