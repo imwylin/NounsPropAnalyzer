@@ -9,10 +9,14 @@ export async function analyzeProposal(description: string): Promise<AIAnalysisRe
     body: JSON.stringify({ description }),
   })
 
+  const data = await response.json()
+
   if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.message || 'Analysis failed')
+    throw new Error(JSON.stringify({
+      error: data.error,
+      details: data.details
+    }))
   }
 
-  return response.json()
+  return data
 } 
