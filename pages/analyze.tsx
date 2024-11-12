@@ -118,7 +118,12 @@ export default function AnalyzePage() {
         <input
           type="text"
           value={proposalId}
-          onChange={(e) => setProposalId(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value.trim()
+            if (value === '' || /^\d+$/.test(value)) {
+              setProposalId(value)
+            }
+          }}
           placeholder="Enter Proposal ID"
           className={styles.input}
         />

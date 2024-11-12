@@ -52,7 +52,7 @@ REQUIRED_MODIFICATIONS:
 - [list each modification on a new line starting with a dash]
 RISK_ASSESSMENT:
 PRIVATE_BENEFIT_RISK: [one of: LOW, MEDIUM, HIGH]
-MISSION_ALIGNMENT: [one of: STRONG, MODERATE, WEAK]
+MISSION_ALIGNMENT: [one of: ${systemPrompt.output_format.structure.required_fields.risk_assessment.mission_alignment.values.join(', ')}]
 IMPLEMENTATION_COMPLEXITY: [one of: LOW, MEDIUM, HIGH]
 KEY_CONSIDERATIONS:
 - [list each consideration on a new line starting with a dash]
@@ -77,88 +77,61 @@ ${systemPrompt.disclaimer}`
     })
 
     const content = response.content[0].text
+    console.log('Raw AI response:', content)
     
-    const analysisMatch = content.match(
-      new RegExp(`ANALYSIS:::START\\n?([\\s\\S]*?)\\n?ANALYSIS:::END`)
-    )
+    // First try exact format
+    let analysisMatch = content.match(/ANALYSIS:::START\n?([\s\S]*?)\n?ANALYSIS:::END/)
     
+    // If exact format fails, try to extract any structured content
     if (!analysisMatch) {
-      console.error('Raw response:', content)
-      throw {
-        field: 'format',
-        message: 'Response missing required markers',
-        received: content.slice(0, 100) + '...'
+      analysisMatch = content.match(/CLASSIFICATION:[\s\S]*KEY_CONSIDERATIONS:/m)
+      if (!analysisMatch) {
+        throw {
+          field: 'format',
+          message: 'Could not extract analysis structure',
+          received: content.slice(0, 100) + '...'
+        }
       }
     }
     
-    const analysis = analysisMatch[1].trim()
+    const analysis = analysisMatch[1]?.trim() || analysisMatch[0].trim()
 
-    const classification = analysis.match(/CLASSIFICATION:\s*(\w+)/i)?.[1]
-    if (!classification) {
-      throw {
-        field: 'classification',
-        message: 'Missing classification field'
-      }
-    }
-    if (!systemPrompt.output_format.structure.required_fields.classification.values.includes(classification)) {
-      throw {
-        field: 'classification',
-        message: 'Invalid classification value',
-        received: classification,
-        expected: systemPrompt.output_format.structure.required_fields.classification.values
-      }
-    }
-
-    const primary_purpose = analysis.match(/PRIMARY_PURPOSE:\s*(.+?)(?=\n|$)/i)?.[1]?.trim()
-    if (!primary_purpose) {
-      console.error('Missing primary purpose')
-      throw new Error('Missing primary purpose')
-    }
-
-    const risk_section = analysis.match(/RISK_ASSESSMENT:?\s*\n([\s\S]*?)(?=\n\w|$)/i)?.[1] || analysis
-    
-    const private_benefit_risk = risk_section.match(/PRIVATE_BENEFIT_RISK:?\s*(\w+)/i)?.[1]
-    if (!private_benefit_risk || !['LOW', 'MEDIUM', 'HIGH'].includes(private_benefit_risk)) {
-      console.error('Invalid private benefit risk:', private_benefit_risk)
-      throw new Error('Invalid private benefit risk value')
-    }
-
-    const mission_alignment = risk_section.match(/MISSION_ALIGNMENT:?\s*(\w+)/i)?.[1]
-    if (!mission_alignment || !['STRONG', 'MODERATE', 'WEAK'].includes(mission_alignment)) {
-      console.error('Invalid mission alignment:', mission_alignment)
-      throw new Error('Invalid mission alignment value')
-    }
-
-    const implementation_complexity = risk_section.match(/IMPLEMENTATION_COMPLEXITY:?\s*(\w+)/i)?.[1]
-    if (!implementation_complexity || !['LOW', 'MEDIUM', 'HIGH'].includes(implementation_complexity)) {
-      console.error('Invalid implementation complexity:', implementation_complexity)
-      throw new Error('Invalid implementation complexity value')
-    }
-
-    // Helper function to safely extract list items
+    // Helper function with more flexible pattern matching
     const extractList = (text: string, section: string) => {
-      const sectionRegex = new RegExp(`${section}:?\\s*\\n((?:[-•\\*]\\s*.+\\n?)+)`, 'i')
-      const match = text.match(sectionRegex)
-      if (!match) {
-        console.warn(`Failed to extract ${section}`)
-        return []
+      // Try multiple list formats
+      const patterns = [
+        `${section}:?\\s*\\n((?:[-•*+]\\s*.+\\n?)+)`,  // Bullet points
+        `${section}:?\\s*\\n((?:\\d+\\.\\s*.+\\n?)+)`, // Numbered lists
+        `${section}:?\\s*([^\\n]+)`,                    // Single line
+      ]
+
+      for (const pattern of patterns) {
+        const match = text.match(new RegExp(pattern, 'i'))
+        if (match) {
+          return match[1]
+            .split(/\n|;/)
+            .map(s => s.replace(/^[-•*+\d.]\s*/, '').trim())
+            .filter(Boolean)
+        }
       }
-      return match[1]
-        .split('\n')
-        .filter(Boolean)
-        .map(s => s.replace(/^[-•\\*]\\s*/, '').trim())
+      
+      return ['[Not specified]']
     }
 
-    const result: AIAnalysisResult = {
-      classification: classification as Classification,
-      primary_purpose,
+    // Extract risk assessment section
+    const risk_section = analysis.match(/RISK_ASSESSMENT:?\s*\n([\s\S]*?)(?=\n\w|$)/i)?.[1] || ''
+
+    // Parse all fields with fallbacks for missing values
+    const result = {
+      classification: analysis.match(/CLASSIFICATION:\s*(\w+)/i)?.[1] || 'UNALLOWABLE',
+      primary_purpose: analysis.match(/PRIMARY_PURPOSE:\s*(.+?)(?=\n|$)/i)?.[1]?.trim() || '[Missing]',
       allowable_elements: extractList(analysis, 'ALLOWABLE_ELEMENTS'),
       unallowable_elements: extractList(analysis, 'UNALLOWABLE_ELEMENTS'),
       required_modifications: extractList(analysis, 'REQUIRED_MODIFICATIONS'),
       risk_assessment: {
-        private_benefit_risk: private_benefit_risk as RiskLevel,
-        mission_alignment: mission_alignment as MissionAlignment,
-        implementation_complexity: implementation_complexity as RiskLevel
+        private_benefit_risk: (risk_section.match(/PRIVATE_BENEFIT_RISK:?\s*(\w+)/i)?.[1] || 'HIGH') as RiskLevel,
+        mission_alignment: (risk_section.match(/MISSION_ALIGNMENT:?\s*(\w+)/i)?.[1] || 'WEAK') as MissionAlignment,
+        implementation_complexity: (risk_section.match(/IMPLEMENTATION_COMPLEXITY:?\s*(\w+)/i)?.[1] || 'HIGH') as RiskLevel
       },
       key_considerations: extractList(analysis, 'KEY_CONSIDERATIONS')
     }
@@ -167,24 +140,17 @@ ${systemPrompt.disclaimer}`
   } catch (error) {
     console.error('Analysis failed:', error)
     
-    // Handle structured errors
-    if ((error as AnalysisError).field) {
-      const analysisError = error as AnalysisError
-      res.status(400).json({ 
-        error: `${analysisError.field}: ${analysisError.message}`,
-        details: {
-          field: analysisError.field,
-          received: analysisError.received,
-          expected: analysisError.expected
-        }
+    // Only throw errors for critical failures
+    if ((error as any).field === 'format') {
+      res.status(400).json({
+        error: `Analysis Error: ${(error as any).message}`,
+        details: error
       })
-      return
+    } else {
+      res.status(500).json({
+        error: 'Analysis failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      })
     }
-
-    // Handle other errors
-    res.status(500).json({ 
-      error: error instanceof Error ? error.message : 'Analysis failed',
-      details: error instanceof Error ? error.stack : undefined
-    })
   }
 } 
