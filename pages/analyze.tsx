@@ -11,12 +11,19 @@ interface AnalysisResultWithMeta extends AIAnalysisResult {
   timestamp: string
 }
 
+interface AnalysisErrorDetails {
+  field: string
+  received?: string
+  expected?: string[]
+}
+
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true)
+  const [errorDetails, setErrorDetails] = useState<AnalysisErrorDetails | null>(null)
   
   const { 
     data: description,
@@ -28,6 +35,7 @@ export default function AnalyzePage() {
     if (!description) return
     setIsAnalyzing(true)
     setAnalysisError(null)
+    setErrorDetails(null)
 
     try {
       const aiResult = await analyzeProposal(description)
@@ -39,7 +47,19 @@ export default function AnalyzePage() {
       setAnalysisResults(prev => [result, ...prev])
     } catch (error) {
       console.error('Analysis failed:', error)
-      setAnalysisError(error instanceof Error ? error.message : 'Analysis failed')
+      if (error instanceof Error) {
+        try {
+          const errorData = JSON.parse(error.message)
+          setAnalysisError(errorData.error || error.message)
+          if (errorData.details) {
+            setErrorDetails(errorData.details)
+          }
+        } catch {
+          setAnalysisError(error.message)
+        }
+      } else {
+        setAnalysisError('Analysis failed')
+      }
     } finally {
       setIsAnalyzing(false)
     }
@@ -119,7 +139,17 @@ export default function AnalyzePage() {
 
       {analysisError && (
         <div className={styles.error}>
-          Analysis Error: {analysisError}
+          <div>Analysis Error: {analysisError}</div>
+          {errorDetails && (
+            <div className={styles.errorDetails}>
+              {errorDetails.received && (
+                <div>Received: {errorDetails.received}</div>
+              )}
+              {errorDetails.expected && (
+                <div>Expected: {errorDetails.expected.join(', ')}</div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

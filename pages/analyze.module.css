@@ -311,3 +311,9 @@
 .description.collapsed {
   max-height: 0;
 }
+
+.errorDetails {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #991b1b;
+}
