@@ -90,13 +90,13 @@ export default function AnalyzePage() {
           placeholder="Enter Proposal ID"
           className={styles.input}
         />
-        <button 
-          onClick={handleFetchDescription}
-          disabled={!proposalId.trim() || isLoading}
-          className={styles.button}
-        >
-          {isLoading ? 'Loading...' : 'Fetch Description'}
-        </button>
+          <button
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+            className={styles.analyzeButton}
+          >
+            {isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
+          </button>
       </div>
 
       {error && (
@@ -115,13 +115,6 @@ export default function AnalyzePage() {
         <div className={styles.section}>
           <h2 className={styles.subtitle}>Proposal Description</h2>
           <div className={styles.description}>{description}</div>
-          <button
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className={styles.analyzeButton}
-          >
-            {isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
-          </button>
         </div>
       )}
 
