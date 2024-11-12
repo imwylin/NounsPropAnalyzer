@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Anthropic from '@anthropic-ai/sdk'
 import type { 
   AIAnalysisResult, 
-  Classification, 
   RiskLevel, 
   MissionAlignment 
 } from '../../types/graphql'
@@ -12,8 +11,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-// Add specific error types
-type AnalysisError = {
+interface ErrorResponse {
   field: string
   message: string
   received?: string
@@ -22,7 +20,7 @@ type AnalysisError = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<AIAnalysisResult | { error: string; details?: ErrorResponse }>
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -136,20 +134,23 @@ ${systemPrompt.disclaimer}`
       key_considerations: extractList(analysis, 'KEY_CONSIDERATIONS')
     }
 
-    res.status(200).json(result)
+    res.status(200).json(result as AIAnalysisResult)
   } catch (error) {
     console.error('Analysis failed:', error)
     
     // Only throw errors for critical failures
-    if ((error as any).field === 'format') {
+    if ((error as ErrorResponse).field === 'format') {
       res.status(400).json({
-        error: `Analysis Error: ${(error as any).message}`,
-        details: error
+        error: `Analysis Error: ${(error as ErrorResponse).message}`,
+        details: error as ErrorResponse
       })
     } else {
       res.status(500).json({
         error: 'Analysis failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? { 
+          field: 'unknown',
+          message: error.message 
+        } : undefined
       })
     }
   }
