@@ -38,33 +38,40 @@ export default function AnalyzePage() {
     setErrorDetails(null)
 
     try {
-      const analysisPromises = Array(3).fill(null).map(async () => {
-        const aiResult = await analyzeProposal(description)
-        return {
-          proposalId,
-          timestamp: new Date().toISOString(),
-          ...aiResult
-        }
-      })
-
-      const results = await Promise.all(analysisPromises)
-      
-      setAnalysisResults(prev => [...results, ...prev])
-    } catch (error) {
-      console.error('Analysis failed:', error)
-      if (error instanceof Error) {
-        try {
-          const errorData = JSON.parse(error.message)
-          setAnalysisError(errorData.error || error.message)
-          if (errorData.details) {
-            setErrorDetails(errorData.details)
+      const results = await Promise.allSettled(
+        Array(3).fill(null).map(async () => {
+          const aiResult = await analyzeProposal(description)
+          return {
+            proposalId,
+            timestamp: new Date().toISOString(),
+            ...aiResult
           }
-        } catch {
-          setAnalysisError(error.message)
-        }
-      } else {
-        setAnalysisError('Analysis failed')
+        })
+      )
+      
+      const successfulResults = results
+        .filter((result): result is PromiseFulfilledResult<AnalysisResultWithMeta> => 
+          result.status === 'fulfilled'
+        )
+        .map(result => result.value)
+
+      const errors = results
+        .filter((result): result is PromiseRejectedResult => 
+          result.status === 'rejected'
+        )
+        .map(result => result.reason)
+
+      if (successfulResults.length > 0) {
+        setAnalysisResults(prev => [...successfulResults, ...prev])
       }
+
+      if (errors.length > 0) {
+        setAnalysisError(`${errors.length} out of 3 analyses failed`)
+        console.error('Analysis errors:', errors)
+      }
+    } catch (error) {
+      console.error('Analysis failed completely:', error)
+      setAnalysisError('All analyses failed')
     } finally {
       setIsAnalyzing(false)
     }
