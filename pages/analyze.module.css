@@ -342,3 +342,100 @@
 .table td {
   vertical-align: top;
 }
+
+/* Dark mode styles */
+:global(.dark) .container {
+  background-color: #1a1a1a;
+  color: #e5e7eb;
+}
+
+:global(.dark) .input {
+  background-color: #2d2d2d;
+  border-color: #404040;
+  color: #e5e7eb;
+}
+
+:global(.dark) .description {
+  background-color: #2d2d2d;
+  border-color: #404040;
+}
+
+:global(.dark) .analysisCard {
+  background-color: #2d2d2d;
+  border-color: #404040;
+}
+
+:global(.dark) .table th {
+  background-color: #262626;
+}
+
+:global(.dark) .table td:first-child {
+  background-color: #262626;
+}
+
+:global(.dark) .table td,
+:global(.dark) .table th {
+  border-color: #404040;
+}
+
+:global(.dark) .tagSuccess {
+  background-color: #065f46;
+  color: #d1fae5;
+}
+
+:global(.dark) .tagWarning {
+  background-color: #92400e;
+  color: #fef3c7;
+}
+
+:global(.dark) .tagError {
+  background-color: #991b1b;
+  color: #fee2e2;
+}
+
+:global(.dark) .toggleButton {
+  background-color: #404040;
+  border-color: #525252;
+  color: #e5e7eb;
+}
+
+:global(.dark) .toggleButton:hover {
+  background-color: #525252;
+}
+
+:global(.dark) .listSection {
+  background-color: #262626;
+}
+
+:global(.dark) .timestamp {
+  color: #9ca3af;
+}
+
+:global(.dark) .label {
+  color: #9ca3af;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.darkModeButton {
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.darkModeButton:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark) .darkModeButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}

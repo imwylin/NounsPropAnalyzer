@@ -6,21 +6,15 @@ import { analyzeProposal } from '../utils/ai/analyzeProposal'
 import type { AIAnalysisResult } from '../types/graphql'
 import styles from './analyze.module.css'
 
-interface AnalysisResultWithMeta extends AIAnalysisResult {
-  proposalId: string
-  timestamp: string
-}
-
-interface AnalysisErrorDetails {
-  field: string
-  received?: string
-  expected?: string[]
-}
-
 interface AnalysisResult {
   status: 'fulfilled' | 'rejected'
   value?: AnalysisResultWithMeta
   reason?: Error
+}
+
+interface AnalysisResultWithMeta extends AIAnalysisResult {
+  proposalId: string
+  timestamp: string
 }
 
 export default function AnalyzePage() {
@@ -28,8 +22,8 @@ export default function AnalyzePage() {
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
+  const [errorDetails, setErrorDetails] = useState<{ field: string; received?: string; expected?: string[] } | null>(null)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true)
-  const [errorDetails, setErrorDetails] = useState<AnalysisErrorDetails | null>(null)
   
   const { 
     data: description,
@@ -105,14 +99,14 @@ export default function AnalyzePage() {
       'Allowable Elements',
       'Unallowable Elements',
       'Required Modifications',
-      'Risk Assessment - Private Benefit Risk',
-      'Risk Assessment - Mission Alignment',
-      'Risk Assessment - Implementation Complexity',
+      'Private Benefit Risk',
+      'Mission Alignment',
+      'Implementation Complexity',
       'Key Considerations'
     ]
 
     const rows = analysisResults.map(result => [
-      new Date(result.timestamp).toISOString(),
+      result.timestamp,
       result.proposalId,
       result.classification,
       result.primary_purpose,
@@ -125,11 +119,7 @@ export default function AnalyzePage() {
       `"${result.key_considerations.join(';\n')}"`
     ])
 
-    const csv = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n')
-
+    const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -149,12 +139,7 @@ export default function AnalyzePage() {
         <input
           type="text"
           value={proposalId}
-          onChange={(e) => {
-            const value = e.target.value.trim()
-            if (value === '' || /^\d+$/.test(value)) {
-              setProposalId(value)
-            }
-          }}
+          onChange={(e) => setProposalId(e.target.value)}
           placeholder="Enter Proposal ID"
           className={styles.input}
         />
@@ -355,7 +340,7 @@ export default function AnalyzePage() {
   )
 }
 
-function getClassificationStyle(classification: AIAnalysisResult['classification']) {
+function getClassificationStyle(classification: string) {
   switch (classification) {
     case 'CHARITABLE':
       return styles.tagSuccess
@@ -397,4 +382,4 @@ function getComplexityStyle(complexity: 'LOW' | 'MEDIUM' | 'HIGH') {
     default:
       return styles.tagWarning
   }
-} 
+}
