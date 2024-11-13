@@ -1,0 +1,244 @@
+{
+    "prompt_purpose": "Nouns DAO 501c3 Proposal Analysis",
+    "output_format": {
+        "structure": {
+            "start_marker": "ANALYSIS:::START",
+            "end_marker": "ANALYSIS:::END",
+            "required_fields": {
+                "classification": {
+                    "type": "enum",
+                    "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"],
+                    "reasoning": "string"
+                },
+                "primary_purpose": {
+                    "type": "string",
+                    "format": "single sentence",
+                    "charitable_purpose_category": {
+                        "type": "enum",
+                        "values": [
+                            "EDUCATIONAL",
+                            "SCIENTIFIC",
+                            "LITERARY",
+                            "RELIGIOUS",
+                            "PREVENTING_CRUELTY",
+                            "FOSTERING_NATIONAL_SPORTS",
+                            "TESTING_PUBLIC_SAFETY",
+                            "CHARITABLE"
+                        ]
+                    }
+                },
+                "allowable_elements": {
+                    "type": "array",
+                    "items": {
+                        "element": "string",
+                        "justification": "string",
+                        "relevant_precedents": ["string"]
+                    }
+                },
+                "unallowable_elements": {
+                    "type": "array",
+                    "items": {
+                        "element": "string",
+                        "violation_type": "string",
+                        "mitigation_options": ["string"]
+                    }
+                },
+                "required_modifications": {
+                    "type": "array",
+                    "items": {
+                        "modification": "string",
+                        "rationale": "string",
+                        "implementation_steps": ["string"],
+                        "priority": {
+                            "type": "enum",
+                            "values": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+                        }
+                    }
+                },
+                "risk_assessment": {
+                    "private_benefit_risk": {
+                        "type": "enum",
+                        "values": ["LOW", "MEDIUM", "HIGH"],
+                        "specific_concerns": ["string"],
+                        "mitigation_strategies": ["string"]
+                    },
+                    "mission_alignment": {
+                        "type": "enum",
+                        "values": ["STRONG", "MODERATE", "WEAK"],
+                        "alignment_analysis": "string"
+                    },
+                    "implementation_complexity": {
+                        "type": "enum",
+                        "values": ["LOW", "MEDIUM", "HIGH"],
+                        "complexity_factors": ["string"]
+                    },
+                    "regulatory_compliance_risk": {
+                        "type": "enum",
+                        "values": ["LOW", "MEDIUM", "HIGH"],
+                        "regulatory_considerations": ["string"]
+                    }
+                },
+                "key_considerations": {
+                    "type": "array",
+                    "items": {
+                        "consideration": "string",
+                        "impact": "string",
+                        "recommendations": ["string"]
+                    }
+                },
+                "financial_analysis": {
+                    "budget_requirements": {
+                        "estimated_costs": "number",
+                        "funding_sources": ["string"],
+                        "sustainability_assessment": "string"
+                    },
+                    "revenue_implications": {
+                        "expected_revenue": "number",
+                        "revenue_classification": "string",
+                        "ubit_considerations": "string"
+                    }
+                }
+            }
+        }
+    },
+    "evaluation_context": {
+        "organization_structure": {
+            "revenue_sources": [
+                "Daily NFT auctions (digital art)",
+                "Donations",
+                "Grant programs",
+                "Program service revenue"
+            ],
+            "mission_statement": "The Nouns Foundation's mission is to expand and improve civic engagement through decentralized democracy, advance the development of public goods technologies and decentralized scientific research, support the creative arts and artists, and elevate the common good through grassroots direct impact work.",
+            "ip_strategy": "CC0 for artistic assets",
+            "governance": {
+                "structure": "Blockchain-based democratic system",
+                "voting_mechanisms": "Token-based governance",
+                "proposal_process": "Community-driven",
+                "oversight_controls": ["string"]
+            },
+            "compliance": {
+                "crypto_readiness": "Equipped for crypto regulations/accounting",
+                "reporting_requirements": ["string"],
+                "audit_procedures": ["string"],
+                "documentation_standards": ["string"]
+            },
+            "payments": {
+                "authorized_methods": ["Cryptocurrency", "Traditional banking"],
+                "internal_controls": ["string"],
+                "transparency_measures": ["string"]
+            },
+            "organizational_capacity": {
+                "staff_resources": ["string"],
+                "technical_capabilities": ["string"],
+                "external_partnerships": ["string"]
+            }
+        },
+        "analysis_guidelines": [
+            "Interpret 'DAO' as the nonprofit entity",
+            "Address references indicate payment activities",
+            "Evaluate third-party revenue for private benefit",
+            "Maintain blockchain/crypto components",
+            "Focus on charitable purpose and public benefit",
+            "Consider acceptable incidental private benefit",
+            "Assess operational sustainability",
+            "Evaluate governance structure compliance",
+            "Consider state-specific requirements",
+            "Assess international implications",
+            "Review historical IRS precedents",
+            "Evaluate technology risk factors"
+        ],
+        "classification_criteria": {
+            "CHARITABLE": {
+                "definition": "Direct public benefit activities",
+                "requirements": ["string"],
+                "examples": ["string"],
+                "exclusions": ["string"]
+            },
+            "OPERATIONAL": {
+                "definition": "Internal management/maintenance",
+                "requirements": ["string"],
+                "examples": ["string"],
+                "exclusions": ["string"]
+            },
+            "MARKETING": {
+                "definition": "Community growth and awareness",
+                "requirements": ["string"],
+                "examples": ["string"],
+                "exclusions": ["string"]
+            },
+            "PROGRAM_RELATED": {
+                "definition": "Mission-aligned revenue activities",
+                "requirements": ["string"],
+                "examples": ["string"],
+                "exclusions": ["string"]
+            },
+            "UNALLOWABLE": {
+                "definition": "Activities incompatible with 501c3",
+                "common_issues": ["string"],
+                "remediation_options": ["string"]
+            }
+        },
+        "risk_evaluation_framework": {
+            "private_benefit_risk": {
+                "LOW": {
+                    "criteria": "Minimal private benefit, clear public benefit",
+                    "indicators": ["string"],
+                    "controls_required": ["string"]
+                },
+                "MEDIUM": {
+                    "criteria": "Some private benefit, requires controls",
+                    "indicators": ["string"],
+                    "controls_required": ["string"]
+                },
+                "HIGH": {
+                    "criteria": "Significant private benefit concerns",
+                    "indicators": ["string"],
+                    "controls_required": ["string"]
+                }
+            },
+            "mission_alignment": {
+                "STRONG": {
+                    "criteria": "Directly advances charitable mission",
+                    "indicators": ["string"]
+                },
+                "MODERATE": {
+                    "criteria": "Indirectly supports mission",
+                    "indicators": ["string"]
+                },
+                "WEAK": {
+                    "criteria": "Tenuous connection to mission",
+                    "indicators": ["string"]
+                }
+            },
+            "implementation_complexity": {
+                "LOW": {
+                    "criteria": "Straightforward execution",
+                    "resource_requirements": ["string"]
+                },
+                "MEDIUM": {
+                    "criteria": "Requires moderate oversight",
+                    "resource_requirements": ["string"]
+                },
+                "HIGH": {
+                    "criteria": "Complex implementation needs",
+                    "resource_requirements": ["string"]
+                }
+            }
+        },
+        "compliance_requirements": {
+            "irs_guidelines": ["string"],
+            "state_requirements": ["string"],
+            "reporting_obligations": ["string"],
+            "documentation_needs": ["string"]
+        },
+        "precedent_cases": {
+            "relevant_rulings": ["string"],
+            "similar_organizations": ["string"],
+            "key_learnings": ["string"]
+        }
+    },
+    "disclaimer": "This analysis represents an informed opinion on 501c3 compatibility and is not legal advice. Organizations should consult qualified legal counsel for definitive guidance.",
+    "version": "2.0",
+    "last_updated": "2024-11-13"
+}

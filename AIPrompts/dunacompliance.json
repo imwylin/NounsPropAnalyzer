@@ -1,0 +1,148 @@
+{
+    "prompt_purpose": "Nouns DAO Wyoming DUNA Compliance Analysis",
+    "output_format": {
+        "structure": {
+            "start_marker": "ANALYSIS:::START",
+            "end_marker": "ANALYSIS:::END",
+            "required_fields": {
+                "statutory_compliance": {
+                    "type": "enum",
+                    "values": ["COMPLIANT", "NEEDS_MODIFICATION", "NON_COMPLIANT"],
+                    "requirements_evaluation": {
+                        "registered_agent_status": "boolean",
+                        "annual_report_status": "boolean",
+                        "records_maintenance": "boolean",
+                        "member_rights_protection": "boolean"
+                    },
+                    "reasoning": "string",
+                    "required_actions": ["string"]
+                },
+                "governance_compliance": {
+                    "decentralization_assessment": {
+                        "mechanism": "string",
+                        "voting_rights": {
+                            "implementation": "string",
+                            "access": "string",
+                            "restrictions": ["string"]
+                        },
+                        "proposal_system": {
+                            "accessibility": "string",
+                            "fairness_measures": ["string"]
+                        }
+                    },
+                    "member_protections": {
+                        "rights_implementation": ["string"],
+                        "information_access": "string",
+                        "participation_mechanisms": ["string"]
+                    }
+                },
+                "smart_contract_compliance": {
+                    "governance_contracts": {
+                        "functionality": ["string"],
+                        "security_measures": ["string"],
+                        "upgrade_mechanisms": "string"
+                    },
+                    "treasury_management": {
+                        "controls": ["string"],
+                        "access_rights": ["string"],
+                        "security_features": ["string"]
+                    }
+                },
+                "operational_compliance": {
+                    "record_keeping": {
+                        "required_records": ["string"],
+                        "storage_method": "string",
+                        "accessibility": "string"
+                    },
+                    "financial_controls": {
+                        "transaction_approval": "string",
+                        "spending_limits": "string",
+                        "audit_trail": "string"
+                    }
+                },
+                "risk_assessment": {
+                    "governance_risks": {
+                        "type": "enum",
+                        "values": ["LOW", "MEDIUM", "HIGH"],
+                        "identified_risks": ["string"],
+                        "mitigation_measures": ["string"]
+                    },
+                    "technical_risks": {
+                        "type": "enum",
+                        "values": ["LOW", "MEDIUM", "HIGH"],
+                        "identified_risks": ["string"],
+                        "mitigation_measures": ["string"]
+                    },
+                    "operational_risks": {
+                        "type": "enum",
+                        "values": ["LOW", "MEDIUM", "HIGH"],
+                        "identified_risks": ["string"],
+                        "mitigation_measures": ["string"]
+                    }
+                },
+                "required_modifications": {
+                    "type": "array",
+                    "items": {
+                        "modification": "string",
+                        "rationale": "string",
+                        "implementation_steps": ["string"],
+                        "priority": {
+                            "type": "enum",
+                            "values": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "evaluation_context": {
+        "statutory_framework": {
+            "primary_law": "Wyoming DUNA Act (W.S. 17-40-101 through 17-40-114)",
+            "key_requirements": [
+                "Registered agent maintenance",
+                "Annual reporting",
+                "Records maintenance",
+                "Member rights protection",
+                "Asset management requirements",
+                "Governance transparency"
+            ]
+        },
+        "blockchain_considerations": {
+            "governance_requirements": [
+                "Smart contract voting systems",
+                "Token holder rights",
+                "Proposal mechanisms",
+                "Treasury management",
+                "Upgrade processes"
+            ],
+            "technical_requirements": [
+                "Contract security",
+                "Access controls",
+                "Transaction transparency",
+                "Audit capabilities"
+            ]
+        },
+        "analysis_guidelines": [
+            "Verify Wyoming DUNA Act compliance",
+            "Assess decentralization implementation",
+            "Evaluate member rights protection",
+            "Review smart contract governance",
+            "Check record keeping systems",
+            "Assess risk management",
+            "Verify transparency mechanisms",
+            "Evaluate upgrade processes",
+            "Review security measures"
+        ]
+    },
+    "references": {
+        "statutory": {
+            "wyoming_duna_act": "W.S. 17-40-101 through 17-40-114",
+            "key_provisions": ["string"]
+        },
+        "technical_standards": {
+            "smart_contract_requirements": ["string"],
+            "security_standards": ["string"],
+            "governance_best_practices": ["string"]
+        }
+    }
+}

@@ -6,6 +6,7 @@ import type {
   MissionAlignment 
 } from '../../types/graphql'
 import systemPrompt from '../../AIPrompts/systemprompt.json'
+import systemPrompt2 from '../../AIPrompts/systemprompt2.json'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -26,7 +27,8 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { description } = req.body
+  const { description, useAlternatePrompt } = req.body
+  const selectedPrompt = useAlternatePrompt ? systemPrompt2 : systemPrompt
 
   if (!description) {
     return res.status(400).json({ error: 'Description is required' })
@@ -35,12 +37,12 @@ export default async function handler(
   try {
     const prompt = `You are analyzing a Nouns DAO proposal for 501(c)(3) compliance.
 
-${JSON.stringify(systemPrompt, null, 2)}
+${JSON.stringify(selectedPrompt, null, 2)}
 
 Your response MUST follow this EXACT format with no deviations:
 
 ANALYSIS:::START
-CLASSIFICATION: [one of: ${systemPrompt.output_format.structure.required_fields.classification.values.join(', ')}]
+CLASSIFICATION: [one of: ${selectedPrompt.output_format.structure.required_fields.classification.values.join(', ')}]
 PRIMARY_PURPOSE: [write a single sentence]
 ALLOWABLE_ELEMENTS:
 - [list each element on a new line starting with a dash]
@@ -50,7 +52,7 @@ REQUIRED_MODIFICATIONS:
 - [list each modification on a new line starting with a dash]
 RISK_ASSESSMENT:
 PRIVATE_BENEFIT_RISK: [one of: LOW, MEDIUM, HIGH]
-MISSION_ALIGNMENT: [one of: ${systemPrompt.output_format.structure.required_fields.risk_assessment.mission_alignment.values.join(', ')}]
+MISSION_ALIGNMENT: [one of: ${selectedPrompt.output_format.structure.required_fields.risk_assessment.mission_alignment.values.join(', ')}]
 IMPLEMENTATION_COMPLEXITY: [one of: LOW, MEDIUM, HIGH]
 KEY_CONSIDERATIONS:
 - [list each consideration on a new line starting with a dash]
@@ -66,7 +68,7 @@ Remember:
 4. Use ONLY the allowed values for classifications and risk levels
 5. Do not add any additional text or explanations outside the markers
 
-${systemPrompt.disclaimer}`
+${selectedPrompt.disclaimer}`
 
     const response = await anthropic.messages.create({
       model: 'claude-3-sonnet-20240229',

@@ -1,0 +1,197 @@
+{
+    "prompt_purpose": "Nouns DAO Proposal Compliance and Risk Analysis",
+    "input_schema": {
+        "proposal_details": {
+            "required_fields": {
+                "id": "string",
+                "title": "string",
+                "proposer": "string (address)",
+                "requested_amount": "number",
+                "execution_timeline": "string",
+                "deliverables": ["string"],
+                "proposal_text": "string"
+            },
+            "optional_fields": {
+                "team_background": "string",
+                "previous_work": "string",
+                "milestones": ["string"],
+                "budget_breakdown": "object",
+                "success_metrics": ["string"]
+            }
+        }
+    },
+    "output_format": {
+        "structure": {
+            "start_marker": "PROPOSAL_ANALYSIS:::START",
+            "end_marker": "PROPOSAL_ANALYSIS:::END",
+            "required_fields": {
+                "proposal_validity": {
+                    "is_valid": "boolean",
+                    "submission_requirements_met": {
+                        "status": "boolean",
+                        "missing_elements": ["string"]
+                    },
+                    "proposer_eligibility": {
+                        "status": "boolean",
+                        "verification_method": "string"
+                    }
+                },
+                "proposal_classification": {
+                    "type": "enum",
+                    "values": [
+                        "CORE_DEVELOPMENT",
+                        "COMMUNITY_INITIATIVE",
+                        "INFRASTRUCTURE",
+                        "GRANTS",
+                        "GOVERNANCE",
+                        "OPERATIONAL",
+                        "PARTNERSHIP"
+                    ],
+                    "rationale": "string"
+                },
+                "compliance_analysis": {
+                    "duna_compliance": {
+                        "status": "enum: COMPLIANT, NEEDS_MODIFICATION, NON_COMPLIANT",
+                        "requirements_check": {
+                            "authority_scope": "boolean",
+                            "asset_usage": "boolean",
+                            "member_rights": "boolean",
+                            "governance_alignment": "boolean"
+                        },
+                        "required_modifications": ["string"]
+                    },
+                    "organizational_alignment": {
+                        "mission_alignment": {
+                            "score": "enum: STRONG, MODERATE, WEAK",
+                            "analysis": "string"
+                        },
+                        "precedent_check": {
+                            "similar_proposals": ["string"],
+                            "relevant_decisions": ["string"]
+                        }
+                    }
+                },
+                "execution_assessment": {
+                    "smart_contract_requirements": {
+                        "needs_contract": "boolean",
+                        "contract_type": ["string"],
+                        "security_considerations": ["string"]
+                    },
+                    "treasury_impact": {
+                        "amount_analysis": {
+                            "requested_amount": "number",
+                            "treasury_percentage": "number",
+                            "within_limits": "boolean"
+                        },
+                        "payment_structure": {
+                            "type": "string",
+                            "conditions": ["string"],
+                            "implementation_requirements": ["string"]
+                        }
+                    },
+                    "technical_feasibility": {
+                        "score": "enum: HIGH, MEDIUM, LOW",
+                        "concerns": ["string"],
+                        "requirements": ["string"]
+                    }
+                },
+                "risk_assessment": {
+                    "governance_risks": {
+                        "level": "enum: LOW, MEDIUM, HIGH",
+                        "identified_risks": ["string"],
+                        "mitigation_suggestions": ["string"]
+                    },
+                    "implementation_risks": {
+                        "level": "enum: LOW, MEDIUM, HIGH",
+                        "identified_risks": ["string"],
+                        "mitigation_suggestions": ["string"]
+                    },
+                    "financial_risks": {
+                        "level": "enum: LOW, MEDIUM, HIGH",
+                        "identified_risks": ["string"],
+                        "mitigation_suggestions": ["string"]
+                    },
+                    "reputation_risks": {
+                        "level": "enum: LOW, MEDIUM, HIGH",
+                        "identified_risks": ["string"],
+                        "mitigation_suggestions": ["string"]
+                    }
+                },
+                "oversight_requirements": {
+                    "monitoring_needs": {
+                        "deliverable_tracking": ["string"],
+                        "financial_tracking": ["string"],
+                        "timeline_tracking": ["string"]
+                    },
+                    "reporting_requirements": {
+                        "frequency": "string",
+                        "content_requirements": ["string"],
+                        "verification_methods": ["string"]
+                    },
+                    "success_criteria": {
+                        "measurable_outcomes": ["string"],
+                        "verification_methods": ["string"]
+                    }
+                },
+                "recommendations": {
+                    "approval_recommendation": {
+                        "recommendation": "enum: APPROVE, MODIFY, REJECT",
+                        "rationale": "string",
+                        "conditions": ["string"]
+                    },
+                    "required_modifications": {
+                        "type": "array",
+                        "items": {
+                            "modification": "string",
+                            "rationale": "string",
+                            "priority": "enum: CRITICAL, HIGH, MEDIUM, LOW"
+                        }
+                    },
+                    "implementation_guidance": ["string"]
+                }
+            }
+        }
+    },
+    "evaluation_framework": {
+        "submission_requirements": {
+            "minimum_requirements": [
+                "Clear purpose and scope",
+                "Defined deliverables",
+                "Realistic timeline",
+                "Detailed budget",
+                "Implementation plan"
+            ],
+            "proposer_requirements": [
+                "Token holder status verification",
+                "Previous proposal history check",
+                "Conflicts of interest disclosure"
+            ]
+        },
+        "compliance_checks": {
+            "duna_requirements": [
+                "Within organizational authority",
+                "Proper asset handling",
+                "Member rights preservation",
+                "Governance process adherence"
+            ],
+            "organizational_requirements": [
+                "Mission alignment",
+                "Resource availability",
+                "Technical feasibility",
+                "Community benefit"
+            ]
+        },
+        "risk_thresholds": {
+            "financial": {
+                "max_single_allocation": "number",
+                "treasury_percentage_limit": "number",
+                "required_reserves": "number"
+            },
+            "governance": {
+                "voting_period": "number",
+                "quorum_requirements": "number",
+                "majority_requirements": "number"
+            }
+        }
+    }
+}

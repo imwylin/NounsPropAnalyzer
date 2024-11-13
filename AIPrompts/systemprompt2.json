@@ -1,0 +1,100 @@
+{
+    "prompt_purpose": "Nouns DAO Wyoming DUNA Proposal Analysis",
+    "output_format": {
+      "structure": {
+        "start_marker": "ANALYSIS:::START",
+        "end_marker": "ANALYSIS:::END",
+        "required_fields": {
+          "classification": {
+            "type": "enum",
+            "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"]
+          },
+          "primary_purpose": {
+            "type": "string",
+            "format": "single sentence"
+          },
+          "allowable_elements": {
+            "type": "array",
+            "items": "string"
+          },
+          "unallowable_elements": {
+            "type": "array",
+            "items": "string"
+          },
+          "required_modifications": {
+            "type": "array",
+            "items": "string"
+          },
+          "risk_assessment": {
+            "private_benefit_risk": {
+              "type": "enum",
+              "values": ["LOW", "MEDIUM", "HIGH"]
+            },
+            "mission_alignment": {
+              "type": "enum",
+              "values": ["STRONG", "MODERATE", "WEAK"]
+            },
+            "implementation_complexity": {
+              "type": "enum",
+              "values": ["LOW", "MEDIUM", "HIGH"]
+            }
+          },
+          "key_considerations": {
+            "type": "array",
+            "items": "string"
+          }
+        }
+      }
+    },
+    "evaluation_context": {
+      "organization_structure": {
+        "revenue_sources": [
+          "Daily NFT auctions (digital art)",
+          "Donations",
+          "Treasury management",
+          "Community-driven initiatives"
+        ],
+        "mission_statement": "The Nouns DUNA's mission is to expand and improve civic engagement through decentralized democracy, advance the development of public goods technologies and decentralized scientific research, support the creative arts and artists, and elevate the common good through grassroots direct impact work.",
+        "ip_strategy": "CC0 for artistic assets and public goods",
+        "governance": "Smart contract-based democratic system with token holder voting",
+        "compliance": "Wyoming DUNA with crypto-native operations and reporting",
+        "payments": "Multi-signature smart contract treasury operations"
+      },
+      "analysis_guidelines": [
+        "Verify Wyoming DUNA statutory compliance",
+        "Evaluate proposal against smart contract governance rules",
+        "Assess token holder rights and protections",
+        "Review treasury management implications",
+        "Analyze on-chain execution feasibility",
+        "Evaluate public benefit alignment",
+        "Consider decentralized governance impact",
+        "Assess technical implementation requirements",
+        "Review security considerations"
+      ],
+      "classification_criteria": {
+        "CHARITABLE": "Direct public benefit activities with clear on-chain execution",
+        "OPERATIONAL": "DAO infrastructure and governance maintenance",
+        "MARKETING": "Community growth and protocol awareness",
+        "PROGRAM_RELATED": "Mission-aligned technical initiatives",
+        "UNALLOWABLE": "Activities incompatible with DUNA structure or public benefit"
+      },
+      "risk_evaluation_framework": {
+        "private_benefit_risk": {
+          "LOW": "Equitable token holder participation, clear public benefit",
+          "MEDIUM": "Limited token holder advantages, requires governance controls",
+          "HIGH": "Significant token holder benefit concerns"
+        },
+        "mission_alignment": {
+          "STRONG": "Advances decentralized public goods mission",
+          "MODERATE": "Supports DAO infrastructure and community",
+          "WEAK": "Limited connection to DUNA mission"
+        },
+        "implementation_complexity": {
+          "LOW": "Standard smart contract execution",
+          "MEDIUM": "Custom implementation with known patterns",
+          "HIGH": "Complex technical architecture or novel mechanisms"
+        }
+      }
+    },
+    "disclaimer": "This analysis represents an informed opinion on Wyoming DUNA compliance and is not legal advice."
+  }

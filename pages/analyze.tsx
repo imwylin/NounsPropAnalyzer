@@ -24,6 +24,7 @@ export default function AnalyzePage() {
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [errorDetails, setErrorDetails] = useState<{ field: string; received?: string; expected?: string[] } | null>(null)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true)
+  const [useAlternatePrompt, setUseAlternatePrompt] = useState(false)
   
   const { 
     data: description,
@@ -150,6 +151,19 @@ export default function AnalyzePage() {
         >
           {isLoading ? 'Loading...' : isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
         </button>
+        <div className={styles.promptToggle}>
+          <label className={styles.switch}>
+            <input
+              type="checkbox"
+              checked={useAlternatePrompt}
+              onChange={(e) => setUseAlternatePrompt(e.target.checked)}
+            />
+            <span className={styles.slider}></span>
+          </label>
+          <span className={styles.toggleLabel}>
+            {useAlternatePrompt ? 'Prompt 2' : 'Prompt 1'}
+          </span>
+        </div>
       </div>
 
       {error && (
