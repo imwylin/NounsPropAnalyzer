@@ -1,14 +1,26 @@
 .navbar {
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  gap: 2rem;
+}
+
+.homeLink {
+  display: flex;
+  align-items: center;
+  margin-left: 3rem;
+}
+
+.homeLink img {
+  border-radius: 4px;
 }
 
 .links {
   display: flex;
   gap: 2rem;
+  justify-content: flex-end;
 }
 
 .link {

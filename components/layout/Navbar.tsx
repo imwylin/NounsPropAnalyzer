@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import styles from './Navbar.module.css'
 
@@ -19,16 +20,16 @@ export function Navbar() {
 
   return (
     <nav className={styles.navbar}>
-      <button
-        onClick={toggleDarkMode}
-        className={styles.darkModeButton}
-      >
-        {isDarkMode ? '☀️' : '🌙'}
-      </button>
+      <Link href="/" className={styles.homeLink}>
+        <Image 
+          src="/apple-touch-icon.png" 
+          alt="Home" 
+          width={32} 
+          height={32}
+          priority
+        />
+      </Link>
       <div className={styles.links}>
-        <Link href="/" className={styles.link}>
-          Home
-        </Link>
         <Link href="/analyze" className={styles.link}>
           Analyze
         </Link>
@@ -36,6 +37,12 @@ export function Navbar() {
           Proposals
         </Link>
       </div>
+      <button
+        onClick={toggleDarkMode}
+        className={styles.darkModeButton}
+      >
+        {isDarkMode ? '☀️' : '🌙'}
+      </button>
     </nav>
   )
 } 
