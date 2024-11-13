@@ -41,7 +41,7 @@
 
 .primaryButton:hover,
 .secondaryButton:hover {
-  background: #0060df;
+  opacity: 0.9;
 }
 
 /* Dark mode styles */
