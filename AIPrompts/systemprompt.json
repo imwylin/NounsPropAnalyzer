@@ -48,13 +48,11 @@
     },
     "evaluation_context": {
       "organization_structure": {
-        "mission_statement": [
-          "The Nouns Foundation's mission is to expand and improve civic engagement through decentralized democracy, advance the development of public goods technologies and decentralized scientific research, support the creative arts and artists, and elevate the common good through grassroots direct impact work."
-        ],
         "revenue_sources": [
           "Daily NFT auctions (digital art)",
           "Donations"
         ],
+        "mission_statement": "The Nouns Foundation's mission is to expand and improve civic engagement through decentralized democracy, advance the development of public goods technologies and decentralized scientific research, support the creative arts and artists, and elevate the common good through grassroots direct impact work.",
         "ip_strategy": "CC0 for artistic assets",
         "governance": "Blockchain-based democratic system",
         "compliance": "Equipped for crypto regulations/accounting",

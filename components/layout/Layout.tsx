@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
+import { Navbar } from './Navbar'
 import styles from './Layout.module.css'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isDarkMode, setIsDarkMode] = useState(false)
 
   useEffect(() => {
-    // Check system preference on mount
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setIsDarkMode(true)
       document.documentElement.classList.add('dark')
@@ -27,6 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {isDarkMode ? '☀️' : '🌙'}
         </button>
       </header>
+      <Navbar />
       <main>
         {children}
       </main>
