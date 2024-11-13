@@ -317,3 +317,28 @@
   font-size: 0.875rem;
   color: #991b1b;
 }
+
+.comparisonTable {
+  overflow-x: auto;
+}
+
+.listInTable {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listInTable li {
+  padding: 0.25rem 0;
+  border-bottom: none;
+}
+
+.table td:first-child {
+  font-weight: 600;
+  background: #f9fafb;
+  width: 200px;
+}
+
+.table td {
+  vertical-align: top;
+}

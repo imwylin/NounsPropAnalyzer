@@ -45,7 +45,7 @@ export default function AnalyzePage() {
 
     try {
       const results: AnalysisResult[] = []
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 2; i++) {
         try {
           if (i > 0) {
             await new Promise(resolve => setTimeout(resolve, 10000))
@@ -85,7 +85,7 @@ export default function AnalyzePage() {
       }
 
       if (errors.length > 0) {
-        setAnalysisError(`${errors.length} out of 3 analyses failed`)
+        setAnalysisError(`${errors.length} out of 2 analyses failed`)
         console.error('Analysis errors:', errors)
       }
     } catch (error) {
@@ -217,79 +217,138 @@ export default function AnalyzePage() {
             </button>
           </div>
           
-          {analysisResults.map((result, index) => (
-            <div key={index} className={styles.analysisCard}>
-              <div className={styles.cardHeader}>
-                <h3>Proposal {result.proposalId}</h3>
-                <span className={styles.timestamp}>
-                  {new Date(result.timestamp).toLocaleString()}
-                </span>
-              </div>
-
-              <div className={styles.mainInfo}>
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Classification:</span>
-                  <span className={getClassificationStyle(result.classification)}>
-                    {result.classification}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.label}>Primary Purpose:</span>
-                  <span>{result.primary_purpose}</span>
-                </div>
-              </div>
-
-              <div className={styles.riskAssessment}>
-                <div className={getRiskStyle(result.risk_assessment.private_benefit_risk)}>
-                  Private Benefit Risk: {result.risk_assessment.private_benefit_risk}
-                </div>
-                <div className={getAlignmentStyle(result.risk_assessment.mission_alignment)}>
-                  Mission Alignment: {result.risk_assessment.mission_alignment}
-                </div>
-                <div className={getComplexityStyle(result.risk_assessment.implementation_complexity)}>
-                  Implementation: {result.risk_assessment.implementation_complexity}
-                </div>
-              </div>
-
-              <div className={styles.lists}>
-                <div className={styles.listSection}>
-                  <h4>Allowable Elements</h4>
-                  <ul>
-                    {result.allowable_elements.map((element, i) => (
-                      <li key={i}>{element}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className={styles.listSection}>
-                  <h4>Unallowable Elements</h4>
-                  <ul>
-                    {result.unallowable_elements.map((element, i) => (
-                      <li key={i}>{element}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className={styles.listSection}>
-                  <h4>Required Modifications</h4>
-                  <ul>
-                    {result.required_modifications.map((mod, i) => (
-                      <li key={i}>{mod}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className={styles.listSection}>
-                  <h4>Key Considerations</h4>
-                  <ul>
-                    {result.key_considerations.map((consideration, i) => (
-                      <li key={i}>{consideration}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+          <div className={styles.analysisCard}>
+            <div className={styles.cardHeader}>
+              <h3>Proposal {analysisResults[0].proposalId} - Comparative Analysis</h3>
             </div>
-          ))}
+
+            <div className={styles.comparisonTable}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Aspect</th>
+                    <th>Analysis 1 ({new Date(analysisResults[0].timestamp).toLocaleTimeString()})</th>
+                    {analysisResults[1] && (
+                      <th>Analysis 2 ({new Date(analysisResults[1].timestamp).toLocaleTimeString()})</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Classification</td>
+                    <td><span className={getClassificationStyle(analysisResults[0].classification)}>{analysisResults[0].classification}</span></td>
+                    {analysisResults[1] && (
+                      <td><span className={getClassificationStyle(analysisResults[1].classification)}>{analysisResults[1].classification}</span></td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Primary Purpose</td>
+                    <td>{analysisResults[0].primary_purpose}</td>
+                    {analysisResults[1] && (
+                      <td>{analysisResults[1].primary_purpose}</td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Private Benefit Risk</td>
+                    <td><span className={getRiskStyle(analysisResults[0].risk_assessment.private_benefit_risk)}>{analysisResults[0].risk_assessment.private_benefit_risk}</span></td>
+                    {analysisResults[1] && (
+                      <td><span className={getRiskStyle(analysisResults[1].risk_assessment.private_benefit_risk)}>{analysisResults[1].risk_assessment.private_benefit_risk}</span></td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Mission Alignment</td>
+                    <td><span className={getAlignmentStyle(analysisResults[0].risk_assessment.mission_alignment)}>{analysisResults[0].risk_assessment.mission_alignment}</span></td>
+                    {analysisResults[1] && (
+                      <td><span className={getAlignmentStyle(analysisResults[1].risk_assessment.mission_alignment)}>{analysisResults[1].risk_assessment.mission_alignment}</span></td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Implementation Complexity</td>
+                    <td><span className={getComplexityStyle(analysisResults[0].risk_assessment.implementation_complexity)}>{analysisResults[0].risk_assessment.implementation_complexity}</span></td>
+                    {analysisResults[1] && (
+                      <td><span className={getComplexityStyle(analysisResults[1].risk_assessment.implementation_complexity)}>{analysisResults[1].risk_assessment.implementation_complexity}</span></td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Allowable Elements</td>
+                    <td>
+                      <ul className={styles.listInTable}>
+                        {analysisResults[0].allowable_elements.map((element, i) => (
+                          <li key={i}>{element}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    {analysisResults[1] && (
+                      <td>
+                        <ul className={styles.listInTable}>
+                          {analysisResults[1].allowable_elements.map((element, i) => (
+                            <li key={i}>{element}</li>
+                          ))}
+                        </ul>
+                      </td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Unallowable Elements</td>
+                    <td>
+                      <ul className={styles.listInTable}>
+                        {analysisResults[0].unallowable_elements.map((element, i) => (
+                          <li key={i}>{element}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    {analysisResults[1] && (
+                      <td>
+                        <ul className={styles.listInTable}>
+                          {analysisResults[1].unallowable_elements.map((element, i) => (
+                            <li key={i}>{element}</li>
+                          ))}
+                        </ul>
+                      </td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Required Modifications</td>
+                    <td>
+                      <ul className={styles.listInTable}>
+                        {analysisResults[0].required_modifications.map((mod, i) => (
+                          <li key={i}>{mod}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    {analysisResults[1] && (
+                      <td>
+                        <ul className={styles.listInTable}>
+                          {analysisResults[1].required_modifications.map((mod, i) => (
+                            <li key={i}>{mod}</li>
+                          ))}
+                        </ul>
+                      </td>
+                    )}
+                  </tr>
+                  <tr>
+                    <td>Key Considerations</td>
+                    <td>
+                      <ul className={styles.listInTable}>
+                        {analysisResults[0].key_considerations.map((consideration, i) => (
+                          <li key={i}>{consideration}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    {analysisResults[1] && (
+                      <td>
+                        <ul className={styles.listInTable}>
+                          {analysisResults[1].key_considerations.map((consideration, i) => (
+                            <li key={i}>{consideration}</li>
+                          ))}
+                        </ul>
+                      </td>
+                    )}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </div>
