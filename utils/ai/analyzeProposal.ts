@@ -2,7 +2,7 @@ import type { AIAnalysisResult } from '../../types/graphql'
 
 export async function analyzeProposal(description: string): Promise<AIAnalysisResult> {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 60000) // Increased to 60 seconds
+  const timeout = setTimeout(() => controller.abort(), 120000) // Increased to 120 seconds
 
   try {
     const response = await fetch('/api/analyze', {
@@ -24,6 +24,11 @@ export async function analyzeProposal(description: string): Promise<AIAnalysisRe
 
     const data = await response.json()
     return data
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Request timed out after 120 seconds')
+    }
+    throw error
   } finally {
     clearTimeout(timeout)
   }
