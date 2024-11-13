@@ -29,7 +29,7 @@
 }
 
 .link:hover {
-  color: #2563eb;
+  color: #f3322c;
 }
 
 .darkModeButton {
@@ -56,7 +56,7 @@
 }
 
 :global(.dark) .link:hover {
-  color: #60a5fa;
+  color: #f3322c;
 }
 
 :global(.dark) .darkModeButton:hover {
