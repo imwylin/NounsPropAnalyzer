@@ -1,6 +1,9 @@
 .navbar {
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .links {
@@ -17,6 +20,20 @@
   color: #2563eb;
 }
 
+.darkModeButton {
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.darkModeButton:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 /* Dark mode styles */
 :global(.dark) .navbar {
   border-color: #404040;
@@ -28,4 +45,8 @@
 
 :global(.dark) .link:hover {
   color: #60a5fa;
+}
+
+:global(.dark) .darkModeButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 } 

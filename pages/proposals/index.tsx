@@ -1,16 +1,14 @@
 import Link from 'next/link'
+import styles from './proposals.module.css'
 
 /**
  * Main page for viewing and managing proposal analyses
  */
 export default function ProposalsPage() {
   return (
-    <div className="container mx-auto p-4 dark:bg-[#1a1a1a] dark:text-gray-100">
-      <h1 className="text-2xl font-bold mb-6">Nouns Proposals</h1>
-      <Link 
-        href="/analyze"
-        className="text-blue-600 hover:underline dark:text-blue-400"
-      >
+    <div className={styles.container}>
+      <h1 className={styles.title}>Nouns Proposals</h1>
+      <Link href="/analyze" className={styles.link}>
         Go to Proposal Analyzer →
       </Link>
     </div>
