@@ -48,7 +48,7 @@ export default function AnalyzePage() {
       for (let i = 0; i < 3; i++) {
         try {
           if (i > 0) {
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            await new Promise(resolve => setTimeout(resolve, 5000))
           }
           
           const aiResult = await analyzeProposal(description)
