@@ -24,7 +24,7 @@
 }
 
 .input {
-  width: 150px;
+  width: 200px;
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -122,8 +122,8 @@
 
 .analyzeButton {
   padding: 0.5rem 1rem;
-  background: #059669;
-  color: white;
+  background: #f3322c;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -143,8 +143,8 @@
 
 .exportButton {
   padding: 0.5rem 1rem;
-  background: #6366f1;
-  color: white;
+  background: #f3322c;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -289,17 +289,17 @@
 }
 
 .toggleButton {
-  padding: 0.25rem 0.75rem;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  padding: 0.5rem 1rem;
+  background: #f3322c;
+  color: black;
+  border: none;
   border-radius: 4px;
   font-size: 0.875rem;
-  color: #374151;
   cursor: pointer;
 }
 
 .toggleButton:hover {
-  background: #e5e7eb;
+  opacity: 0.9;
 }
 
 .description {
@@ -394,9 +394,7 @@
 }
 
 :global(.dark) .toggleButton {
-  background-color: #404040;
-  border-color: #525252;
-  color: #e5e7eb;
+  color: white;
 }
 
 :global(.dark) .toggleButton:hover {
@@ -438,4 +436,16 @@
 
 :global(.dark) .darkModeButton:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .analyzeButton,
+:global(.dark) .exportButton {
+  color: white;
+}
+
+:global(.dark) .analyzeButton:disabled,
+:global(.dark) .exportButton:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
 }

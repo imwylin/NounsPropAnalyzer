@@ -30,28 +30,18 @@
   gap: 1rem;
 }
 
-.primaryButton {
-  padding: 0.5rem 1rem;
-  background: #0070f3;
-  color: white;
-  border-radius: 4px;
-  text-decoration: none;
-}
-
-.primaryButton:hover {
-  background: #0060df;
-}
-
+.primaryButton,
 .secondaryButton {
   padding: 0.5rem 1rem;
-  background: #4b5563;
-  color: white;
+  background: #f3322c;
+  color: black;
   border-radius: 4px;
   text-decoration: none;
 }
 
+.primaryButton:hover,
 .secondaryButton:hover {
-  background: #374151;
+  background: #0060df;
 }
 
 /* Dark mode styles */
@@ -65,18 +55,7 @@
   color: #9ca3af;
 }
 
-:global(.dark) .primaryButton {
-  background: #3b82f6;
-}
-
-:global(.dark) .primaryButton:hover {
-  background: #2563eb;
-}
-
+:global(.dark) .primaryButton,
 :global(.dark) .secondaryButton {
-  background: #6b7280;
-}
-
-:global(.dark) .secondaryButton:hover {
-  background: #4b5563;
+  color: white;
 } 
