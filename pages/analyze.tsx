@@ -117,7 +117,7 @@ export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [selectedPrompt, setSelectedPrompt] = useState<number>(1)
+  const [selectedPrompts, setSelectedPrompts] = useState<[number, number]>([1, 3])
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus[]>([])
   const [showStatus, setShowStatus] = useState(true)
   
@@ -144,7 +144,7 @@ export default function AnalyzePage() {
         prev[1]
       ])
       
-      const firstAnalysis = await analyzeProposal(description, selectedPrompt)
+      const firstAnalysis = await analyzeProposal(description, selectedPrompts[0])
       
       setAnalysisStatus(prev => [
         { ...prev[0], state: 'success' },
@@ -160,13 +160,13 @@ export default function AnalyzePage() {
       // Wait before second analysis
       await new Promise(resolve => setTimeout(resolve, 10000))
       
-      // Second Analysis
+      // Second Analysis with different prompt
       setAnalysisStatus(prev => [
         prev[0],
         { ...prev[1], state: 'running' }
       ])
       
-      const secondAnalysis = await analyzeProposal(description, selectedPrompt)
+      const secondAnalysis = await analyzeProposal(description, selectedPrompts[1])
       
       setAnalysisStatus(prev => [
         prev[0],
@@ -179,7 +179,6 @@ export default function AnalyzePage() {
         timestamp: new Date().toISOString()
       }])
 
-      // After both analyses are complete, hide status after a delay
       setTimeout(() => {
         setShowStatus(false)
       }, 2000)
@@ -194,6 +193,19 @@ export default function AnalyzePage() {
     }
   }
 
+  const getPromptName = (promptId: number) => {
+    switch (promptId) {
+      case 1:
+        return 'Moderate'
+      case 2:
+        return 'Hawkish'
+      case 3:
+        return 'Innovative'
+      default:
+        return 'Unknown'
+    }
+  }
+
   const renderComparisonTable = (results: AnalysisResultWithMeta[]) => {
     return (
       <table className={styles.comparisonTable}>
@@ -201,7 +213,7 @@ export default function AnalyzePage() {
           <tr>
             <th>Aspect</th>
             {results.map((result, index) => (
-              <th key={index}>Analysis {index + 1}</th>
+              <th key={index}>{getPromptName(selectedPrompts[index])} Analysis</th>
             ))}
           </tr>
         </thead>
@@ -320,13 +332,30 @@ export default function AnalyzePage() {
           </div>
           
           <div className={styles.inputGroup}>
-            <label htmlFor="analysisType" className={styles.inputLabel}>
-              Analysis Type
+            <label htmlFor="analysisType1" className={styles.inputLabel}>
+              First Analysis
             </label>
             <select
-              id="analysisType"
-              value={selectedPrompt}
-              onChange={(e) => setSelectedPrompt(Number(e.target.value))}
+              id="analysisType1"
+              value={selectedPrompts[0]}
+              onChange={(e) => setSelectedPrompts([Number(e.target.value), selectedPrompts[1]])}
+              className={styles.select}
+              disabled={isAnalyzing}
+            >
+              <option value={1}>Moderate Analysis</option>
+              <option value={2}>Hawkish Analysis</option>
+              <option value={3}>Innovative Analysis</option>
+            </select>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="analysisType2" className={styles.inputLabel}>
+              Second Analysis
+            </label>
+            <select
+              id="analysisType2"
+              value={selectedPrompts[1]}
+              onChange={(e) => setSelectedPrompts([selectedPrompts[0], Number(e.target.value)])}
               className={styles.select}
               disabled={isAnalyzing}
             >
@@ -341,7 +370,7 @@ export default function AnalyzePage() {
             disabled={!description || isAnalyzing || isLoading}
             className={styles.analyzeButton}
           >
-            {isLoading ? 'Loading Proposal...' : isAnalyzing ? 'Analyzing...' : 'Analyze Proposal'}
+            {isLoading ? 'Loading Proposal...' : isAnalyzing ? 'Analyzing...' : 'Compare Analyses'}
           </button>
         </div>
 

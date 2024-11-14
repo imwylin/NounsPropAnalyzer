@@ -23,7 +23,8 @@
 }
 
 .inputSection {
-  display: flex;
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr auto;
   gap: 1.5rem;
   align-items: flex-end;
 }
@@ -51,7 +52,7 @@
 }
 
 .select {
-  min-width: 200px;
+  width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -75,6 +76,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 140px;
 }
 
 .analyzeButton:disabled {
@@ -340,6 +343,7 @@
   text-align: left;
   border-bottom: 1px solid #e1d7d5;
   background: var(--card-bg);
+  vertical-align: top;
 }
 
 /* Handle the first column */
@@ -381,18 +385,28 @@
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
   }
+  
+  .inputSection {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .inputGroup:first-child {
+    grid-column: 1 / -1;
+  }
+  
+  .analyzeButton {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 640px) {
   .inputSection {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
-
-  .input,
-  .select,
+  
+  .inputGroup,
   .analyzeButton {
-    width: 100%;
-    max-width: none;
+    grid-column: 1;
   }
 }
 
