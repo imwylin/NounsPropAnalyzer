@@ -514,3 +514,100 @@ input:checked + .slider:before {
 :global(.dark) .slider {
   background-color: #4b5563;
 }
+
+.progressSection {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.progressTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.progressItem {
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progressStatus {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.progressStatus.pending {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.progressStatus.running {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.progressStatus.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.progressStatus.error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.progressError {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin-top: 0.5rem;
+}
+
+/* Dark mode styles */
+:global(.dark) .progressSection {
+  background: #262626;
+  border-color: #404040;
+}
+
+:global(.dark) .progressItem {
+  background: #1f2937;
+  border-color: #404040;
+}
+
+:global(.dark) .progressStatus.pending {
+  background: #374151;
+  color: #9ca3af;
+}
+
+:global(.dark) .progressStatus.running {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
+
+:global(.dark) .progressStatus.success {
+  background: #065f46;
+  color: #d1fae5;
+}
+
+:global(.dark) .progressStatus.error {
+  background: #991b1b;
+  color: #fee2e2;
+}

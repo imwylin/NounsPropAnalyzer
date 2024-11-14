@@ -17,6 +17,12 @@ interface AnalysisResultWithMeta extends AIAnalysisResult {
   timestamp: string
 }
 
+interface AnalysisStatus {
+  attempt: number;
+  state: 'pending' | 'running' | 'success' | 'error';
+  error?: string;
+}
+
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
@@ -25,6 +31,7 @@ export default function AnalyzePage() {
   const [errorDetails, setErrorDetails] = useState<{ field: string; received?: string; expected?: string[] } | null>(null)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true)
   const [useAlternatePrompt, setUseAlternatePrompt] = useState(false)
+  const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus[]>([])
   
   const { 
     data: description,
@@ -37,16 +44,24 @@ export default function AnalyzePage() {
     setIsAnalyzing(true)
     setAnalysisError(null)
     setErrorDetails(null)
+    setAnalysisStatus([
+      { attempt: 1, state: 'pending' },
+      { attempt: 2, state: 'pending' }
+    ])
 
     try {
       const results: AnalysisResult[] = []
       for (let i = 0; i < 2; i++) {
         try {
+          setAnalysisStatus(prev => prev.map((status, idx) => 
+            idx === i ? { ...status, state: 'running' } : status
+          ))
+
           if (i > 0) {
             await new Promise(resolve => setTimeout(resolve, 10000))
           }
           
-          const aiResult = await analyzeProposal(description)
+          const aiResult = await analyzeProposal(description, useAlternatePrompt)
           results.push({
             status: 'fulfilled',
             value: {
@@ -55,11 +70,23 @@ export default function AnalyzePage() {
               ...aiResult
             }
           })
+
+          setAnalysisStatus(prev => prev.map((status, idx) => 
+            idx === i ? { ...status, state: 'success' } : status
+          ))
         } catch (error) {
           results.push({
             status: 'rejected',
             reason: error instanceof Error ? error : new Error('Unknown error')
           })
+
+          setAnalysisStatus(prev => prev.map((status, idx) => 
+            idx === i ? { 
+              ...status, 
+              state: 'error',
+              error: error instanceof Error ? error.message : 'Unknown error'
+            } : status
+          ))
         }
       }
       
@@ -132,6 +159,36 @@ export default function AnalyzePage() {
     URL.revokeObjectURL(url)
   }
 
+  const renderAnalysisProgress = () => {
+    if (!isAnalyzing && analysisStatus.length === 0) return null;
+
+    return (
+      <div className={styles.progressSection}>
+        <h3 className={styles.progressTitle}>Analysis Progress</h3>
+        <div className={styles.progressContainer}>
+          {analysisStatus.map((status, index) => (
+            <div key={index} className={styles.progressItem}>
+              <div className={styles.progressHeader}>
+                <span>Analysis Attempt {status.attempt}</span>
+                <span className={`${styles.progressStatus} ${styles[status.state]}`}>
+                  {status.state === 'pending' && 'Waiting...'}
+                  {status.state === 'running' && 'Analyzing...'}
+                  {status.state === 'success' && 'Complete'}
+                  {status.state === 'error' && 'Failed'}
+                </span>
+              </div>
+              {status.error && (
+                <div className={styles.progressError}>
+                  Error: {status.error}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>501(c)(3) Compliance Analyzer</h1>
@@ -165,6 +222,8 @@ export default function AnalyzePage() {
           </span>
         </div>
       </div>
+
+      {renderAnalysisProgress()}
 
       {error && (
         <div className={styles.error}>
