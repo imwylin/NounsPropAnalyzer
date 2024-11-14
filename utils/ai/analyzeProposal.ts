@@ -1,6 +1,6 @@
 import type { AIAnalysisResult } from '../../types/graphql'
 
-export async function analyzeProposal(description: string, useAlternatePrompt: boolean = false): Promise<AIAnalysisResult> {
+export async function analyzeProposal(description: string, promptVersion: number = 1): Promise<AIAnalysisResult> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 120000) // Increased to 120 seconds
 
@@ -10,7 +10,7 @@ export async function analyzeProposal(description: string, useAlternatePrompt: b
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ description, useAlternatePrompt }),
+      body: JSON.stringify({ description, promptVersion }),
       signal: controller.signal
     })
 

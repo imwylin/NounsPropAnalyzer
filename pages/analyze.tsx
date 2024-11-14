@@ -30,7 +30,7 @@ export default function AnalyzePage() {
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [errorDetails, setErrorDetails] = useState<{ field: string; received?: string; expected?: string[] } | null>(null)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true)
-  const [useAlternatePrompt, setUseAlternatePrompt] = useState(false)
+  const [selectedPrompt, setSelectedPrompt] = useState<number>(1)
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus[]>([])
   
   const { 
@@ -61,7 +61,7 @@ export default function AnalyzePage() {
             await new Promise(resolve => setTimeout(resolve, 10000))
           }
           
-          const aiResult = await analyzeProposal(description, useAlternatePrompt)
+          const aiResult = await analyzeProposal(description, selectedPrompt)
           results.push({
             status: 'fulfilled',
             value: {
@@ -208,18 +208,16 @@ export default function AnalyzePage() {
         >
           {isLoading ? 'Loading...' : isAnalyzing ? 'Analyzing...' : 'Analyze Compliance'}
         </button>
-        <div className={styles.promptToggle}>
-          <label className={styles.switch}>
-            <input
-              type="checkbox"
-              checked={useAlternatePrompt}
-              onChange={(e) => setUseAlternatePrompt(e.target.checked)}
-            />
-            <span className={styles.slider}></span>
-          </label>
-          <span className={styles.toggleLabel}>
-            {useAlternatePrompt ? 'Prompt 2' : 'Prompt 1'}
-          </span>
+        <div className={styles.promptSelect}>
+          <select
+            value={selectedPrompt}
+            onChange={(e) => setSelectedPrompt(Number(e.target.value))}
+            className={styles.select}
+          >
+            <option value={1}>Moderate Analysis</option>
+            <option value={2}>Hawkish Analysis</option>
+            <option value={3}>Innovative Analysis</option>
+          </select>
         </div>
       </div>
 

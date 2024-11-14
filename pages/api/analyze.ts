@@ -7,6 +7,7 @@ import type {
 } from '../../types/graphql'
 import systemPrompt from '../../AIPrompts/systemprompt.json'
 import systemPrompt2 from '../../AIPrompts/systemprompt2.json'
+import systemPrompt3 from '../../AIPrompts/systemprompt3.json'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -27,8 +28,18 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { description, useAlternatePrompt } = req.body
-  const selectedPrompt = useAlternatePrompt ? systemPrompt2 : systemPrompt
+  const { description, promptVersion } = req.body
+  const getSelectedPrompt = (version: number) => {
+    switch (version) {
+      case 2:
+        return systemPrompt2
+      case 3:
+        return systemPrompt3
+      default:
+        return systemPrompt
+    }
+  }
+  const selectedPrompt = getSelectedPrompt(promptVersion)
 
   if (!description) {
     return res.status(400).json({ error: 'Description is required' })

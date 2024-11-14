@@ -1,0 +1,103 @@
+{
+    "prompt_purpose": "Nouns DAO 501c3 Proposal Analysis - Progressive Interpretation",
+    "output_format": {
+      "structure": {
+        "start_marker": "ANALYSIS:::START",
+        "end_marker": "ANALYSIS:::END",
+        "required_fields": {
+          "classification": {
+            "type": "enum",
+            "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"]
+          },
+          "primary_purpose": {
+            "type": "string",
+            "format": "single sentence"
+          },
+          "allowable_elements": {
+            "type": "array",
+            "items": "string"
+          },
+          "unallowable_elements": {
+            "type": "array",
+            "items": "string"
+          },
+          "required_modifications": {
+            "type": "array",
+            "items": "string"
+          },
+          "risk_assessment": {
+            "private_benefit_risk": {
+              "type": "enum",
+              "values": ["LOW", "MEDIUM", "HIGH"]
+            },
+            "mission_alignment": {
+              "type": "enum",
+              "values": ["STRONG", "MODERATE", "WEAK"]
+            },
+            "implementation_complexity": {
+              "type": "enum",
+              "values": ["LOW", "MEDIUM", "HIGH"]
+            }
+          },
+          "key_considerations": {
+            "type": "array",
+            "items": "string"
+          }
+        }
+      }
+    },
+    "evaluation_context": {
+      "organization_structure": {
+        "revenue_sources": [
+          "Daily NFT auctions (digital art)",
+          "Donations",
+          "Community initiatives",
+          "Technology licensing",
+          "Educational programs",
+          "Collaborative projects"
+        ],
+        "mission_statement": "The Nouns Foundation's mission is to pioneer innovative approaches to civic engagement through decentralized democracy, catalyze breakthrough developments in public goods technologies and decentralized research, nurture creative expression and artistic innovation, and transform communities through technology-enabled direct impact initiatives.",
+        "ip_strategy": "Progressive CC0 and open-source approach with selective licensing for sustainability",
+        "governance": "Hybrid blockchain-traditional democratic system",
+        "compliance": "Modern interpretation of crypto-native operations",
+        "payments": "Flexible cryptocurrency and traditional payment systems"
+      },
+      "analysis_guidelines": [
+        "Embrace innovative interpretations of charitable purpose",
+        "Consider technological advancement as public benefit",
+        "Evaluate community benefit through modern lens",
+        "Balance traditional compliance with innovation",
+        "Recognize evolving nature of public goods",
+        "Accept reasonable private benefit in service of innovation",
+        "Focus on transformative potential",
+        "Value experimental approaches",
+        "Consider indirect public benefits",
+        "Emphasize long-term impact over short-term concerns"
+      ],
+      "classification_criteria": {
+        "CHARITABLE": "Activities advancing public benefit through innovation",
+        "OPERATIONAL": "Essential infrastructure and ecosystem development",
+        "MARKETING": "Community building and public engagement",
+        "PROGRAM_RELATED": "Experimental initiatives advancing mission",
+        "UNALLOWABLE": "Activities primarily serving private interests"
+      },
+      "risk_evaluation_framework": {
+        "private_benefit_risk": {
+          "LOW": "Acceptable private benefit in service of innovation",
+          "MEDIUM": "Managed private benefit with public good potential",
+          "HIGH": "Disproportionate private benefit without justification"
+        },
+        "mission_alignment": {
+          "STRONG": "Advances mission through innovative approaches",
+          "MODERATE": "Supports ecosystem development",
+          "WEAK": "Limited connection to innovative public benefit"
+        },
+        "implementation_complexity": {
+          "LOW": "Standard implementation patterns",
+          "MEDIUM": "Innovative but manageable approach",
+          "HIGH": "Complex but potentially transformative"
+        }
+      }
+    },
+    "disclaimer": "This analysis represents a progressive interpretation of 501c3 compatibility and is not legal advice."
+}
