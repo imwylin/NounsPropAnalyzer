@@ -182,6 +182,29 @@ function processTransaction(
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const apiKey = process.env.MORALIS_API_KEY;
+  const clientApiKey = req.headers['x-api-key'];
+
+  if (!clientApiKey) {
+    return res.status(400).json({
+      error: 'Authentication failed',
+      details: {
+        field: 'x-api-key',
+        message: 'API key is required'
+      }
+    });
+  }
+
+  if (clientApiKey !== apiKey) {
+    return res.status(401).json({
+      error: 'Unauthorized',
+      details: {
+        field: 'x-api-key',
+        message: 'Invalid API key'
+      }
+    });
+  }
+
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
