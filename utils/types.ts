@@ -1,16 +1,35 @@
-export interface TokenBalance {
+export interface MoralisBalance {
   token_address: string;
   symbol: string;
   name: string;
   logo: string | null;
-  decimals: number;
+  decimals: string;
   balance: string;
   balance_formatted: string;
-  usd_price: number | null;
-  usd_value: number | null;
   possible_spam: boolean;
   verified_contract: boolean;
   native_token: boolean;
+  token_price?: {
+    usd_price?: string;
+    native_price?: string;
+  };
+}
+
+export interface EvmTokenBalanceWithPrice {
+  token_address: string;
+  symbol: string;
+  name: string;
+  logo: string | null;
+  decimals: string;
+  balance: string;
+  balance_formatted: string;
+  possible_spam: boolean;
+  verified_contract: boolean;
+  native_token: boolean;
+  token_price: {
+    usd_price: string;
+    native_price: string;
+  };
 }
 
 export interface NativeTransfer {
@@ -61,4 +80,50 @@ export interface ProcessedTransaction extends Transaction {
   description: string;
   source: string;
   value: string;
+}
+
+export interface MoralisTokenBalance {
+  token_address: string;
+  symbol: string;
+  name: string;
+  logo: string | null;
+  decimals: string;
+  balance: string;
+  balance_formatted: string;
+  possible_spam: boolean;
+  verified_contract: boolean;
+  native_token: boolean;
+  usd_price?: string;
+}
+
+export interface TokenBalance {
+  token_address: string;
+  symbol: string;
+  name: string;
+  logo: string | null;
+  decimals: number;
+  balance: string;
+  balance_formatted: string;
+  usd_price: number | null;
+  usd_value: number | null;
+  possible_spam: boolean;
+  verified_contract: boolean;
+  native_token: boolean;
+}
+
+export interface MoralisTokenBalanceResponse {
+  token_address: string;
+  symbol: string;
+  name: string;
+  logo: string | null;
+  decimals: string;
+  balance: string;
+  balance_formatted: string;
+  possible_spam: boolean;
+  verified_contract: boolean;
+  native_token: boolean;
+  token_price?: {
+    usd_price?: string;
+    native_price?: string;
+  };
 } 

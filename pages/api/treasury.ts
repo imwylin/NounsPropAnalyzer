@@ -21,55 +21,97 @@ function getContractDetails(address: string): string {
   return KNOWN_CONTRACTS[address.toLowerCase()] || 'Unknown Contract';
 }
 
-interface Transaction {
-  hash: string;
-  from_address: string;
-  to_address: string;
-  block_timestamp: string;
-  value: string;
-  native_transfers?: {
-    from_address: string;
-    to_address: string;
-    value: string;
-    value_formatted: string;
-  }[];
-  nft_transfers?: {
-    token_address: string;
-    token_id: string;
-    from_address: string;
-    to_address: string;
-  }[];
-  erc20_transfers?: {
-    token_address: string;
-    token_symbol: string;
-    value: string;
-    value_formatted: string;
-    from_address: string;
-  }[];
-}
+// Remove or comment out the unused Transaction import
+// import { Transaction } from '@prisma/client'  // Remove this line if not needed
 
-interface NFTTransfer {
+interface MoralisNFTTransfer {
   token_address: string;
   token_id: string;
-  from_address: string | undefined;
-  to_address: string | undefined;
+  from_address: string;
+  to_address: string;
   amount: string;
   contract_type: string;
   block_timestamp: string;
   transaction_hash: string;
 }
 
-interface MoralisResponse {
-  result: NFTTransfer[];
+interface MoralisNativeTransfer {
+  from_address: string;
+  to_address: string;
+  value: string;
+  value_formatted: string;
 }
 
-function processTransaction(tx: any, type: 'auction' | 'treasury' | 'tokenBuyer') {
-  const isNounsTransfer = tx.nft_transfers?.some((transfer: any) => 
-    transfer.token_address.toLowerCase() === NOUNS_TOKEN_ADDRESS.toLowerCase()
-  );
+interface MoralisERC20Transfer {
+  token_address: string;
+  token_symbol: string;
+  from_address: string;
+  to_address: string;
+  value: string;
+  value_formatted: string;
+}
 
-  const hasEthTransfer = tx.native_transfers && tx.native_transfers.length > 0;
-  const hasErc20Transfer = tx.erc20_transfers && tx.erc20_transfers.length > 0;
+interface ProcessedTransaction {
+  hash: string;
+  from_address: string;
+  to_address?: string;
+  block_timestamp: string;
+  nft_transfers?: MoralisNFTTransfer[];
+  native_transfers?: MoralisNativeTransfer[];
+  erc20_transfers?: MoralisERC20Transfer[];
+  type: 'auction' | 'treasury' | 'tokenBuyer';
+  category: string;
+  description: string;
+  source: string;
+  contractDetails: string;
+  isAuctionSettlement: boolean;
+  direction: string;
+}
+
+// Add MoralisResponse interface
+interface MoralisResponse {
+  result: {
+    token_address: string;
+    token_id: string;
+    from_address: string | undefined;
+    to_address: string | undefined;
+    amount: string;
+    contract_type: string;
+    block_timestamp: string;
+    transaction_hash: string;
+  }[];
+}
+
+// Add this function before processTransaction
+function processRawTransaction(tx: any): Partial<ProcessedTransaction> {
+  return {
+    hash: tx.hash,
+    from_address: tx.from_address || '',
+    to_address: tx.to_address,
+    block_timestamp: tx.block_timestamp,
+    nft_transfers: tx.nft_transfers,
+    native_transfers: tx.native_transfers,
+    erc20_transfers: tx.erc20_transfers,
+    type: 'treasury' as const,
+    category: '',
+    description: '',
+    source: 'treasury',
+    contractDetails: '',
+    isAuctionSettlement: false,
+    direction: ''
+  };
+}
+
+function processTransaction(
+  tx: any, // Use any temporarily for the input since Moralis types are complex
+  type: 'auction' | 'treasury' | 'tokenBuyer'
+): ProcessedTransaction {
+  const isNounsTransfer = tx.nft_transfers?.some((transfer: MoralisNFTTransfer) => 
+    transfer.token_address.toLowerCase() === NOUNS_TOKEN_ADDRESS.toLowerCase()
+  ) ?? false;
+
+  const hasEthTransfer = Array.isArray(tx.native_transfers) && tx.native_transfers.length > 0;
+  const hasErc20Transfer = Array.isArray(tx.erc20_transfers) && tx.erc20_transfers.length > 0;
   const ethAmount = hasEthTransfer ? tx.native_transfers[0].value_formatted : null;
 
   let category = 'Contract Interaction';
@@ -79,10 +121,10 @@ function processTransaction(tx: any, type: 'auction' | 'treasury' | 'tokenBuyer'
 
   // Determine direction for ETH and ERC-20 transfers
   if (type === 'treasury' && (hasEthTransfer || hasErc20Transfer)) {
-    if (hasEthTransfer) {
+    if (hasEthTransfer && tx.native_transfers?.[0]) {
       const fromTreasury = tx.native_transfers[0].from_address.toLowerCase() === TREASURY_ADDRESS.toLowerCase();
       direction = fromTreasury ? 'Outbound' : 'Inbound';
-    } else if (hasErc20Transfer) {
+    } else if (hasErc20Transfer && tx.erc20_transfers?.[0]) {
       const fromTreasury = tx.erc20_transfers[0].from_address.toLowerCase() === TREASURY_ADDRESS.toLowerCase();
       direction = fromTreasury ? 'Outbound' : 'Inbound';
     }
@@ -97,15 +139,15 @@ function processTransaction(tx: any, type: 'auction' | 'treasury' | 'tokenBuyer'
   }
 
   // Categorize transaction
-  if (isNounsTransfer) {
-    const nftTransfer = tx.nft_transfers.find((t: any) => 
+  if (isNounsTransfer && tx.nft_transfers) {
+    const nftTransfer = tx.nft_transfers.find((t: MoralisNFTTransfer) => 
       t.token_address.toLowerCase() === NOUNS_TOKEN_ADDRESS.toLowerCase()
     );
     
-    if (nftTransfer.to_address.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase()) {
+    if (nftTransfer?.to_address?.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase()) {
       category = 'NFT Transfer';
       description = `Noun #${nftTransfer.token_id} Transfer`;
-    } else {
+    } else if (nftTransfer) {
       category = 'NFT Transfer';
       description = `Noun #${nftTransfer.token_id} Transfer`;
     }
@@ -115,17 +157,20 @@ function processTransaction(tx: any, type: 'auction' | 'treasury' | 'tokenBuyer'
   } else if (hasEthTransfer) {
     category = 'ETH Transfer';
     description = `${ethAmount} ETH`;
-  } else if (hasErc20Transfer) {
+  } else if (hasErc20Transfer && tx.erc20_transfers?.[0]) {
     const erc20Transfer = tx.erc20_transfers[0];
     category = 'Token Transfer';
     description = `${erc20Transfer.value_formatted} ${erc20Transfer.token_symbol}`;
-  } else {
-    category = 'Contract Interaction';
-    description = `Interaction with ${contractDetails}`;
   }
 
   return {
-    ...tx,
+    hash: tx.hash,
+    from_address: tx.from_address,
+    to_address: tx.to_address,
+    block_timestamp: tx.block_timestamp,
+    nft_transfers: tx.nft_transfers,
+    native_transfers: tx.native_transfers,
+    erc20_transfers: tx.erc20_transfers,
     type,
     category,
     description,
@@ -190,25 +235,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Process NFT transfers from Auction House
     const nftTransfers = (nftTransfersResponse.toJSON() as MoralisResponse).result
-      .filter(transfer => 
+      .filter((transfer: MoralisResponse['result'][0]) => 
         transfer.token_address?.toLowerCase() === NOUNS_TOKEN_ADDRESS.toLowerCase() &&
         transfer.from_address?.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase()
       )
-      .map(transfer => ({
+      .map((transfer: MoralisResponse['result'][0]) => ({
         hash: transfer.transaction_hash,
         block_timestamp: transfer.block_timestamp,
         from_address: transfer.from_address || '',
         to_address: transfer.to_address || '',
-        type: 'auction',
+        type: 'auction' as const,
         category: 'NFT Transfer',
         description: `Noun #${transfer.token_id} Transfer`,
         source: 'auction'
       }));
 
     // Process transactions for each contract
-    const treasury = treasuryTxs.toJSON().result.map(tx => processTransaction(tx, 'treasury'));
-    const auction = auctionTxs.toJSON().result.map(tx => processTransaction(tx, 'auction'));
-    const tokenBuyer = tokenBuyerTxs.toJSON().result.map(tx => processTransaction(tx, 'tokenBuyer'));
+    const treasury = treasuryTxs.toJSON().result.map(tx => 
+      processTransaction(processRawTransaction(tx), 'treasury')
+    );
+
+    const auction = auctionTxs.toJSON().result.map(tx => 
+      processTransaction(processRawTransaction(tx), 'auction')
+    );
+
+    const tokenBuyer = tokenBuyerTxs.toJSON().result.map(tx => 
+      processTransaction(processRawTransaction(tx), 'tokenBuyer')
+    );
 
     // Combine all transactions
     const allTransactions = [...treasury, ...auction, ...tokenBuyer, ...nftTransfers].sort((a, b) => 

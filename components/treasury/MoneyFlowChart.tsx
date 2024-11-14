@@ -1,9 +1,10 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { calculateMoneyFlow } from '../../utils/treasury';
 import styles from './MoneyFlowChart.module.css';
+import { Transaction } from '../../utils/types';
 
 interface MoneyFlowChartProps {
-  transactions: any[];
+  transactions: Transaction[];
 }
 
 const monthNames = [

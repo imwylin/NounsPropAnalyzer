@@ -3,10 +3,33 @@ import Moralis from 'moralis';
 import { ADDRESSES } from '../../../utils/contracts';
 import { processTransaction } from '../../../utils/transactions';
 import type { Transaction, TokenBalance } from '../../../utils/types';
+import type { EvmErc20TokenBalanceWithPriceJSON } from 'moralis/common-evm-utils';
 
 interface DAOResponse {
   balances: TokenBalance[];
   transactions: Transaction[];
+}
+
+interface TransactionData {
+  hash: string;
+  // Add other relevant fields based on what data you're actually using
+}
+
+interface MoralisTokenBalance {
+  token_address: string;
+  symbol: string;
+  name: string;
+  logo: string | null;
+  decimals: string;
+  balance: string;
+  balance_formatted: string;
+  possible_spam: boolean;
+  verified_contract: boolean;
+  native_token: boolean;
+  price?: {
+    usd_price?: string;
+    native_price?: string;
+  };
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<DAOResponse | { error: string }>) {
@@ -59,22 +82,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     // Process balances with safe fallbacks
     const balances = balancesResponse.toJSON().result || [];
-    const processedBalances: TokenBalance[] = balances.map((balance: any) => ({
-      token_address: balance.token_address || '',
-      symbol: balance.symbol || '',
-      name: balance.name || '',
-      logo: balance.logo || null,
-      decimals: parseInt(balance.decimals || '0'),
-      balance: balance.balance || '0',
-      balance_formatted: balance.balance_formatted || '0',
-      usd_price: balance.usd_price ? parseFloat(balance.usd_price) : null,
-      usd_value: balance.usd_price && balance.balance_formatted ? 
-        parseFloat(balance.balance_formatted) * parseFloat(balance.usd_price) : 
-        null,
-      possible_spam: balance.possible_spam || false,
-      verified_contract: balance.verified_contract || false,
-      native_token: balance.native_token || false
-    }));
+    const processedBalances: TokenBalance[] = balances.map((balance: any) => {
+      // First safely extract all values with proper type checking
+      const tokenAddress = typeof balance.token_address === 'string' ? balance.token_address : '';
+      const symbol = typeof balance.symbol === 'string' ? balance.symbol : '';
+      const name = typeof balance.name === 'string' ? balance.name : '';
+      const logo = balance.logo || null;
+      const decimals = typeof balance.decimals === 'string' ? parseInt(balance.decimals, 10) : 0;
+      const rawBalance = typeof balance.balance === 'string' ? balance.balance : '0';
+      const formattedBalance = typeof balance.balance_formatted === 'string' ? balance.balance_formatted : '0';
+      
+      // Handle price data safely
+      const usdPrice = balance.price?.usd_price ? parseFloat(balance.price.usd_price) : null;
+      const usdValue = usdPrice && formattedBalance ? parseFloat(formattedBalance) * usdPrice : null;
+
+      // Handle boolean flags safely
+      const possibleSpam = typeof balance.possible_spam === 'boolean' ? balance.possible_spam : false;
+      const verifiedContract = typeof balance.verified_contract === 'boolean' ? balance.verified_contract : false;
+      const nativeToken = typeof balance.native_token === 'boolean' ? balance.native_token : false;
+
+      return {
+        token_address: tokenAddress,
+        symbol,
+        name,
+        logo,
+        decimals,
+        balance: rawBalance,
+        balance_formatted: formattedBalance,
+        usd_price: usdPrice,
+        usd_value: usdValue,
+        possible_spam: possibleSpam,
+        verified_contract: verifiedContract,
+        native_token: nativeToken
+      };
+    });
 
     // Process transactions
     const transactions = transactionsResponse.toJSON().result;

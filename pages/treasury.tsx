@@ -39,16 +39,11 @@ interface Transaction {
 }
 
 // Constants for addresses
-const TREASURY_ADDRESS = '0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71';
+// const TREASURY_ADDRESS = '0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71';
 const AUCTION_HOUSE_ADDRESS = '0x830BD73E4184ceF73443C15111a1DF14e495C706';
 
 // Update the feedsContainer style
-const feedsContainer = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr 1fr',  // Four equal columns
-  gap: '1rem',
-  marginTop: '2rem'
-};
+// const feedsContainer = { ... }
 
 const formatAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -430,7 +425,7 @@ export default function Treasury() {
             )}
           </section>
 
-          <section>
+          <section className={styles.feedsContainer}>
             <FeedRow 
               title="Auction Activity" 
               transactions={auctionTransactions} 
