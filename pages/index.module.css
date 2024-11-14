@@ -3,115 +3,169 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 3rem 0;
 }
 
 .title {
   font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.section {
-  margin-bottom: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
 }
 
 .subtitle {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  color: #333;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  color: #555;
-}
-
-.features {
+/* Tools Section */
+.tools {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
-  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 800px;
 }
 
-.feature {
-  padding: 1.5rem;
-  border-radius: 8px;
-  background: #f8f8f8;
-  transition: transform 0.2s;
+.tool {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.feature:hover {
-  transform: translateY(-5px);
+.tool:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
 }
 
-.feature h3 {
-  font-size: 1.4rem;
+.tool h2 {
+  font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
-.feature p {
-  margin-bottom: 1.5rem;
-  color: #666;
+.description {
+  color: var(--text-secondary);
 }
 
-.featureList {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  font-size: 1.1rem;
+.description p {
+  margin-bottom: 1rem;
   line-height: 1.6;
 }
 
-.featureList li {
-  margin-bottom: 0.8rem;
-  color: #555;
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.primaryButton {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background: #f3322c;
-  color: white;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: opacity 0.2s;
+.features span {
+  background: var(--hover-bg);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
-.primaryButton:hover {
-  opacity: 0.9;
+/* Documentation Section */
+.documentation {
+  margin: 3rem 0;
 }
 
-/* Dark mode styles */
-:global(.dark) .container {
-  background: #1a1a1a;
-  color: #e5e7eb;
+.documentation h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
 }
 
-:global(.dark) .subtitle {
-  color: #e5e7eb;
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
-:global(.dark) .description,
-:global(.dark) .feature p {
-  color: #9ca3af;
+.note {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
 }
 
-:global(.dark) .feature {
-  background: #2a2a2a;
+.note h3 {
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
 }
 
-:global(.dark) .feature h3 {
-  color: #e5e7eb;
+.note p {
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
-:global(.dark) .featureList li {
-  color: #9ca3af;
+/* Dark Mode Adjustments */
+:global(.dark) .toolList li::before {
+  color: #4a5d5b;  /* Deep teal */
 }
 
-:global(.dark) .primaryButton {
-  color: white;
+:global(.dark) .toolLink {
+  background: #4a5d5b;  /* Deep teal */
+  border-color: #3b4a48;
+}
+
+:global(.dark) .toolLink:hover {
+  background: #3b4a48;  /* Darker on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .hero {
+    padding: 2rem 0;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .tool, .note {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .toolLink {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .tool {
+    padding: 1.5rem;
+  }
 } 
