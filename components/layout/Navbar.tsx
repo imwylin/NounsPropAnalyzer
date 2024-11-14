@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import styles from './Navbar.module.css'
 
 export function Navbar() {
+  console.log('Navbar rendering');
+
   const [isDarkMode, setIsDarkMode] = useState(false)
 
   useEffect(() => {
@@ -26,6 +28,8 @@ export function Navbar() {
           alt="Home" 
           width={32} 
           height={32}
+          priority={true}
+          unoptimized={true}
         />
       </Link>
       <div className={styles.links}>

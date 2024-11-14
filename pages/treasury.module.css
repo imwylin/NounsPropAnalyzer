@@ -64,10 +64,15 @@
   margin-bottom: 0.5rem;
 }
 
-.tokenLogo {
+.tokenLogoWrapper {
+  position: relative;
   width: 24px;
   height: 24px;
+}
+
+.tokenLogo {
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .nativeToken {

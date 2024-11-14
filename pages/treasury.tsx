@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import styles from './treasury.module.css';
-import Layout from '../components/layout/Layout';
 
 interface TokenBalance {
   token_address: string;
@@ -37,6 +37,33 @@ interface Transaction {
   summary: string;
 }
 
+// Add interfaces for the API response
+interface TokenBalanceResponse {
+  token_address: string;
+  symbol: string;
+  name: string;
+  logo: string | null;
+  decimals: number;
+  balance: string;
+  balance_formatted: string;
+  usd_price: number | null;
+  usd_value: number | null;
+  possible_spam: boolean;
+  verified_contract: boolean;
+  native_token: boolean;
+}
+
+interface TransactionResponse {
+  hash: string;
+  from_address: string;
+  to_address: string;
+  block_timestamp: string;
+  value: string;
+  native_transfers: NativeTransfer[];
+  category: string;
+  summary: string;
+}
+
 export default function Treasury() {
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -53,8 +80,8 @@ export default function Treasury() {
 
         // Map the response to our TokenBalance interface
         const validTokens = data.balances
-          .filter((token: any) => !token.possible_spam || token.verified_contract)
-          .map((token: any) => ({
+          .filter((token: TokenBalanceResponse) => !token.possible_spam || token.verified_contract)
+          .map((token: TokenBalanceResponse) => ({
             token_address: token.token_address,
             symbol: token.symbol,
             name: token.name,
@@ -72,7 +99,7 @@ export default function Treasury() {
         setTokenBalances(validTokens);
 
         // Map the response to our Transaction interface
-        const mappedTransactions = data.transactions.map((tx: any) => ({
+        const mappedTransactions = data.transactions.map((tx: TransactionResponse) => ({
           hash: tx.hash,
           from_address: tx.from_address,
           to_address: tx.to_address,
@@ -95,53 +122,68 @@ export default function Treasury() {
     fetchData();
   }, []);
 
-  if (isLoading) return <Layout><div>Loading...</div></Layout>;
-  if (error) return <Layout><div>Error: {error}</div></Layout>;
-
   return (
-    <Layout>
-      <div className={styles.container}>
-        <h1>Nouns DAO Treasury Analysis</h1>
-        
-        <section className={styles.balances}>
-          <h2>Token Balances</h2>
-          <div className={styles.balanceGrid}>
-            {tokenBalances.map((token) => (
-              <div key={token.token_address} className={styles.balanceCard}>
-                <div className={styles.tokenHeader}>
-                  {token.logo && <img src={token.logo} alt={token.symbol} className={styles.tokenLogo} />}
-                  <h3>{token.name} ({token.symbol})</h3>
-                </div>
-                <p>Balance: {token.balance_formatted}</p>
-                {token.usd_value && (
-                  <p>Value: ${token.usd_value.toLocaleString()}</p>
-                )}
-                {token.native_token && <span className={styles.nativeToken}>Native Token</span>}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.transactions}>
-          <h2>Recent Transactions</h2>
-          <div className={styles.transactionList}>
-            {transactions.map((tx) => (
-              <div key={tx.hash} className={styles.transactionCard}>
-                <h3>{tx.summary}</h3>
-                <p>Category: {tx.category}</p>
-                <p>Hash: {tx.hash}</p>
-                <p>Time: {new Date(tx.block_timestamp).toLocaleString()}</p>
-                {tx.native_transfers.map((transfer, index) => (
-                  <div key={index} className={styles.transferInfo}>
-                    <p>{transfer.direction === 'send' ? 'Sent' : 'Received'}: {transfer.value_formatted} {transfer.token_symbol}</p>
-                    <p>{transfer.direction === 'send' ? 'To' : 'From'}: {transfer.direction === 'send' ? transfer.to_address : transfer.from_address}</p>
+    <div className={styles.container}>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>Error: {error}</div>
+      ) : (
+        <>
+          <h1>Nouns DAO Treasury Analysis</h1>
+          
+          <section className={styles.balances}>
+            <h2>Token Balances</h2>
+            <div className={styles.balanceGrid}>
+              {tokenBalances.map((token) => (
+                <div key={token.token_address} className={styles.balanceCard}>
+                  <div className={styles.tokenHeader}>
+                    {token.logo && (
+                      <div className={styles.tokenLogoWrapper}>
+                        <Image 
+                          src={token.logo} 
+                          alt={token.symbol}
+                          width={24}
+                          height={24}
+                          className={styles.tokenLogo}
+                          unoptimized={true}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <h3>{token.name} ({token.symbol})</h3>
                   </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </Layout>
+                  <p>Balance: {token.balance_formatted}</p>
+                  {token.usd_value && (
+                    <p>Value: ${token.usd_value.toLocaleString()}</p>
+                  )}
+                  {token.native_token && <span className={styles.nativeToken}>Native Token</span>}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.transactions}>
+            <h2>Recent Transactions</h2>
+            <div className={styles.transactionList}>
+              {transactions.map((tx) => (
+                <div key={tx.hash} className={styles.transactionCard}>
+                  <h3>{tx.summary}</h3>
+                  <p>Category: {tx.category}</p>
+                  <p>Hash: {tx.hash}</p>
+                  <p>Time: {new Date(tx.block_timestamp).toLocaleString()}</p>
+                  {tx.native_transfers.map((transfer, index) => (
+                    <div key={index} className={styles.transferInfo}>
+                      <p>{transfer.direction === 'send' ? 'Sent' : 'Received'}: {transfer.value_formatted} {transfer.token_symbol}</p>
+                      <p>{transfer.direction === 'send' ? 'To' : 'From'}: {transfer.direction === 'send' ? transfer.to_address : transfer.from_address}</p>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+    </div>
   );
 } 
