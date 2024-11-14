@@ -80,22 +80,13 @@ ${selectedPrompt.disclaimer}`
     console.log('Raw AI response:', content)
     
     // First try exact format
-    let analysisMatch = content.match(/ANALYSIS:::START\n?([\s\S]*?)\n?ANALYSIS:::END/)
-    
-    // If exact format fails, try to extract any structured content
+    const analysisMatch = content.match(/ANALYSIS:::START\n([\s\S]*)\nANALYSIS:::END/)
     if (!analysisMatch) {
-      analysisMatch = content.match(/CLASSIFICATION:[\s\S]*KEY_CONSIDERATIONS:/m)
-      if (!analysisMatch) {
-        throw {
-          field: 'format',
-          message: 'Could not extract analysis structure',
-          received: content.slice(0, 100) + '...'
-        }
-      }
+      throw new Error('Failed to parse analysis response')
     }
     
-    const analysis = analysisMatch[1]?.trim() || analysisMatch[0].trim()
-
+    const analysis = analysisMatch[1]
+    
     // Helper function with more flexible pattern matching
     const extractList = (text: string, section: string) => {
       // Try multiple list formats

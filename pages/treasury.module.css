@@ -8,6 +8,16 @@
   margin: 2rem 0;
 }
 
+.pageTitle,
+.sectionTitle {
+  color: #333;
+}
+
+:global(.dark) .pageTitle,
+:global(.dark) .sectionTitle {
+  color: #fff;
+}
+
 .balanceGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -20,6 +30,12 @@
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+:global(.dark) .balanceCard {
+  background: #2d2d2d;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .transactionList {
@@ -36,14 +52,28 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.transactionCard h3 {
+:global(.dark) .transactionCard {
+  background: #2d2d2d;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.transactionTitle {
   margin: 0 0 1rem 0;
   color: #333;
 }
 
-.transactionCard p {
+:global(.dark) .transactionTitle {
+  color: #fff;
+}
+
+.transactionText {
   margin: 0.5rem 0;
   color: #666;
+}
+
+:global(.dark) .transactionText {
+  color: #aaa;
 }
 
 .transferInfo {
@@ -51,6 +81,10 @@
   padding: 1rem;
   background: rgba(255,255,255,0.5);
   border-radius: 4px;
+}
+
+:global(.dark) .transferInfo {
+  background: rgba(255,255,255,0.1);
 }
 
 .transferInfo p {

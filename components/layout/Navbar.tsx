@@ -39,6 +39,9 @@ export function Navbar() {
         <Link href="/proposals" className={styles.link}>
           Proposals
         </Link>
+        <Link href="/treasury" className={styles.link}>
+          Treasury
+        </Link>
       </div>
       <button
         onClick={toggleDarkMode}

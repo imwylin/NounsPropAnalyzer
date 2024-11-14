@@ -7,6 +7,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    if (!process.env.MORALIS_API_KEY) {
+      throw new Error('MORALIS_API_KEY is not configured');
+    }
+
     await Moralis.start({
       apiKey: process.env.MORALIS_API_KEY
     });
@@ -30,8 +34,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       balances: balancesResponse.toJSON().result,
       transactions: txResponse.toJSON().result
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching treasury data' });
+  } catch (error: unknown) {
+    console.error('Treasury API Error:', error);
+    
+    // Type guard to handle different error types
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    
+    res.status(500).json({ 
+      message: 'Error fetching treasury data',
+      error: errorMessage 
+    });
   }
 } 

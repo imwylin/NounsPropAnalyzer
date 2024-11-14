@@ -130,10 +130,10 @@ export default function Treasury() {
         <div>Error: {error}</div>
       ) : (
         <>
-          <h1>Nouns DAO Treasury Analysis</h1>
+          <h1 className={styles.pageTitle}>Nouns DAO Treasury Analysis</h1>
           
           <section className={styles.balances}>
-            <h2>Token Balances</h2>
+            <h2 className={styles.sectionTitle}>Token Balances</h2>
             <div className={styles.balanceGrid}>
               {tokenBalances.map((token) => (
                 <div key={token.token_address} className={styles.balanceCard}>
@@ -164,14 +164,14 @@ export default function Treasury() {
           </section>
 
           <section className={styles.transactions}>
-            <h2>Recent Transactions</h2>
+            <h2 className={styles.sectionTitle}>Recent Transactions</h2>
             <div className={styles.transactionList}>
               {transactions.map((tx) => (
                 <div key={tx.hash} className={styles.transactionCard}>
-                  <h3>{tx.summary}</h3>
-                  <p>Category: {tx.category}</p>
-                  <p>Hash: {tx.hash}</p>
-                  <p>Time: {new Date(tx.block_timestamp).toLocaleString()}</p>
+                  <h3 className={styles.transactionTitle}>{tx.summary}</h3>
+                  <p className={styles.transactionText}>Category: {tx.category}</p>
+                  <p className={styles.transactionText}>Hash: {tx.hash}</p>
+                  <p className={styles.transactionText}>Time: {new Date(tx.block_timestamp).toLocaleString()}</p>
                   {tx.native_transfers.map((transfer, index) => (
                     <div key={index} className={styles.transferInfo}>
                       <p>{transfer.direction === 'send' ? 'Sent' : 'Received'}: {transfer.value_formatted} {transfer.token_symbol}</p>
