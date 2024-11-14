@@ -13,7 +13,8 @@ export default function HomePage() {
         <h2 className={styles.subtitle}>About This Interface</h2>
         <p className={styles.description}>
           An intelligent administrative interface powered by AI to help DAOs manage their operations
-          with enhanced efficiency and compliance. Built specifically for Nouns DAO to streamline
+          with enhanced efficiency and compliance.<br /><br />
+          Built specifically for Nouns DAO to streamline
           governance and ensure alignment with organizational objectives.
         </p>
       </section>
