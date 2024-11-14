@@ -21,9 +21,6 @@ export default function HomePage() {
         <Link href="/analyze" className={styles.primaryButton}>
           Start Analysis
         </Link>
-        <Link href="/proposals" className={styles.secondaryButton}>
-          View Proposals
-        </Link>
       </div>
     </div>
   )
