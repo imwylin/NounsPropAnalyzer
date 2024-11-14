@@ -39,6 +39,7 @@ const MarkdownComponents = {
           unoptimized
           onError={() => setIsError(true)}
           onLoad={() => setIsLoading(false)}
+          priority={false}
         />
         {isLoading && <div className={styles.imageLoader}>Loading...</div>}
       </div>
