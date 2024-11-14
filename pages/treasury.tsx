@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styles from './treasury.module.css';
+import { MoneyFlowChart } from '../components/treasury/MoneyFlowChart';
 
 interface TokenBalance {
   token_address: string;
@@ -17,103 +18,264 @@ interface TokenBalance {
   native_token: boolean;
 }
 
-interface NativeTransfer {
-  from_address: string;
-  to_address: string;
-  value: string;
-  value_formatted: string;
-  direction: 'send' | 'receive';
-  token_symbol: string;
-}
-
 interface Transaction {
   hash: string;
   from_address: string;
   to_address: string;
   block_timestamp: string;
   value: string;
-  native_transfers: NativeTransfer[];
+  type: 'auction' | 'treasury' | 'tokenBuyer' | 'usdcPayer';
   category: string;
-  summary: string;
+  description: string;
+  native_transfers?: {
+    from_address: string;
+    to_address: string;
+    value: string;
+    value_formatted: string;
+  }[];
+  isAuctionSettlement: boolean;
+  contractDetails: string;
+  direction: string;
 }
 
-// Add interfaces for the API response
-interface TokenBalanceResponse {
-  token_address: string;
-  symbol: string;
+// Constants for addresses
+const TREASURY_ADDRESS = '0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71';
+const AUCTION_HOUSE_ADDRESS = '0x830BD73E4184ceF73443C15111a1DF14e495C706';
+
+// Update the feedsContainer style
+const feedsContainer = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr 1fr 1fr',  // Four equal columns
+  gap: '1rem',
+  marginTop: '2rem'
+};
+
+const formatAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
+interface FeedRowProps {
+  title: string;
+  transactions: Transaction[];
+  balance?: React.ReactNode;
   name: string;
-  logo: string | null;
-  decimals: number;
-  balance: string;
-  balance_formatted: string;
-  usd_price: number | null;
-  usd_value: number | null;
-  possible_spam: boolean;
-  verified_contract: boolean;
-  native_token: boolean;
+  feedLoading: {[key: string]: boolean};
+  feedErrors: {[key: string]: string};
 }
 
-interface TransactionResponse {
-  hash: string;
-  from_address: string;
-  to_address: string;
-  block_timestamp: string;
-  value: string;
-  native_transfers: NativeTransfer[];
-  category: string;
-  summary: string;
-}
+const FeedRow = ({ title, transactions, balance, name, feedLoading, feedErrors }: FeedRowProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showOnlyWins, setShowOnlyWins] = useState(false);
+
+  // Filter transactions if showing only wins
+  const displayedTransactions = title === "Auction Activity" && showOnlyWins
+    ? transactions.filter(tx => 
+        tx.category === 'NFT Transfer' && 
+        tx.from_address.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase()
+      )
+    : transactions;
+
+  return (
+    <div className={styles.feedRow}>
+      <div 
+        className={styles.feedHeader} 
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span className={`${styles.expandIcon} ${isExpanded ? styles.expanded : ''}`}>
+            ▶
+          </span>
+          <h2 className={styles.feedTitle}>{title}</h2>
+        </div>
+        {title === "Auction Activity" && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowOnlyWins(!showOnlyWins);
+            }}
+            className={styles.filterButton}
+          >
+            {showOnlyWins ? 'Show All Activity' : 'Show Only Wins'}
+          </button>
+        )}
+      </div>
+      <div className={`${styles.feedContent} ${isExpanded ? styles.expanded : ''}`}>
+        {feedLoading[name] ? (
+          <div className={styles.loading}>Loading...</div>
+        ) : feedErrors[name] ? (
+          <div className={styles.error}>{feedErrors[name]}</div>
+        ) : (
+          <>
+            {balance}
+            <div className={styles.feed}>
+              <div className={styles.transactionList}>
+                {displayedTransactions.map((tx) => (
+                  <div key={tx.hash} className={styles.transactionCard}>
+                    {tx.category === 'Auction Bid' ? (
+                      // Auction Bid layout
+                      <>
+                        <h3 className={styles.transactionTitle}>{tx.description}</h3>
+                        <p className={styles.transactionText}>
+                          Time: {new Date(tx.block_timestamp).toLocaleString()}
+                        </p>
+                        <p className={styles.transactionText}>
+                          From: <span className={styles.address}>{formatAddress(tx.from_address)}</span>
+                        </p>
+                        <p className={styles.transactionText}>
+                          <a 
+                            href={`https://etherscan.io/tx/${tx.hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.txLink}
+                          >
+                            View on Etherscan ↗
+                          </a>
+                        </p>
+                      </>
+                    ) : tx.category === 'NFT Transfer' && tx.from_address.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase() ? (
+                      // NFT Transfer FROM auction house layout (Auction Win)
+                      <div className={styles.auctionWin}>
+                        <h3 className={styles.transactionTitle}>{tx.description}</h3>
+                        <p className={styles.transactionText}>Category: Auction Win</p>
+                        <p className={styles.transactionText}>
+                          From: <span className={styles.address}>{formatAddress(tx.from_address)}</span>
+                        </p>
+                        <p className={styles.transactionText}>
+                          To: <span className={styles.address}>{formatAddress(tx.to_address)}</span>
+                        </p>
+                        <p className={styles.transactionText}>
+                          Time: {new Date(tx.block_timestamp).toLocaleString()}
+                        </p>
+                        <p className={styles.transactionText}>
+                          <a 
+                            href={`https://etherscan.io/tx/${tx.hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.txLink}
+                          >
+                            View on Etherscan ↗
+                          </a>
+                        </p>
+                      </div>
+                    ) : (
+                      // Regular transaction layout
+                      <>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                          {tx.direction && (
+                            <span className={`${styles.direction} ${
+                              tx.direction === 'Outbound' ? styles.outbound : styles.inbound
+                            }`}>
+                              {tx.direction}
+                            </span>
+                          )}
+                          <h3 className={styles.transactionTitle}>{tx.description}</h3>
+                        </div>
+                        <p className={styles.transactionText}>Category: {tx.category}</p>
+                        {tx.contractDetails && tx.contractDetails !== 'Unknown Contract' && (
+                          <p className={styles.transactionText}>Contract: {tx.contractDetails}</p>
+                        )}
+                        <p className={styles.transactionText}>
+                          From: <span className={styles.address}>{formatAddress(tx.from_address)}</span>
+                        </p>
+                        <p className={styles.transactionText}>
+                          To: <span className={styles.address}>{formatAddress(tx.to_address)}</span>
+                        </p>
+                        <p className={styles.transactionText}>
+                          Time: {new Date(tx.block_timestamp).toLocaleString()}
+                        </p>
+                        <p className={styles.transactionText}>
+                          <a 
+                            href={`https://etherscan.io/tx/${tx.hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.txLink}
+                          >
+                            View on Etherscan ↗
+                          </a>
+                        </p>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default function Treasury() {
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAllTokens, setShowAllTokens] = useState(false);
+  const [tokenBuyerBalances, setTokenBuyerBalances] = useState<TokenBalance[]>([]);
+  const [usdcPayerBalances, setUsdcPayerBalances] = useState<TokenBalance[]>([]);
+  const [feedErrors, setFeedErrors] = useState<{[key: string]: string}>({});
+  const [feedLoading, setFeedLoading] = useState<{[key: string]: boolean}>({
+    dao: true,
+    auction: true,
+    tokenBuyer: true,
+    usdcPayer: true
+  });
+
+  const totalUsdValue = tokenBalances.reduce((sum, token) => {
+    return sum + (token.usd_value || 0);
+  }, 0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/treasury');
-        const data = await response.json();
+        // Fetch each feed separately to handle individual errors
+        const fetchFeed = async (endpoint: string, name: string) => {
+          try {
+            const response = await fetch(`/api/treasury/${endpoint}`);
+            const data = await response.json();
+            
+            if (!response.ok) throw new Error(data.error || 'Failed to fetch data');
+            
+            setFeedLoading(prev => ({ ...prev, [name]: false }));
+            return data;
+          } catch (error) {
+            console.error(`${name} feed error:`, error);
+            setFeedErrors(prev => ({ 
+              ...prev, 
+              [name]: error instanceof Error ? error.message : 'Failed to fetch data'
+            }));
+            setFeedLoading(prev => ({ ...prev, [name]: false }));
+            return null;
+          }
+        };
 
-        if (!response.ok) throw new Error(data.message);
+        const [daoData, auctionData, tokenBuyerData, usdcPayerData] = await Promise.all([
+          fetchFeed('dao', 'dao'),
+          fetchFeed('auction-house', 'auction'),
+          fetchFeed('token-buyer', 'tokenBuyer'),
+          fetchFeed('usdc-payer', 'usdcPayer')
+        ]);
 
-        // Map the response to our TokenBalance interface
-        const validTokens = data.balances
-          .filter((token: TokenBalanceResponse) => !token.possible_spam || token.verified_contract)
-          .map((token: TokenBalanceResponse) => ({
-            token_address: token.token_address,
-            symbol: token.symbol,
-            name: token.name,
-            logo: token.logo,
-            decimals: token.decimals,
-            balance: token.balance,
-            balance_formatted: token.balance_formatted,
-            usd_price: token.usd_price,
-            usd_value: token.usd_value,
-            possible_spam: token.possible_spam,
-            verified_contract: token.verified_contract,
-            native_token: token.native_token
-          }));
+        // Set balances if available
+        if (daoData) setTokenBalances(daoData.balances);
+        if (tokenBuyerData) setTokenBuyerBalances(tokenBuyerData.balances);
+        if (usdcPayerData) setUsdcPayerBalances(usdcPayerData.balances);
+        
+        // Combine all successful transactions
+        const allTransactions = [
+          ...(daoData?.transactions || []),
+          ...(auctionData?.transactions || []),
+          ...(tokenBuyerData?.transactions || []),
+          ...(usdcPayerData?.transactions || [])
+        ].sort((a, b) => 
+          new Date(b.block_timestamp).getTime() - new Date(a.block_timestamp).getTime()
+        );
 
-        setTokenBalances(validTokens);
-
-        // Map the response to our Transaction interface
-        const mappedTransactions = data.transactions.map((tx: TransactionResponse) => ({
-          hash: tx.hash,
-          from_address: tx.from_address,
-          to_address: tx.to_address,
-          block_timestamp: tx.block_timestamp,
-          value: tx.value,
-          native_transfers: tx.native_transfers || [],
-          category: tx.category,
-          summary: tx.summary
-        }));
-
-        setTransactions(mappedTransactions);
+        setTransactions(allTransactions);
         setIsLoading(false);
       } catch (e) {
-        console.error(e);
+        console.error('Global error:', e);
         setError('Failed to fetch treasury data');
         setIsLoading(false);
       }
@@ -121,6 +283,58 @@ export default function Treasury() {
 
     fetchData();
   }, []);
+
+  const formatBalance = (value: string | number) => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  // Update the auction transactions filtering
+  const auctionTransactions = transactions.filter(tx => {
+    const isAuctionTx = tx.type === 'auction' || 
+      (tx.category === 'NFT Transfer' && (
+        tx.from_address.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase() ||
+        tx.to_address.toLowerCase() === AUCTION_HOUSE_ADDRESS.toLowerCase()
+      ));
+    
+    return isAuctionTx;
+  });
+
+  const treasuryTransactions = transactions.filter(tx => 
+    tx.type === 'treasury' && 
+    tx.category !== 'NFT Transfer' &&
+    !tx.isAuctionSettlement
+  );
+
+  const tokenBuyerTransactions = transactions.filter(tx => 
+    tx.type === 'tokenBuyer'
+  );
+
+  const usdcPayerTransactions = transactions.filter(tx => 
+    tx.type === 'usdcPayer'
+  );
+
+  // Sort tokens by USD value and split into top and other
+  const sortedTokens = [...tokenBalances].sort((a, b) => 
+    (b.usd_value || 0) - (a.usd_value || 0)
+  );
+  const topTokens = sortedTokens.slice(0, 8);
+  const otherTokens = sortedTokens.slice(8);
+
+  // Add balance display component
+  const ContractBalance = ({ title, balances }: { title: string, balances: TokenBalance[] }) => {
+    const totalValue = balances.reduce((sum, token) => sum + (token.usd_value || 0), 0);
+    
+    return (
+      <div className={styles.contractBalance}>
+        <h3>{title} Balance</h3>
+        <p>${formatBalance(totalValue)}</p>
+      </div>
+    );
+  };
 
   return (
     <div className={styles.container}>
@@ -132,10 +346,19 @@ export default function Treasury() {
         <>
           <h1 className={styles.pageTitle}>Nouns DAO Treasury Analysis</h1>
           
+          <MoneyFlowChart transactions={treasuryTransactions} />
+          
           <section className={styles.balances}>
             <h2 className={styles.sectionTitle}>Token Balances</h2>
+            <div className={styles.totalBalance}>
+              Total Value: ${totalUsdValue.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })} USD
+            </div>
             <div className={styles.balanceGrid}>
-              {tokenBalances.map((token) => (
+              {/* Top 8 tokens */}
+              {topTokens.map((token) => (
                 <div key={token.token_address} className={styles.balanceCard}>
                   <div className={styles.tokenHeader}>
                     {token.logo && (
@@ -146,41 +369,98 @@ export default function Treasury() {
                           width={24}
                           height={24}
                           className={styles.tokenLogo}
-                          unoptimized={true}
-                          loading="lazy"
+                          unoptimized
                         />
                       </div>
                     )}
                     <h3>{token.name} ({token.symbol})</h3>
                   </div>
-                  <p>Balance: {token.balance_formatted}</p>
+                  <p>Balance: {formatBalance(token.balance_formatted)}</p>
                   {token.usd_value && (
-                    <p>Value: ${token.usd_value.toLocaleString()}</p>
+                    <p>Value: ${formatBalance(token.usd_value)}</p>
                   )}
-                  {token.native_token && <span className={styles.nativeToken}>Native Token</span>}
+                  {token.native_token && token.symbol !== 'ETH' && (
+                    <span className={styles.nativeToken}>Native Token</span>
+                  )}
                 </div>
               ))}
             </div>
+
+            {/* Other tokens in collapsible section */}
+            {otherTokens.length > 0 && (
+              <div className={styles.otherTokens}>
+                <button 
+                  onClick={() => setShowAllTokens(!showAllTokens)}
+                  className={styles.toggleButton}
+                >
+                  {showAllTokens ? '▼' : '▶'} Other ({otherTokens.length} tokens)
+                </button>
+                
+                {showAllTokens && (
+                  <div className={styles.balanceGrid}>
+                    {otherTokens.map((token) => (
+                      <div key={token.token_address} className={styles.balanceCard}>
+                        <div className={styles.tokenHeader}>
+                          {token.logo && (
+                            <div className={styles.tokenLogoWrapper}>
+                              <Image 
+                                src={token.logo} 
+                                alt={token.symbol}
+                                width={24}
+                                height={24}
+                                className={styles.tokenLogo}
+                                unoptimized
+                              />
+                            </div>
+                          )}
+                          <h3>{token.name} ({token.symbol})</h3>
+                        </div>
+                        <p>Balance: {formatBalance(token.balance_formatted)}</p>
+                        {token.usd_value && (
+                          <p>Value: ${formatBalance(token.usd_value)}</p>
+                        )}
+                        {token.native_token && token.symbol !== 'ETH' && (
+                          <span className={styles.nativeToken}>Native Token</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
 
-          <section className={styles.transactions}>
-            <h2 className={styles.sectionTitle}>Recent Transactions</h2>
-            <div className={styles.transactionList}>
-              {transactions.map((tx) => (
-                <div key={tx.hash} className={styles.transactionCard}>
-                  <h3 className={styles.transactionTitle}>{tx.summary}</h3>
-                  <p className={styles.transactionText}>Category: {tx.category}</p>
-                  <p className={styles.transactionText}>Hash: {tx.hash}</p>
-                  <p className={styles.transactionText}>Time: {new Date(tx.block_timestamp).toLocaleString()}</p>
-                  {tx.native_transfers.map((transfer, index) => (
-                    <div key={index} className={styles.transferInfo}>
-                      <p>{transfer.direction === 'send' ? 'Sent' : 'Received'}: {transfer.value_formatted} {transfer.token_symbol}</p>
-                      <p>{transfer.direction === 'send' ? 'To' : 'From'}: {transfer.direction === 'send' ? transfer.to_address : transfer.from_address}</p>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
+          <section>
+            <FeedRow 
+              title="Auction Activity" 
+              transactions={auctionTransactions} 
+              name="auction"
+              feedLoading={feedLoading}
+              feedErrors={feedErrors}
+            />
+            <FeedRow 
+              title="Treasury" 
+              transactions={treasuryTransactions} 
+              name="treasury"
+              feedLoading={feedLoading}
+              feedErrors={feedErrors}
+            />
+            <FeedRow 
+              title="Token Buyer" 
+              transactions={tokenBuyerTransactions}
+              balance={<ContractBalance title="Token Buyer" balances={tokenBuyerBalances} />}
+              name="tokenBuyer"
+              feedLoading={feedLoading}
+              feedErrors={feedErrors}
+            />
+            <FeedRow 
+              title="USDC Payer" 
+              transactions={usdcPayerTransactions}
+              balance={<ContractBalance title="USDC Payer" balances={usdcPayerBalances} />}
+              name="usdcPayer"
+              feedLoading={feedLoading}
+              feedErrors={feedErrors}
+            />
           </section>
         </>
       )}

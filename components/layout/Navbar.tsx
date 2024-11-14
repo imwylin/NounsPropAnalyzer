@@ -28,8 +28,7 @@ export function Navbar() {
           alt="Home" 
           width={32} 
           height={32}
-          priority={true}
-          unoptimized={true}
+          unoptimized
         />
       </Link>
       <div className={styles.links}>
