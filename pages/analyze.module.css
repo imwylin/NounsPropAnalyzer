@@ -24,22 +24,34 @@
 
 .inputSection {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  gap: 1.5rem;
+  align-items: flex-end;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .input {
-  flex: 1;
-  max-width: 200px;
+  width: 200px;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 1rem;
   transition: all 0.2s;
-  background-color: #f9fafb;
+  background-color: var(--card-bg);
 }
 
 .select {
+  min-width: 200px;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -107,11 +119,25 @@
 
 /* Status Bar */
 .statusBar {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   border-bottom: 1px solid var(--border);
   background: var(--card-bg);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  max-height: 100px;
+  margin-bottom: 0;
+}
+
+.statusBar.fadeOut {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom-color: transparent;
+  pointer-events: none;
 }
 
 .statusPill {
@@ -123,12 +149,66 @@
   align-items: center;
   gap: 1rem;
   border: 1px solid var(--border);
-  transition: all 0.2s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top;
 }
 
+.fadeOut .statusPill {
+  transform: scale(0.95);
+}
+
+.statusPill.pending {
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.statusPill.running {
+  background: #7da399;  /* Brighter sage */
+  color: white;
+  border: none;
+  box-shadow: 0 0 0 1px #7da399;
+}
+
+.statusPill.success {
+  background: #7da399;  /* Brighter sage */
+  color: white;
+  border: none;
+  box-shadow: 0 0 0 1px #7da399;
+}
+
+.statusPill.error {
+  background: #b66360;  /* Brighter terracotta */
+  color: white;
+  border: none;
+  box-shadow: 0 0 0 1px #b66360;
+}
+
+/* Dark mode adjustments */
+:global(.dark) .statusPill.pending {
+  background: var(--card-bg);
+  border-color: var(--border);
+}
+
+:global(.dark) .statusPill.running {
+  background: #8ab5aa;  /* Brightest sage for dark mode */
+  box-shadow: 0 0 0 1px #8ab5aa;
+}
+
+:global(.dark) .statusPill.success {
+  background: #8ab5aa;  /* Brightest sage for dark mode */
+  box-shadow: 0 0 0 1px #8ab5aa;
+}
+
+:global(.dark) .statusPill.error {
+  background: #c87471;  /* Brightest terracotta for dark mode */
+  box-shadow: 0 0 0 1px #c87471;
+}
+
+/* Status icons */
 .statusIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -136,7 +216,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  text-align: left;
 }
 
 .statusTitle {
@@ -146,10 +225,12 @@
 
 .statusLabel {
   font-size: 0.75rem;
+  opacity: 0.9;
 }
 
+/* Animation for running state */
 .spinning {
-  animation: spin 1s linear infinite;
+  animation: spin 1.2s linear infinite;
 }
 
 @keyframes spin {
@@ -161,82 +242,118 @@
   }
 }
 
-/* Status states - Muted tints and tones */
-.statusPill.pending {
-  background: #a3a09b;  /* Muted gray */
-  color: #ffffff;
-  border-color: #8c8884;
+/* Classification styles using our brighter colors */
+.riskLow,
+.alignmentStrong,
+.complexityLow {
+  background: #7da399;  /* Brighter sage */
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-block;
 }
 
-.statusPill.running {
-  background: #6b8e7b;  /* Muted green-blue */
-  color: #ffffff;
-  border-color: #5a7967;
+.riskMedium,
+.alignmentModerate,
+.complexityMedium {
+  background: #8b7355;  /* Warm brown */
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-block;
 }
 
-.statusPill.success {
-  background: #687f7c;  /* Muted teal */
-  color: #ffffff;
-  border-color: #566a67;
+.riskHigh,
+.alignmentWeak,
+.complexityHigh {
+  background: #b66360;  /* Brighter terracotta */
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  display: inline-block;
 }
 
-.statusPill.error {
-  background: #8d6263;  /* Muted burgundy */
-  color: #ffffff;
-  border-color: #775354;
+/* Dark mode adjustments */
+:global(.dark) .riskLow,
+:global(.dark) .alignmentStrong,
+:global(.dark) .complexityLow {
+  background: #8ab5aa;  /* Brightest sage for dark mode */
 }
 
-/* Dark mode - Deeper tones */
-:global(.dark) .statusPill.pending {
-  background: #7a756e;  /* Deep warm gray */
-  color: #ffffff;
-  border-color: #65615b;
+:global(.dark) .riskMedium,
+:global(.dark) .alignmentModerate,
+:global(.dark) .complexityMedium {
+  background: #735c42;  /* Deep brown for dark mode */
 }
 
-:global(.dark) .statusPill.running {
-  background: #4d6659;  /* Deep sage */
-  color: #ffffff;
-  border-color: #3d5247;
-}
-
-:global(.dark) .statusPill.success {
-  background: #4a5d5b;  /* Deep teal */
-  color: #ffffff;
-  border-color: #3b4a48;
-}
-
-:global(.dark) .statusPill.error {
-  background: #634748;  /* Deep burgundy */
-  color: #ffffff;
-  border-color: #503839;
+:global(.dark) .riskHigh,
+:global(.dark) .alignmentWeak,
+:global(.dark) .complexityHigh {
+  background: #c87471;  /* Brightest terracotta for dark mode */
 }
 
 /* Results Section */
 .results {
+  position: relative;
   padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
 }
 
-.resultActions {
-  margin-bottom: 1rem;
+.comparisonGrid {
+  position: relative;
+  overflow: auto;
 }
 
-.exportButton {
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+.comparisonTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1rem;
 }
 
-.exportButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(243, 50, 44, 0.1);
+/* Create a wrapper for the header row */
+.comparisonTable thead {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  z-index: 3;
+}
+
+.comparisonTable th {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #e1d7d5;
+  z-index: 2;
+}
+
+.comparisonTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e1d7d5;
+  background: var(--card-bg);
+}
+
+/* Handle the first column */
+.comparisonTable td:first-child,
+.comparisonTable th:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--card-bg);
+  z-index: 1;
+}
+
+/* Special handling for the top-left cell */
+.comparisonTable th:first-child {
+  z-index: 4;
 }
 
 .error {
@@ -281,38 +398,6 @@
 
 /* Add these styles to the existing CSS file */
 
-.comparisonTable {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-top: 1rem;
-}
-
-.comparisonTable th,
-.comparisonTable td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-.comparisonTable th {
-  font-weight: 600;
-  color: var(--text-primary);
-  background: var(--card-bg);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.comparisonTable td:first-child {
-  font-weight: 500;
-  color: var(--text-primary);
-  background: var(--card-bg);
-  position: sticky;
-  left: 0;
-  z-index: 5;
-}
-
 .elementList {
   list-style-type: none;
   padding: 0;
@@ -321,7 +406,7 @@
 
 .elementList li {
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #e1d7d5;
 }
 
 .elementList li:last-child {
@@ -384,4 +469,29 @@
 :global(.dark) .select:focus {
   border-color: var(--accent);
   background-color: #6b6969;
+}
+
+/* Panel Headers */
+.panelHeader {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+}
+
+.panelHeader h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.proposalId {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  padding: 0.375rem 0.75rem;
+  background: var(--hover-bg);
+  border-radius: 4px;
 }

@@ -1,7 +1,7 @@
 .navbar {
-  background: white;
+  background: var(--card-bg);
   padding: 1rem 2rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,7 +36,7 @@
 }
 
 .link {
-  color: #374151;
+  color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
@@ -46,8 +46,8 @@
 }
 
 .link:hover {
-  color: #f3322c;
-  background-color: rgba(243, 50, 44, 0.1);
+  color: var(--accent);
+  background-color: var(--hover-bg);
 }
 
 .darkModeButton {
@@ -57,14 +57,14 @@
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s;
-  color: #374151;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .darkModeButton:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--hover-bg);
   transform: translateY(-1px);
 }
 
@@ -79,24 +79,24 @@
 /* Dark mode styles */
 :global(.dark) .navbar {
   background-color: rgba(75, 73, 73, 0.9);
-  border-color: #5c5a5a;
+  border-color: var(--border);
 }
 
 :global(.dark) .link {
-  color: #e5e7eb;
+  color: var(--text-primary);
 }
 
 :global(.dark) .link:hover {
-  color: #f3322c;
-  background-color: rgba(243, 50, 44, 0.15);
+  color: var(--accent);
+  background-color: var(--hover-bg);
 }
 
 :global(.dark) .darkModeButton {
-  color: #e5e7eb;
+  color: var(--text-primary);
 }
 
 :global(.dark) .darkModeButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--hover-bg);
 }
 
 /* Responsive styles */

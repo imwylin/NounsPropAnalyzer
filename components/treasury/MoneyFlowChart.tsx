@@ -78,19 +78,25 @@ export function MoneyFlowChart({ transactions }: MoneyFlowChartProps) {
           <BarChart data={chartData}>
             <CartesianGrid 
               strokeDasharray="3 3" 
-              stroke={isDarkMode ? '#5c5a5a' : '#e5e7eb'}
+              stroke="#e1d7d5"
             />
             <XAxis 
               dataKey="month" 
-              stroke={isDarkMode ? '#9ca3af' : '#4b5563'}
+              stroke="#e1d7d5"
+              axisLine={{ stroke: '#e1d7d5' }}
+              tickLine={{ stroke: '#e1d7d5' }}
+              tick={{ fill: isDarkMode ? '#9ca3af' : '#4b5563' }}
             />
             <YAxis 
-              stroke={isDarkMode ? '#9ca3af' : '#4b5563'}
+              stroke="#e1d7d5"
+              axisLine={{ stroke: '#e1d7d5' }}
+              tickLine={{ stroke: '#e1d7d5' }}
+              tick={{ fill: isDarkMode ? '#9ca3af' : '#4b5563' }}
             />
             <Tooltip 
               contentStyle={{
                 background: isDarkMode ? '#4b4949' : '#ffffff',
-                border: `1px solid ${isDarkMode ? '#5c5a5a' : '#e5e7eb'}`,
+                border: '1px solid #e1d7d5',
                 borderRadius: '4px',
                 padding: '8px'
               }}
@@ -98,10 +104,38 @@ export function MoneyFlowChart({ transactions }: MoneyFlowChartProps) {
                 color: isDarkMode ? '#e5e7eb' : '#111827',
                 marginBottom: '4px'
               }}
+              cursor={{ 
+                fill: 'transparent', 
+                stroke: '#e1d7d5' 
+              }}
             />
-            <Legend />
-            <Bar dataKey="Inflow (ETH)" fill="#687f7c" />
-            <Bar dataKey="Outflow (ETH)" fill="#8d6263" />
+            <Legend 
+              wrapperStyle={{
+                paddingTop: '20px',
+                borderTop: '1px solid #e1d7d5'
+              }}
+              formatter={(value) => (
+                <span style={{ 
+                  color: value.includes('Inflow') ? 
+                    (isDarkMode ? '#8ab5aa' : '#7da399') : 
+                    (isDarkMode ? '#c87471' : '#b66360')
+                }}>
+                  {value}
+                </span>
+              )}
+            />
+            <Bar 
+              dataKey="Inflow (ETH)" 
+              fill={isDarkMode ? '#8ab5aa' : '#7da399'} 
+              stroke="#e1d7d5"
+              strokeWidth={1}
+            />
+            <Bar 
+              dataKey="Outflow (ETH)" 
+              fill={isDarkMode ? '#c87471' : '#b66360'} 
+              stroke="#e1d7d5"
+              strokeWidth={1}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

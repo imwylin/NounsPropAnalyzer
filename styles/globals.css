@@ -6,49 +6,79 @@
 }
 
 :root {
-  /* Light mode variables */
+  /* Core colors */
   --background: #ffffff;
+  --card-bg: #ffffff;
+  
+  /* Text colors */
   --text-primary: #111827;
   --text-secondary: #4b5563;
-  --border: #e5e7eb;
-  --accent: #8d6263;
-  --card-bg: #ffffff;
-  --hover-bg: #f3f4f6;
   
-  /* Status colors - Light mode */
-  --status-pending: #a3a09b;
-  --status-running: #6b8e7b;
-  --status-success: #687f7c;
-  --status-error: #8d6263;
+  /* Brand colors - Bold but earthy */
+  --accent: #8d6263;          /* Rich burgundy */
+  --accent-primary: #8d6263;  /* Rich burgundy */
+  --accent-success: #5f7470;  /* Deep sage */
+  --accent-warning: #8b7355;  /* Warm brown */
+  --accent-error: #96524f;    /* Terracotta */
   
-  /* Border colors for status */
-  --status-pending-border: #8c8884;
-  --status-running-border: #5a7967;
-  --status-success-border: #566a67;
-  --status-error-border: #775354;
+  /* Extended earthy palette */
+  --earth-1: #7c6a53;         /* Umber */
+  --earth-2: #5f7470;         /* Sage */
+  --earth-3: #876d5a;         /* Russet */
+  --earth-4: #8b7355;         /* Raw umber */
+  --earth-5: #96524f;         /* Terracotta */
+  
+  /* UI colors */
+  --border: #e1d7d5;          /* Warm gray border */
+  --hover-bg: #f5f2f2;        /* Warm gray hover */
+  
+  /* Status colors - Bold variants */
+  --status-low: var(--earth-2);      /* Sage */
+  --status-medium: var(--earth-4);    /* Raw umber */
+  --status-high: var(--earth-5);      /* Terracotta */
+  
+  /* Opacity variants for status indicators */
+  --status-opacity-strong: 1;
+  --status-opacity-medium: 0.9;
+  --status-opacity-weak: 0.8;
 }
 
-/* Update dark mode variables */
 .dark {
+  /* Core colors */
   --background: #4b4949;
+  --card-bg: #565454;
+  
+  /* Text colors */
   --text-primary: #f9fafb;
   --text-secondary: #9ca3af;
+  
+  /* Brand colors - Deeper variants */
+  --accent: #8d6263;          /* Keep consistent */
+  --accent-primary: #8d6263;  /* Keep consistent */
+  --accent-success: #4a5d5b;  /* Deep sage */
+  --accent-warning: #735c42;  /* Deep brown */
+  --accent-error: #7c403e;    /* Deep terracotta */
+  
+  /* Extended earthy palette - Dark variants */
+  --earth-1: #635445;         /* Deep umber */
+  --earth-2: #4a5d5b;         /* Deep sage */
+  --earth-3: #6d574a;         /* Deep russet */
+  --earth-4: #735c42;         /* Deep raw umber */
+  --earth-5: #7c403e;         /* Deep terracotta */
+  
+  /* UI colors */
   --border: #5c5a5a;
-  --accent: #8d6263;
-  --card-bg: #565454;
-  --hover-bg: #5c5a5a;
+  --hover-bg: #636060;
   
-  /* Status colors - Dark mode */
-  --status-pending: #7a756e;
-  --status-running: #4d6659;
-  --status-success: #4a5d5b;
-  --status-error: #634748;
+  /* Status colors inherit from earth tones */
+  --status-low: var(--earth-2);
+  --status-medium: var(--earth-4);
+  --status-high: var(--earth-5);
   
-  /* Border colors for status in dark mode */
-  --status-pending-border: #65615b;
-  --status-running-border: #3d5247;
-  --status-success-border: #3b4a48;
-  --status-error-border: #503839;
+  /* Adjusted opacity for better contrast in dark mode */
+  --status-opacity-strong: 0.95;
+  --status-opacity-medium: 0.85;
+  --status-opacity-weak: 0.75;
 }
 
 html {
@@ -77,7 +107,7 @@ p {
 
 /* Links */
 a {
-  color: var(--accent);
+  color: var(--accent-primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -108,7 +138,7 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(243, 50, 44, 0.1);
 }
 
@@ -133,13 +163,13 @@ textarea:focus {
 
 /* Selection */
 ::selection {
-  background-color: var(--accent);
+  background-color: var(--accent-primary);
   color: white;
 }
 
 /* Focus outline */
 :focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 

@@ -47,11 +47,12 @@
   padding: 1.5rem;
   border-radius: 4px;
   border: 1px solid var(--border);
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .balanceCard:hover {
   transform: translateY(-2px);
+  border-color: var(--earth-2);
 }
 
 .tokenHeader {
@@ -97,24 +98,25 @@
   background: var(--hover-bg);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .feedHeader:hover {
-  background: var(--hover-bg);
+  background: var(--earth-2);
+  color: white;
 }
 
 .feedTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: inherit;
   margin: 0;
 }
 
 .transactionCard {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border);
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .transactionCard:hover {
@@ -143,33 +145,37 @@
 }
 
 .inbound {
-  background: #687f7c;  /* Muted teal */
+  background: var(--earth-2);
   color: white;
 }
 
 .outbound {
-  background: #8d6263;  /* Muted burgundy */
+  background: var(--earth-5);
   color: white;
 }
 
 .txLink {
-  color: var(--accent);
+  color: var(--earth-3);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .txLink:hover {
-  opacity: 0.9;
+  color: var(--earth-4);
 }
 
 /* Dark Mode */
-:global(.dark) .inbound {
-  background: #4a5d5b;  /* Deep teal */
+:global(.dark) .feedHeader:hover {
+  background: var(--earth-2);
 }
 
-:global(.dark) .outbound {
-  background: #634748;  /* Deep burgundy */
+:global(.dark) .txLink {
+  color: var(--earth-2);
+}
+
+:global(.dark) .txLink:hover {
+  color: var(--earth-3);
 }
 
 /* Responsive Design */

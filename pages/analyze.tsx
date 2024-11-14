@@ -80,12 +80,46 @@ const StatusIcon = ({ state }: { state: string }) => {
   }
 }
 
+const getRiskStyle = (risk: 'LOW' | 'MEDIUM' | 'HIGH') => {
+  switch (risk) {
+    case 'LOW':
+      return styles.riskLow
+    case 'HIGH':
+      return styles.riskHigh
+    default:
+      return styles.riskMedium
+  }
+}
+
+const getAlignmentStyle = (alignment: 'STRONG' | 'MODERATE' | 'WEAK') => {
+  switch (alignment) {
+    case 'STRONG':
+      return styles.alignmentStrong
+    case 'WEAK':
+      return styles.alignmentWeak
+    default:
+      return styles.alignmentModerate
+  }
+}
+
+const getComplexityStyle = (complexity: 'LOW' | 'MEDIUM' | 'HIGH') => {
+  switch (complexity) {
+    case 'LOW':
+      return styles.complexityLow
+    case 'HIGH':
+      return styles.complexityHigh
+    default:
+      return styles.complexityMedium
+  }
+}
+
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [selectedPrompt, setSelectedPrompt] = useState<number>(1)
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus[]>([])
+  const [showStatus, setShowStatus] = useState(true)
   
   const { 
     data: description,
@@ -96,7 +130,8 @@ export default function AnalyzePage() {
   const handleAnalyze = async () => {
     if (!description) return
     setIsAnalyzing(true)
-    setAnalysisResults([]) // Clear previous results
+    setShowStatus(true)
+    setAnalysisResults([])
     setAnalysisStatus([
       { attempt: 1, state: 'pending' },
       { attempt: 2, state: 'pending' }
@@ -144,6 +179,11 @@ export default function AnalyzePage() {
         timestamp: new Date().toISOString()
       }])
 
+      // After both analyses are complete, hide status after a delay
+      setTimeout(() => {
+        setShowStatus(false)
+      }, 2000)
+
     } catch (error) {
       console.error('Analysis failed:', error)
       setAnalysisStatus(prev => prev.map(status => 
@@ -152,11 +192,6 @@ export default function AnalyzePage() {
     } finally {
       setIsAnalyzing(false)
     }
-  }
-
-  const handleExport = () => {
-    // Implementation of export functionality
-    // (We'll keep the existing export logic)
   }
 
   const renderComparisonTable = (results: AnalysisResultWithMeta[]) => {
@@ -186,19 +221,31 @@ export default function AnalyzePage() {
           <tr>
             <td>Private Benefit Risk</td>
             {results.map((result, index) => (
-              <td key={index}>{result.risk_assessment.private_benefit_risk}</td>
+              <td key={index}>
+                <span className={getRiskStyle(result.risk_assessment.private_benefit_risk)}>
+                  {result.risk_assessment.private_benefit_risk}
+                </span>
+              </td>
             ))}
           </tr>
           <tr>
             <td>Mission Alignment</td>
             {results.map((result, index) => (
-              <td key={index}>{result.risk_assessment.mission_alignment}</td>
+              <td key={index}>
+                <span className={getAlignmentStyle(result.risk_assessment.mission_alignment)}>
+                  {result.risk_assessment.mission_alignment}
+                </span>
+              </td>
             ))}
           </tr>
           <tr>
             <td>Implementation Complexity</td>
             {results.map((result, index) => (
-              <td key={index}>{result.risk_assessment.implementation_complexity}</td>
+              <td key={index}>
+                <span className={getComplexityStyle(result.risk_assessment.implementation_complexity)}>
+                  {result.risk_assessment.implementation_complexity}
+                </span>
+              </td>
             ))}
           </tr>
           <tr>
@@ -256,35 +303,45 @@ export default function AnalyzePage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.pageTitle}>Proposal Analysis</h1>
-      
       <div className={styles.header}>
         <div className={styles.inputSection}>
-          <input
-            type="text"
-            value={proposalId}
-            onChange={(e) => setProposalId(e.target.value)}
-            placeholder="Enter Proposal ID"
-            className={styles.input}
-          />
+          <div className={styles.inputGroup}>
+            <label htmlFor="proposalId" className={styles.inputLabel}>
+              Proposal ID
+            </label>
+            <input
+              id="proposalId"
+              type="text"
+              value={proposalId}
+              onChange={(e) => setProposalId(e.target.value)}
+              placeholder="Enter ID"
+              className={styles.input}
+            />
+          </div>
           
-          <select
-            value={selectedPrompt}
-            onChange={(e) => setSelectedPrompt(Number(e.target.value))}
-            className={styles.select}
-            disabled={isAnalyzing}
-          >
-            <option value={1}>Moderate Analysis</option>
-            <option value={2}>Hawkish Analysis</option>
-            <option value={3}>Innovative Analysis</option>
-          </select>
+          <div className={styles.inputGroup}>
+            <label htmlFor="analysisType" className={styles.inputLabel}>
+              Analysis Type
+            </label>
+            <select
+              id="analysisType"
+              value={selectedPrompt}
+              onChange={(e) => setSelectedPrompt(Number(e.target.value))}
+              className={styles.select}
+              disabled={isAnalyzing}
+            >
+              <option value={1}>Moderate Analysis</option>
+              <option value={2}>Hawkish Analysis</option>
+              <option value={3}>Innovative Analysis</option>
+            </select>
+          </div>
 
           <button 
             onClick={handleAnalyze}
             disabled={!description || isAnalyzing || isLoading}
             className={styles.analyzeButton}
           >
-            {isLoading ? 'Loading...' : isAnalyzing ? 'Analyzing...' : 'Analyze'}
+            {isLoading ? 'Loading Proposal...' : isAnalyzing ? 'Analyzing...' : 'Analyze Proposal'}
           </button>
         </div>
 
@@ -297,9 +354,12 @@ export default function AnalyzePage() {
 
       <div className={styles.splitView}>
         <div className={styles.proposalPanel}>
+          <div className={styles.panelHeader}>
+            <h2>Proposal Content</h2>
+            {description && <span className={styles.proposalId}>#{proposalId}</span>}
+          </div>
           {description && (
             <div className={styles.proposalContent}>
-              <h2>Proposal {proposalId}</h2>
               <ReactMarkdown 
                 remarkPlugins={[remarkBreaks]}
                 components={MarkdownComponents}
@@ -311,8 +371,12 @@ export default function AnalyzePage() {
         </div>
 
         <div className={styles.analysisPanel}>
-          {analysisStatus.length > 0 && (
-            <div className={styles.statusBar}>
+          <div className={styles.panelHeader}>
+            <h2>Analysis Results</h2>
+          </div>
+          
+          {analysisStatus.length > 0 && showStatus && (
+            <div className={`${styles.statusBar} ${!isAnalyzing && styles.fadeOut}`}>
               {analysisStatus.map((status, index) => (
                 <div 
                   key={index} 
@@ -322,10 +386,10 @@ export default function AnalyzePage() {
                   <div className={styles.statusInfo}>
                     <span className={styles.statusTitle}>Analysis {index + 1}</span>
                     <span className={styles.statusLabel}>
-                      {status.state === 'pending' && 'Queued for analysis...'}
-                      {status.state === 'running' && 'Analyzing proposal...'}
-                      {status.state === 'success' && 'Analysis complete'}
-                      {status.state === 'error' && 'Analysis failed'}
+                      {status.state === 'pending' && 'Queued'}
+                      {status.state === 'running' && 'In Progress'}
+                      {status.state === 'success' && 'Complete'}
+                      {status.state === 'error' && 'Failed'}
                     </span>
                   </div>
                 </div>
@@ -335,12 +399,6 @@ export default function AnalyzePage() {
 
           {analysisResults.length > 0 && (
             <div className={styles.results}>
-              <div className={styles.resultActions}>
-                <button onClick={handleExport} className={styles.exportButton}>
-                  Export Results
-                </button>
-              </div>
-              
               <div className={styles.comparisonGrid}>
                 {renderComparisonTable(analysisResults)}
               </div>

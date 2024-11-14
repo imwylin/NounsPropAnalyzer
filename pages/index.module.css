@@ -49,7 +49,8 @@
 
 .tool:hover {
   transform: translateY(-2px);
-  border-color: var(--accent);
+  border-color: var(--earth-2);
+  box-shadow: 0 4px 12px rgba(95, 116, 112, 0.1);
 }
 
 .tool h2 {
@@ -74,11 +75,25 @@
 }
 
 .features span {
-  background: var(--hover-bg);
+  background: var(--earth-2);
+  color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.features span:nth-child(2) {
+  background: var(--earth-3);
+}
+
+.features span:nth-child(3) {
+  background: var(--earth-4);
+}
+
+.tool:hover .features span {
+  opacity: 1;
 }
 
 /* Documentation Section */
@@ -117,17 +132,9 @@
 }
 
 /* Dark Mode Adjustments */
-:global(.dark) .toolList li::before {
-  color: #4a5d5b;  /* Deep teal */
-}
-
-:global(.dark) .toolLink {
-  background: #4a5d5b;  /* Deep teal */
-  border-color: #3b4a48;
-}
-
-:global(.dark) .toolLink:hover {
-  background: #3b4a48;  /* Darker on hover */
+:global(.dark) .tool:hover {
+  border-color: var(--earth-2);
+  box-shadow: 0 4px 12px rgba(74, 93, 91, 0.2);
 }
 
 /* Responsive Design */
@@ -156,6 +163,14 @@
 
   .toolLink {
     width: 100%;
+    text-align: center;
+  }
+
+  .features {
+    flex-direction: column;
+  }
+
+  .features span {
     text-align: center;
   }
 }
