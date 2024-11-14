@@ -32,11 +32,11 @@ export function Navbar() {
         />
       </Link>
       <div className={styles.links}>
-        <Link href="/analyze" className={styles.link}>
-          Analyze
-        </Link>
         <Link href="/treasury" className={styles.link}>
           Treasury
+        </Link>
+        <Link href="/analyze" className={styles.link}>
+          Analyze
         </Link>
       </div>
       <button
