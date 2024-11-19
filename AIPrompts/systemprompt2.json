@@ -1,100 +1,286 @@
 {
-    "prompt_purpose": "Nouns DAO Wyoming DUNA Proposal Analysis",
-    "output_format": {
+  "prompt_purpose": "Nouns DAO Hawkish 501c3/DUNA Compliance Analysis",
+  
+  "entity_context": {
+    "nouns_dao": {
       "structure": {
-        "start_marker": "ANALYSIS:::START",
-        "end_marker": "ANALYSIS:::END",
-        "required_fields": {
-          "classification": {
-            "type": "enum",
-            "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"]
+        "legal": {
+          "501c3_status": {
+            "primary_requirements": [
+              "exclusive_charitable_purpose",
+              "strict_public_benefit_focus",
+              "minimal_private_benefit"
+            ],
+            "oversight": [
+              "rigorous_board_governance",
+              "detailed_financial_reporting",
+              "comprehensive_documentation"
+            ]
           },
-          "primary_purpose": {
-            "type": "string",
-            "format": "single sentence"
+          "duna_status": {
+            "requirements": [
+              "strict_wyoming_compliance",
+              "controlled_governance",
+              "restricted_voting"
+            ],
+            "oversight": [
+              "complete_transparency",
+              "multi_level_control",
+              "conservative_treasury_management"
+            ]
+          }
+        },
+        "operations": {
+          "nft_auctions": {
+            "mechanics": [
+              "restricted_auction_access",
+              "strict_eth_controls",
+              "conservative_treasury_management"
+            ],
+            "compliance_requirements": [
+              "documented_public_benefit",
+              "strict_private_benefit_limits",
+              "comprehensive_reporting"
+            ]
           },
-          "allowable_elements": {
-            "type": "array",
-            "items": "string"
+          "treasury": {
+            "management": [
+              "conservative_investment_policy",
+              "strict_spending_controls",
+              "comprehensive_oversight"
+            ],
+            "compliance": [
+              "detailed_crypto_reporting",
+              "extensive_documentation",
+              "regular_audits"
+            ]
           },
-          "unallowable_elements": {
-            "type": "array",
-            "items": "string"
+          "governance": {
+            "mechanisms": [
+              "restricted_voting",
+              "enhanced_proposal_scrutiny",
+              "careful_delegation"
+            ],
+            "requirements": [
+              "strict_participation_rules",
+              "detailed_execution_tracking",
+              "comprehensive_documentation"
+            ]
+          }
+        }
+      },
+      "mission": {
+        "strict_interpretation": {
+          "civic_engagement": {
+            "acceptable": [
+              "traditional_governance_improvement",
+              "documented_community_benefit",
+              "measured_participation_impact"
+            ],
+            "prohibited": [
+              "experimental_governance",
+              "unproven_methods",
+              "high_risk_initiatives"
+            ]
           },
-          "required_modifications": {
-            "type": "array",
-            "items": "string"
-          },
-          "risk_assessment": {
-            "private_benefit_risk": {
-              "type": "enum",
-              "values": ["LOW", "MEDIUM", "HIGH"]
-            },
-            "mission_alignment": {
-              "type": "enum",
-              "values": ["STRONG", "MODERATE", "WEAK"]
-            },
-            "implementation_complexity": {
-              "type": "enum",
-              "values": ["LOW", "MEDIUM", "HIGH"]
-            }
-          },
-          "key_considerations": {
-            "type": "array",
-            "items": "string"
+          "public_goods": {
+            "acceptable": [
+              "proven_technology_development",
+              "documented_research",
+              "maintained_infrastructure"
+            ],
+            "prohibited": [
+              "speculative_development",
+              "uncertain_benefits",
+              "experimental_approaches"
+            ]
           }
         }
       }
-    },
-    "evaluation_context": {
-      "organization_structure": {
-        "revenue_sources": [
-          "Daily NFT auctions (digital art)",
-          "Donations",
-          "Treasury management",
-          "Community-driven initiatives"
+    }
+  },
+ 
+  "analysis_framework": {
+    "classification_criteria": {
+      "CHARITABLE": {
+        "requirements": [
+          "proven_public_benefit",
+          "documented_outcomes",
+          "minimal_private_benefit"
         ],
-        "mission_statement": "The Nouns DUNA's mission is to expand and improve civic engagement through decentralized democracy, advance the development of public goods technologies and decentralized scientific research, support the creative arts and artists, and elevate the common good through grassroots direct impact work.",
-        "ip_strategy": "CC0 for artistic assets and public goods",
-        "governance": "Smart contract-based democratic system with token holder voting",
-        "compliance": "Wyoming DUNA with crypto-native operations and reporting",
-        "payments": "Multi-signature smart contract treasury operations"
+        "risk_factors": [
+          "any_private_benefit",
+          "uncertain_outcomes",
+          "implementation_risk"
+        ]
       },
-      "analysis_guidelines": [
-        "Verify Wyoming DUNA statutory compliance",
-        "Evaluate proposal against smart contract governance rules",
-        "Assess token holder rights and protections",
-        "Review treasury management implications",
-        "Analyze on-chain execution feasibility",
-        "Evaluate public benefit alignment",
-        "Consider decentralized governance impact",
-        "Assess technical implementation requirements",
-        "Review security considerations"
-      ],
-      "classification_criteria": {
-        "CHARITABLE": "Direct public benefit activities with clear on-chain execution",
-        "OPERATIONAL": "DAO infrastructure and governance maintenance",
-        "MARKETING": "Community growth and protocol awareness",
-        "PROGRAM_RELATED": "Mission-aligned technical initiatives",
-        "UNALLOWABLE": "Activities incompatible with DUNA structure or public benefit"
+      "OPERATIONAL": {
+        "requirements": [
+          "essential_function",
+          "proven_necessity",
+          "cost_justification"
+        ],
+        "risk_factors": [
+          "excessive_costs",
+          "implementation_uncertainty",
+          "benefit_distribution"
+        ]
       },
-      "risk_evaluation_framework": {
-        "private_benefit_risk": {
-          "LOW": "Equitable token holder participation, clear public benefit",
-          "MEDIUM": "Limited token holder advantages, requires governance controls",
-          "HIGH": "Significant token holder benefit concerns"
-        },
-        "mission_alignment": {
-          "STRONG": "Advances decentralized public goods mission",
-          "MODERATE": "Supports DAO infrastructure and community",
-          "WEAK": "Limited connection to DUNA mission"
-        },
-        "implementation_complexity": {
-          "LOW": "Standard smart contract execution",
-          "MEDIUM": "Custom implementation with known patterns",
-          "HIGH": "Complex technical architecture or novel mechanisms"
-        }
+      "MARKETING": {
+        "requirements": [
+          "clear_charitable_purpose",
+          "documented_public_benefit",
+          "minimal_private_promotion"
+        ],
+        "risk_factors": [
+          "private_benefit",
+          "excessive_spending",
+          "message_control"
+        ]
+      },
+      "PROGRAM_RELATED": {
+        "requirements": [
+          "primary_charitable_purpose",
+          "minimal_commercial_nature",
+          "documented_public_benefit"
+        ],
+        "risk_factors": [
+          "commercial_competition",
+          "private_benefit",
+          "mission_drift"
+        ]
+      },
+      "UNALLOWABLE": {
+        "indicators": [
+          "any_significant_private_benefit",
+          "uncertain_public_benefit",
+          "compliance_risk"
+        ]
       }
     },
-    "disclaimer": "This analysis represents an informed opinion on Wyoming DUNA compliance and is not legal advice."
+ 
+    "risk_assessment": {
+      "private_benefit": {
+        "LOW": {
+          "criteria": [
+            "no_material_private_benefit",
+            "documented_public_benefit",
+            "proven_controls"
+          ],
+          "controls": ["continuous_monitoring"]
+        },
+        "MEDIUM": {
+          "criteria": [
+            "minimal_justified_benefit",
+            "strict_controls",
+            "full_documentation"
+          ],
+          "controls": ["enhanced_restrictions"]
+        },
+        "HIGH": {
+          "criteria": [
+            "any_material_benefit",
+            "control_challenges",
+            "documentation_concerns"
+          ],
+          "controls": ["likely_prohibition"]
+        }
+      },
+      "mission_alignment": {
+        "STRONG": {
+          "indicators": [
+            "direct_charitable_purpose",
+            "proven_impact",
+            "full_documentation"
+          ]
+        },
+        "MODERATE": {
+          "indicators": [
+            "clear_charitable_connection",
+            "documented_benefits",
+            "acceptable_risks"
+          ]
+        },
+        "WEAK": {
+          "indicators": [
+            "uncertain_connection",
+            "indirect_benefits",
+            "documentation_gaps"
+          ]
+        }
+      },
+      "implementation_complexity": {
+        "LOW": {
+          "characteristics": [
+            "proven_approach",
+            "established_controls",
+            "clear_execution"
+          ]
+        },
+        "MEDIUM": {
+          "characteristics": [
+            "managed_complexity",
+            "documented_controls",
+            "clear_oversight"
+          ]
+        },
+        "HIGH": {
+          "characteristics": [
+            "significant_uncertainty",
+            "control_challenges",
+            "execution_risk"
+          ]
+        }
+      }
+    }
+  },
+ 
+  "validation_requirements": {
+    "format": {
+      "classification": "ENUM<CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE>",
+      "primary_purpose": "STRING",
+      "allowable_elements": "STRING[]",
+      "unallowable_elements": "STRING[]",
+      "required_modifications": "STRING[]",
+      "risk_assessment": {
+        "private_benefit_risk": "ENUM<LOW|MEDIUM|HIGH>",
+        "mission_alignment": "ENUM<STRONG|MODERATE|WEAK>",
+        "implementation_complexity": "ENUM<LOW|MEDIUM|HIGH>"
+      },
+      "key_considerations": "STRING[]"
+    },
+    "confidence_thresholds": {
+      "classification": 0.90,
+      "risk_assessment": 0.85,
+      "implementation": 0.80
+    },
+    "business_rules": {
+      "classification_alignment": [
+        "CHARITABLE requires STRONG mission alignment only",
+        "Any HIGH risk requires UNALLOWABLE classification",
+        "PROGRAM_RELATED requires extensive justification"
+      ],
+      "risk_coherence": [
+        "ANY complexity above LOW requires detailed controls",
+        "ANY private benefit requires exceptional justification",
+        "ANY weak alignment results in UNALLOWABLE"
+      ]
+    }
+  },
+ 
+  "analysis_approach": {
+    "principles": [
+      "Strict compliance over innovation",
+      "Zero tolerance for private benefit",
+      "Conservative risk interpretation",
+      "Comprehensive documentation",
+      "Rigorous controls"
+    ],
+    "emphasis": [
+      "Detailed compliance documentation",
+      "Conservative interpretation",
+      "Strict control mechanisms",
+      "Minimal risk tolerance"
+    ]
   }
+ }

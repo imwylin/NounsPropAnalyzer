@@ -1,96 +1,296 @@
 {
-    "prompt_purpose": "Nouns DAO 501c3 Proposal Analysis",
-    "output_format": {
+  "prompt_purpose": "Nouns DAO Moderate 501c3/DUNA Compliance Analysis",
+  
+  "entity_context": {
+    "nouns_dao": {
       "structure": {
-        "start_marker": "ANALYSIS:::START",
-        "end_marker": "ANALYSIS:::END",
-        "required_fields": {
-          "classification": {
-            "type": "enum",
-            "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"]
+        "legal": {
+          "501c3_status": {
+            "primary_requirements": [
+              "charitable_purpose",
+              "public_benefit_focus",
+              "private_benefit_limitation"
+            ],
+            "oversight": [
+              "board_governance",
+              "financial_reporting",
+              "program_documentation"
+            ]
           },
-          "primary_purpose": {
-            "type": "string",
-            "format": "single sentence"
+          "duna_status": {
+            "requirements": [
+              "wyoming_compliance",
+              "smart_contract_governance",
+              "token_voting"
+            ],
+            "oversight": [
+              "on-chain_transparency", 
+              "multi_sig_control",
+              "treasury_management"
+            ]
+          }
+        },
+        "operations": {
+          "nft_auctions": {
+            "mechanics": [
+              "daily_auction",
+              "eth_based",
+              "proceeds_to_treasury"
+            ],
+            "compliance_requirements": [
+              "fair_access",
+              "transparent_process",
+              "documented_benefits"
+            ]
           },
-          "allowable_elements": {
-            "type": "array",
-            "items": "string"
+          "treasury": {
+            "management": [
+              "multi_sig_control",
+              "proposal_based_spending",
+              "investment_policy"
+            ],
+            "compliance": [
+              "crypto_reporting",
+              "benefit_tracking",
+              "audit_requirements" 
+            ]
           },
-          "unallowable_elements": {
-            "type": "array",
-            "items": "string"
-          },
-          "required_modifications": {
-            "type": "array",
-            "items": "string"
-          },
-          "risk_assessment": {
-            "private_benefit_risk": {
-              "type": "enum",
-              "values": ["LOW", "MEDIUM", "HIGH"]
-            },
-            "mission_alignment": {
-              "type": "enum",
-              "values": ["STRONG", "MODERATE", "WEAK"]
-            },
-            "implementation_complexity": {
-              "type": "enum",
-              "values": ["LOW", "MEDIUM", "HIGH"]
-            }
-          },
-          "key_considerations": {
-            "type": "array",
-            "items": "string"
+          "governance": {
+            "mechanisms": [
+              "token_voting",
+              "proposal_system",
+              "delegation"
+            ],
+            "requirements": [
+              "fair_participation",
+              "transparent_execution",
+              "documented_decisions"
+            ]
           }
         }
-      }
-    },
-    "evaluation_context": {
-      "organization_structure": {
-        "revenue_sources": [
-          "Daily NFT auctions (digital art)",
-          "Donations"
-        ],
-        "mission_statement": "The Nouns Foundation's mission is to expand and improve civic engagement through decentralized democracy, advance the development of public goods technologies and decentralized scientific research, support the creative arts and artists, and elevate the common good through grassroots direct impact work.",
-        "ip_strategy": "CC0 for artistic assets",
-        "governance": "Blockchain-based democratic system",
-        "compliance": "Equipped for crypto regulations/accounting",
-        "payments": "Authorized for cryptocurrency transactions"
       },
-      "analysis_guidelines": [
-        "Interpret 'DAO' as the nonprofit entity",
-        "Address references indicate payment activities",
-        "Evaluate third-party revenue for private benefit",
-        "Maintain blockchain/crypto components",
-        "Focus on charitable purpose and public benefit",
-        "Consider acceptable incidental private benefit",
-        "Assess operational sustainability"
-      ],
-      "classification_criteria": {
-        "CHARITABLE": "Direct public benefit activities",
-        "OPERATIONAL": "Internal management/maintenance",
-        "MARKETING": "Community growth and awareness",
-        "PROGRAM_RELATED": "Mission-aligned revenue activities",
-        "UNALLOWABLE": "Activities incompatible with 501c3"
-      },
-      "risk_evaluation_framework": {
-        "private_benefit_risk": {
-          "LOW": "Minimal private benefit, clear public benefit",
-          "MEDIUM": "Some private benefit, requires controls",
-          "HIGH": "Significant private benefit concerns"
+      "mission": {
+        "civic_engagement": {
+          "goals": [
+            "decentralized_democracy",
+            "community_governance",
+            "participatory_decision_making"
+          ],
+          "requirements": [
+            "broad_participation",
+            "equitable_access",
+            "measurable_impact"
+          ]
         },
-        "mission_alignment": {
-          "STRONG": "Directly advances charitable mission",
-          "MODERATE": "Indirectly supports mission",
-          "WEAK": "Tenuous connection to mission"
+        "public_goods": {
+          "focus": [
+            "technology_development",
+            "research_advancement",
+            "infrastructure_creation"
+          ],
+          "requirements": [
+            "open_access",
+            "documented_benefits",
+            "sustainable_maintenance"
+          ]
         },
-        "implementation_complexity": {
-          "LOW": "Straightforward execution",
-          "MEDIUM": "Requires moderate oversight",
-          "HIGH": "Complex implementation needs"
+        "creative_support": {
+          "activities": [
+            "artist_funding",
+            "cultural_development",
+            "creative_commons"
+          ],
+          "requirements": [
+            "fair_distribution",
+            "public_access",
+            "impact_measurement"
+          ]
         }
       }
+    }
+  },
+ 
+  "analysis_framework": {
+    "classification_criteria": {
+      "CHARITABLE": {
+        "requirements": [
+          "clear_public_benefit",
+          "mission_advancement",
+          "measured_outcomes"
+        ],
+        "risk_factors": [
+          "private_benefit_ratio",
+          "benefit_distribution",
+          "execution_complexity"
+        ]
+      },
+      "OPERATIONAL": {
+        "requirements": [
+          "necessary_function",
+          "efficiency_improvement",
+          "cost_effectiveness"
+        ],
+        "risk_factors": [
+          "resource_allocation",
+          "implementation_challenges",
+          "maintenance_needs"
+        ]
+      },
+      "MARKETING": {
+        "requirements": [
+          "community_growth",
+          "mission_awareness",
+          "public_education"
+        ],
+        "risk_factors": [
+          "benefit_distribution",
+          "resource_efficiency",
+          "message_alignment"
+        ]
+      },
+      "PROGRAM_RELATED": {
+        "requirements": [
+          "mission_alignment",
+          "revenue_generation",
+          "public_benefit"
+        ],
+        "risk_factors": [
+          "private_benefit",
+          "market_competition",
+          "sustainability"
+        ]
+      },
+      "UNALLOWABLE": {
+        "indicators": [
+          "excessive_private_benefit",
+          "mission_misalignment",
+          "regulatory_violation"
+        ]
+      }
     },
-    "disclaimer": "This analysis represents an informed opinion on 501c3 compatibility and is not legal advice."
+ 
+    "risk_assessment": {
+      "private_benefit": {
+        "LOW": {
+          "criteria": [
+            "incidental_only",
+            "broadly_distributed",
+            "well_documented"
+          ],
+          "controls": ["standard_monitoring"]
+        },
+        "MEDIUM": {
+          "criteria": [
+            "justified_necessity",
+            "controlled_distribution",
+            "clear_documentation"
+          ],
+          "controls": ["enhanced_oversight"]
+        },
+        "HIGH": {
+          "criteria": [
+            "significant_concentration",
+            "complex_distribution",
+            "documentation_gaps"
+          ],
+          "controls": ["strict_controls"]
+        }
+      },
+      "mission_alignment": {
+        "STRONG": {
+          "indicators": [
+            "direct_advancement",
+            "clear_metrics",
+            "documented_impact"
+          ]
+        },
+        "MODERATE": {
+          "indicators": [
+            "indirect_support",
+            "measurable_contribution",
+            "reasonable_connection"
+          ]
+        },
+        "WEAK": {
+          "indicators": [
+            "tangential_relationship",
+            "unclear_impact",
+            "difficult_measurement"
+          ]
+        }
+      },
+      "implementation_complexity": {
+        "LOW": {
+          "characteristics": [
+            "standard_process",
+            "existing_framework",
+            "clear_execution"
+          ]
+        },
+        "MEDIUM": {
+          "characteristics": [
+            "moderate_customization",
+            "some_complexity",
+            "defined_process"
+          ]
+        },
+        "HIGH": {
+          "characteristics": [
+            "significant_complexity",
+            "novel_approach",
+            "uncertain_execution"
+          ]
+        }
+      }
+    }
+  },
+ 
+  "validation_requirements": {
+    "format": {
+      "classification": "ENUM<CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE>",
+      "primary_purpose": "STRING",
+      "allowable_elements": "STRING[]",
+      "unallowable_elements": "STRING[]",
+      "required_modifications": "STRING[]",
+      "risk_assessment": {
+        "private_benefit_risk": "ENUM<LOW|MEDIUM|HIGH>",
+        "mission_alignment": "ENUM<STRONG|MODERATE|WEAK>",
+        "implementation_complexity": "ENUM<LOW|MEDIUM|HIGH>"
+      },
+      "key_considerations": "STRING[]"
+    },
+    "confidence_thresholds": {
+      "classification": 0.85,
+      "risk_assessment": 0.80,
+      "implementation": 0.75
+    },
+    "business_rules": {
+      "classification_alignment": [
+        "CHARITABLE requires STRONG/MODERATE mission alignment",
+        "UNALLOWABLE if HIGH private benefit without justification",
+        "PROGRAM_RELATED requires clear revenue/mission connection"
+      ],
+      "risk_coherence": [
+        "HIGH complexity requires detailed modifications",
+        "HIGH private benefit requires strong justification",
+        "WEAK alignment requires compelling public benefit"
+      ]
+    }
+  },
+ 
+  "analysis_approach": {
+    "principles": [
+      "Balance innovation with compliance",
+      "Prioritize measurable public benefit",
+      "Consider reasonable private benefit",
+      "Focus on practical implementation",
+      "Maintain consistent standards"
+    ],
+    "emphasis": [
+      "Clear documentation requirements",
+      "Specific success metrics",
+      "Practical control mechanisms",
+      "Reasonable risk tolerance"
+    ]
   }
+ }

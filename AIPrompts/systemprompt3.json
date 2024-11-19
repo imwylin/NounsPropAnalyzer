@@ -1,103 +1,196 @@
 {
-    "prompt_purpose": "Nouns DAO 501c3 Proposal Analysis - Progressive Interpretation",
-    "output_format": {
+  "prompt_purpose": "Nouns DAO Innovative 501c3/DUNA Compliance Analysis",
+  
+  "entity_context": {
+    "nouns_dao": {
       "structure": {
-        "start_marker": "ANALYSIS:::START",
-        "end_marker": "ANALYSIS:::END",
-        "required_fields": {
-          "classification": {
-            "type": "enum",
-            "values": ["CHARITABLE", "OPERATIONAL", "MARKETING", "PROGRAM_RELATED", "UNALLOWABLE"]
-          },
-          "primary_purpose": {
-            "type": "string",
-            "format": "single sentence"
-          },
-          "allowable_elements": {
-            "type": "array",
-            "items": "string"
-          },
-          "unallowable_elements": {
-            "type": "array",
-            "items": "string"
-          },
-          "required_modifications": {
-            "type": "array",
-            "items": "string"
-          },
-          "risk_assessment": {
-            "private_benefit_risk": {
-              "type": "enum",
-              "values": ["LOW", "MEDIUM", "HIGH"]
+        "legal": {
+          "501c3_status": {
+            "innovative_interpretation": {
+              "charitable_purpose": [
+                "digital_public_goods",
+                "decentralized_governance_research",
+                "web3_infrastructure"
+              ],
+              "public_benefit": [
+                "open_source_development",
+                "community_empowerment",
+                "technological_advancement"
+              ]
             },
-            "mission_alignment": {
-              "type": "enum",
-              "values": ["STRONG", "MODERATE", "WEAK"]
-            },
-            "implementation_complexity": {
-              "type": "enum",
-              "values": ["LOW", "MEDIUM", "HIGH"]
-            }
+            "modern_oversight": [
+              "on-chain_transparency",
+              "community_governance",
+              "real-time_reporting"
+            ]
           },
-          "key_considerations": {
-            "type": "array",
-            "items": "string"
+          "duna_status": {
+            "next_generation": [
+              "programmable_governance",
+              "automated_compliance",
+              "smart_oversight"
+            ]
+          }
+        },
+        "operations": {
+          "nft_auctions": {
+            "innovative_mechanics": [
+              "algorithmic_price_discovery",
+              "impact_tied_bidding",
+              "community_benefits"
+            ],
+            "compliance_evolution": [
+              "automated_tracking",
+              "impact_measurement",
+              "benefit_distribution"
+            ]
+          },
+          "treasury": {
+            "defi_integration": [
+              "yield_optimization",
+              "programmatic_allocation",
+              "impact_investing"
+            ],
+            "modern_compliance": [
+              "real-time_reporting",
+              "automated_controls",
+              "blockchain_transparency"
+            ]
           }
         }
-      }
-    },
-    "evaluation_context": {
-      "organization_structure": {
-        "revenue_sources": [
-          "Daily NFT auctions (digital art)",
-          "Donations",
-          "Community initiatives",
-          "Technology licensing",
-          "Educational programs",
-          "Collaborative projects"
-        ],
-        "mission_statement": "The Nouns Foundation's mission is to pioneer innovative approaches to civic engagement through decentralized democracy, catalyze breakthrough developments in public goods technologies and decentralized research, nurture creative expression and artistic innovation, and transform communities through technology-enabled direct impact initiatives.",
-        "ip_strategy": "Progressive CC0 and open-source approach with selective licensing for sustainability",
-        "governance": "Hybrid blockchain-traditional democratic system",
-        "compliance": "Modern interpretation of crypto-native operations",
-        "payments": "Flexible cryptocurrency and traditional payment systems"
       },
-      "analysis_guidelines": [
-        "Embrace innovative interpretations of charitable purpose",
-        "Consider technological advancement as public benefit",
-        "Evaluate community benefit through modern lens",
-        "Balance traditional compliance with innovation",
-        "Recognize evolving nature of public goods",
-        "Accept reasonable private benefit in service of innovation",
-        "Focus on transformative potential",
-        "Value experimental approaches",
-        "Consider indirect public benefits",
-        "Emphasize long-term impact over short-term concerns"
-      ],
-      "classification_criteria": {
-        "CHARITABLE": "Activities advancing public benefit through innovation",
-        "OPERATIONAL": "Essential infrastructure and ecosystem development",
-        "MARKETING": "Community building and public engagement",
-        "PROGRAM_RELATED": "Experimental initiatives advancing mission",
-        "UNALLOWABLE": "Activities primarily serving private interests"
-      },
-      "risk_evaluation_framework": {
-        "private_benefit_risk": {
-          "LOW": "Acceptable private benefit in service of innovation",
-          "MEDIUM": "Managed private benefit with public good potential",
-          "HIGH": "Disproportionate private benefit without justification"
-        },
-        "mission_alignment": {
-          "STRONG": "Advances mission through innovative approaches",
-          "MODERATE": "Supports ecosystem development",
-          "WEAK": "Limited connection to innovative public benefit"
-        },
-        "implementation_complexity": {
-          "LOW": "Standard implementation patterns",
-          "MEDIUM": "Innovative but manageable approach",
-          "HIGH": "Complex but potentially transformative"
+      "mission": {
+        "expanded_interpretation": {
+          "civic_innovation": [
+            "dao_governance_research",
+            "digital_democracy_tools",
+            "participation_technology"
+          ],
+          "public_goods": [
+            "web3_infrastructure",
+            "open_protocols",
+            "decentralized_science"
+          ],
+          "creative_advancement": [
+            "generative_art_research",
+            "creator_economies",
+            "digital_culture"
+          ]
         }
       }
+    }
+  },
+ 
+  "analysis_framework": {
+    "classification_criteria": {
+      "CHARITABLE": {
+        "innovative_requirements": [
+          "technological_advancement",
+          "ecosystem_development",
+          "community_empowerment"
+        ],
+        "modern_metrics": [
+          "network_effects",
+          "protocol_adoption",
+          "community_engagement"
+        ]
+      },
+      "PROGRAM_RELATED": {
+        "web3_focus": [
+          "protocol_development",
+          "ecosystem_growth",
+          "infrastructure_building"
+        ],
+        "impact_metrics": [
+          "adoption_rates",
+          "developer_activity",
+          "community_value"
+        ]
+      }
     },
-    "disclaimer": "This analysis represents a progressive interpretation of 501c3 compatibility and is not legal advice."
-}
+ 
+    "risk_assessment": {
+      "private_benefit": {
+        "innovative_interpretation": {
+          "LOW": {
+            "criteria": [
+              "broad_distribution",
+              "ecosystem_benefit",
+              "network_effects"
+            ]
+          },
+          "MEDIUM": {
+            "criteria": [
+              "balanced_incentives",
+              "community_alignment",
+              "value_creation"
+            ]
+          }
+        }
+      },
+      "mission_alignment": {
+        "web3_context": {
+          "STRONG": [
+            "protocol_development",
+            "ecosystem_growth",
+            "community_benefit"
+          ],
+          "MODERATE": [
+            "infrastructure_support",
+            "indirect_advancement",
+            "experimental_approaches"
+          ]
+        }
+      }
+    }
+  },
+ 
+  "validation_requirements": {
+    "format": {
+      "classification": "ENUM<CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE>",
+      "primary_purpose": "STRING",
+      "allowable_elements": "STRING[]",
+      "unallowable_elements": "STRING[]",
+      "required_modifications": "STRING[]",
+      "risk_assessment": {
+        "private_benefit_risk": "ENUM<LOW|MEDIUM|HIGH>",
+        "mission_alignment": "ENUM<STRONG|MODERATE|WEAK>",
+        "implementation_complexity": "ENUM<LOW|MEDIUM|HIGH>"
+      },
+      "key_considerations": "STRING[]"
+    },
+    "confidence_thresholds": {
+      "classification": 0.75,
+      "risk_assessment": 0.70,
+      "implementation": 0.65
+    },
+    "business_rules": {
+      "innovation_focused": [
+        "Consider technological advancement as public benefit",
+        "Value network effects in benefit assessment",
+        "Recognize ecosystem development as charitable"
+      ],
+      "risk_tolerance": [
+        "Accept experimental approaches with controls",
+        "Consider community governance as oversight",
+        "Value long-term impact over short-term certainty"
+      ]
+    }
+  },
+ 
+  "analysis_approach": {
+    "principles": [
+      "Embrace technological innovation",
+      "Recognize digital public goods",
+      "Value ecosystem development",
+      "Consider network effects",
+      "Support experimentation"
+    ],
+    "emphasis": [
+      "Innovation in compliance",
+      "Modern interpretation",
+      "Community benefit",
+      "Technological advancement"
+    ]
+  }
+ }

@@ -7,9 +7,16 @@ import type { AIAnalysisResult } from '../types/graphql'
 import styles from './analyze.module.css'
 import Image from 'next/image'
 
+interface RawAnalysis {
+  promptVersion: number
+  response: string
+  timestamp: string
+}
+
 interface AnalysisResultWithMeta extends AIAnalysisResult {
   proposalId: string
   timestamp: string
+  rawAnalysis?: RawAnalysis
 }
 
 interface AnalysisStatus {
@@ -121,6 +128,8 @@ export default function AnalyzePage() {
   const [selectedPrompts, setSelectedPrompts] = useState<[number, number]>([1, 3])
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus[]>([])
   const [showStatus, setShowStatus] = useState(true)
+  const [showRawAnalysis, setShowRawAnalysis] = useState(false)
+  const [selectedAnalysis, setSelectedAnalysis] = useState<RawAnalysis | null>(null)
   
   const { 
     data: description,
@@ -146,6 +155,11 @@ export default function AnalyzePage() {
       ])
       
       const firstAnalysis = await analyzeProposal(description, selectedPrompts[0])
+      const firstRawAnalysis = {
+        promptVersion: selectedPrompts[0],
+        response: firstAnalysis.rawResponse || 'Raw response not available',
+        timestamp: new Date().toISOString()
+      }
       
       setAnalysisStatus(prev => [
         { ...prev[0], state: 'success' },
@@ -155,7 +169,8 @@ export default function AnalyzePage() {
       setAnalysisResults([{
         ...firstAnalysis,
         proposalId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        rawAnalysis: firstRawAnalysis
       }])
       
       // Wait before second analysis
@@ -168,6 +183,11 @@ export default function AnalyzePage() {
       ])
       
       const secondAnalysis = await analyzeProposal(description, selectedPrompts[1])
+      const secondRawAnalysis = {
+        promptVersion: selectedPrompts[1],
+        response: secondAnalysis.rawResponse || 'Raw response not available',
+        timestamp: new Date().toISOString()
+      }
       
       setAnalysisStatus(prev => [
         prev[0],
@@ -177,7 +197,8 @@ export default function AnalyzePage() {
       setAnalysisResults(prev => [...prev, {
         ...secondAnalysis,
         proposalId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        rawAnalysis: secondRawAnalysis
       }])
 
       setTimeout(() => {
@@ -192,6 +213,38 @@ export default function AnalyzePage() {
     } finally {
       setIsAnalyzing(false)
     }
+  }
+
+  const handleViewRawAnalysis = (rawAnalysis: RawAnalysis) => {
+    setSelectedAnalysis(rawAnalysis)
+    setShowRawAnalysis(true)
+  }
+
+  const RawAnalysisModal = () => {
+    if (!showRawAnalysis || !selectedAnalysis) return null
+
+    return (
+      <div className={styles.modalOverlay} onClick={() => setShowRawAnalysis(false)}>
+        <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+          <div className={styles.modalHeader}>
+            <h3>Raw Analysis Output</h3>
+            <div className={styles.modalMeta}>
+              <span>Prompt Version: {getPromptName(selectedAnalysis.promptVersion)}</span>
+              <span>Time: {new Date(selectedAnalysis.timestamp).toLocaleString()}</span>
+            </div>
+            <button 
+              className={styles.closeButton}
+              onClick={() => setShowRawAnalysis(false)}
+            >
+              ×
+            </button>
+          </div>
+          <pre className={styles.rawAnalysis}>
+            {selectedAnalysis.response}
+          </pre>
+        </div>
+      </div>
+    )
   }
 
   const getPromptName = (promptId: number) => {
@@ -214,7 +267,19 @@ export default function AnalyzePage() {
           <tr>
             <th>Aspect</th>
             {results.map((result, index) => (
-              <th key={index}>{getPromptName(selectedPrompts[index])} Analysis</th>
+              <th key={index}>
+                <div className={styles.columnHeader}>
+                  <span>{getPromptName(selectedPrompts[index])} Analysis</span>
+                  {result.rawAnalysis && (
+                    <button 
+                      className={styles.viewRawButton}
+                      onClick={() => handleViewRawAnalysis(result.rawAnalysis!)}
+                    >
+                      View Raw
+                    </button>
+                  )}
+                </div>
+              </th>
             ))}
           </tr>
         </thead>
@@ -229,6 +294,17 @@ export default function AnalyzePage() {
             <td>Primary Purpose</td>
             {results.map((result, index) => (
               <td key={index}>{result.primary_purpose}</td>
+            ))}
+          </tr>
+          <tr>
+            <td>Human Review Required</td>
+            {results.map((result, index) => (
+              <td key={index}>
+                {result.needs_human_review ? 
+                  <span className={styles.warningPill}>Required</span> : 
+                  <span className={styles.successPill}>Not Required</span>
+                }
+              </td>
             ))}
           </tr>
           <tr>
@@ -306,6 +382,36 @@ export default function AnalyzePage() {
                     <li key={i}>{consideration}</li>
                   ))}
                 </ul>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td>Confidence Scores</td>
+            {results.map((result, index) => (
+              <td key={index}>
+                <div>Classification: {(result.confidence_scores.classification * 100).toFixed(1)}%</div>
+                <div>Private Benefit: {(result.confidence_scores.risk_assessment.private_benefit_risk * 100).toFixed(1)}%</div>
+                <div>Mission Alignment: {(result.confidence_scores.risk_assessment.mission_alignment * 100).toFixed(1)}%</div>
+                <div>Implementation: {(result.confidence_scores.risk_assessment.implementation_complexity * 100).toFixed(1)}%</div>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td>Validation Warnings</td>
+            {results.map((result, index) => (
+              <td key={index}>
+                {result.validationWarnings?.length ? (
+                  <div className={styles.warningsList}>
+                    {result.validationWarnings.map((warning, i) => (
+                      <div key={i} className={styles.warningItem}>
+                        <span className={styles.warningBadge}>Warning</span>
+                        <span>{warning.message}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className={styles.successPill}>No Warnings</span>
+                )}
               </td>
             ))}
           </tr>
@@ -436,6 +542,7 @@ export default function AnalyzePage() {
           )}
         </div>
       </div>
+      <RawAnalysisModal />
     </div>
   )
 }
