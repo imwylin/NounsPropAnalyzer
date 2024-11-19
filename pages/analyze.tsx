@@ -396,25 +396,6 @@ export default function AnalyzePage() {
               </td>
             ))}
           </tr>
-          <tr>
-            <td>Validation Warnings</td>
-            {results.map((result, index) => (
-              <td key={index}>
-                {result.validationWarnings?.length ? (
-                  <div className={styles.warningsList}>
-                    {result.validationWarnings.map((warning, i) => (
-                      <div key={i} className={styles.warningItem}>
-                        <span className={styles.warningBadge}>Warning</span>
-                        <span>{warning.message}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <span className={styles.successPill}>No Warnings</span>
-                )}
-              </td>
-            ))}
-          </tr>
         </tbody>
       </table>
     );
