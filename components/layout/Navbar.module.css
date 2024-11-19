@@ -9,7 +9,6 @@
   top: 0;
   z-index: 50;
   backdrop-filter: blur(8px);
-  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .homeLink {
@@ -78,7 +77,6 @@
 
 /* Dark mode styles */
 :global(.dark) .navbar {
-  background-color: rgba(75, 73, 73, 0.9);
   border-color: var(--border);
 }
 
