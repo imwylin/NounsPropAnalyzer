@@ -7,7 +7,22 @@ interface AnalyzeResponse {
   details?: ErrorResponse
 }
 
-export async function analyzeProposal(description: string, promptVersion: number = 1): Promise<AIAnalysisResult & { rawResponse?: string, validationWarnings?: ValidationError[] }> {
+interface ConfidenceMetrics {
+  response_confidence: number;
+  rubric_scores: {
+    classification: number;
+    risk_assessment: number;
+    modifications: number;
+    elements: number;
+  };
+  grading_response: string;
+}
+
+export async function analyzeProposal(description: string, promptVersion: number = 1): Promise<AIAnalysisResult & { 
+  rawResponse?: string, 
+  validationWarnings?: ValidationError[],
+  native_confidence?: ConfidenceMetrics
+}> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 120000)
 
@@ -25,8 +40,7 @@ export async function analyzeProposal(description: string, promptVersion: number
 
     const data: AnalyzeResponse = await response.json()
     console.log('Raw API Response:', data)
-    console.log('Risk Assessment in response:', data.result?.risk_assessment)
-    console.log('Mission Alignment value:', data.result?.risk_assessment.mission_alignment)
+    console.log('Native confidence metrics:', data.result?.native_confidence)
 
     if (!response.ok) {
       throw new Error(JSON.stringify({
@@ -39,14 +53,24 @@ export async function analyzeProposal(description: string, promptVersion: number
       console.warn('Analysis validation warnings:', data.validationWarnings)
     }
 
+    const native_confidence = data.result?.native_confidence ? {
+      response_confidence: data.result.native_confidence.response_confidence || 0,
+      rubric_scores: {
+        classification: data.result.native_confidence.rubric_scores?.classification || 0,
+        risk_assessment: data.result.native_confidence.rubric_scores?.risk_assessment || 0,
+        modifications: data.result.native_confidence.rubric_scores?.modifications || 0,
+        elements: data.result.native_confidence.rubric_scores?.elements || 0
+      },
+      grading_response: data.result.native_confidence.grading_response || ''
+    } : undefined
+
     const result = {
       ...data.result!,
-      validationWarnings: data.validationWarnings
+      validationWarnings: data.validationWarnings,
+      native_confidence
     }
 
-    console.log('Processed result:', result)
-    console.log('Final risk assessment:', result.risk_assessment)
-    console.log('Final mission alignment:', result.risk_assessment.mission_alignment)
+    console.log('Final result with native confidence:', result)
 
     return result
   } catch (error) {

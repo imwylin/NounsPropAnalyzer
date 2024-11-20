@@ -1,4 +1,4 @@
-import type { AIAnalysisResult, RiskLevel, MissionAlignment } from '../../types/graphql'
+import type { AIAnalysisResult } from '../../types/graphql'
 
 export interface BusinessRule {
   id: string
@@ -39,8 +39,23 @@ const businessRules: BusinessRule[] = [
     name: 'Unallowable Elements Consistency',
     severity: 'WARNING',
     validate: (result: AIAnalysisResult): ValidationResult => {
-      if (result.classification === 'CHARITABLE' && 
-          result.unallowable_elements.length > 0) {
+      const hasActualUnallowableElements = result.unallowable_elements.some(element => {
+        const lowerElement = element.toLowerCase()
+        const negativeIndicators = [
+          'no ', 
+          'none ', 
+          'not ', 
+          'there are no',
+          'none identified',
+          'no concerning',
+          'no specific',
+          'aligns with',
+          'consistent with'
+        ]
+        return !negativeIndicators.some(indicator => lowerElement.includes(indicator))
+      })
+
+      if (result.classification === 'CHARITABLE' && hasActualUnallowableElements) {
         return {
           valid: false,
           message: 'Proposal contains unallowable elements that may need review'

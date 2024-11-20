@@ -28,7 +28,7 @@ export default function HomePage() {
           </div>
         </Link>
 
-        <Link href="/treasury" className={styles.card}>
+        <div className={`${styles.card} ${styles.comingSoon}`}>
           <div className={styles.cardHeader}>
             <h2>Treasury Overview</h2>
             <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,9 +45,9 @@ export default function HomePage() {
             <span>Flow Analysis</span>
           </div>
           <div className={styles.cardFooter}>
-            <span className={styles.accessButton}>Access Tool</span>
+            <span className={styles.comingSoonLabel}>Coming Soon</span>
           </div>
-        </Link>
+        </div>
 
         <div className={`${styles.card} ${styles.comingSoon}`}>
           <div className={styles.cardHeader}>

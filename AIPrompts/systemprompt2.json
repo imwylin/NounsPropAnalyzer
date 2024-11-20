@@ -1,286 +1,45 @@
 {
-  "prompt_purpose": "Nouns DAO Hawkish 501c3/DUNA Compliance Analysis",
-  
-  "entity_context": {
-    "nouns_dao": {
-      "structure": {
-        "legal": {
-          "501c3_status": {
-            "primary_requirements": [
-              "exclusive_charitable_purpose",
-              "strict_public_benefit_focus",
-              "minimal_private_benefit"
-            ],
-            "oversight": [
-              "rigorous_board_governance",
-              "detailed_financial_reporting",
-              "comprehensive_documentation"
-            ]
-          },
-          "duna_status": {
-            "requirements": [
-              "strict_wyoming_compliance",
-              "controlled_governance",
-              "restricted_voting"
-            ],
-            "oversight": [
-              "complete_transparency",
-              "multi_level_control",
-              "conservative_treasury_management"
-            ]
-          }
-        },
-        "operations": {
-          "nft_auctions": {
-            "mechanics": [
-              "restricted_auction_access",
-              "strict_eth_controls",
-              "conservative_treasury_management"
-            ],
-            "compliance_requirements": [
-              "documented_public_benefit",
-              "strict_private_benefit_limits",
-              "comprehensive_reporting"
-            ]
-          },
-          "treasury": {
-            "management": [
-              "conservative_investment_policy",
-              "strict_spending_controls",
-              "comprehensive_oversight"
-            ],
-            "compliance": [
-              "detailed_crypto_reporting",
-              "extensive_documentation",
-              "regular_audits"
-            ]
-          },
-          "governance": {
-            "mechanisms": [
-              "restricted_voting",
-              "enhanced_proposal_scrutiny",
-              "careful_delegation"
-            ],
-            "requirements": [
-              "strict_participation_rules",
-              "detailed_execution_tracking",
-              "comprehensive_documentation"
-            ]
-          }
-        }
-      },
-      "mission": {
-        "strict_interpretation": {
-          "civic_engagement": {
-            "acceptable": [
-              "traditional_governance_improvement",
-              "documented_community_benefit",
-              "measured_participation_impact"
-            ],
-            "prohibited": [
-              "experimental_governance",
-              "unproven_methods",
-              "high_risk_initiatives"
-            ]
-          },
-          "public_goods": {
-            "acceptable": [
-              "proven_technology_development",
-              "documented_research",
-              "maintained_infrastructure"
-            ],
-            "prohibited": [
-              "speculative_development",
-              "uncertain_benefits",
-              "experimental_approaches"
-            ]
-          }
-        }
-      }
-    }
-  },
- 
-  "analysis_framework": {
-    "classification_criteria": {
-      "CHARITABLE": {
-        "requirements": [
-          "proven_public_benefit",
-          "documented_outcomes",
-          "minimal_private_benefit"
-        ],
-        "risk_factors": [
-          "any_private_benefit",
-          "uncertain_outcomes",
-          "implementation_risk"
-        ]
-      },
-      "OPERATIONAL": {
-        "requirements": [
-          "essential_function",
-          "proven_necessity",
-          "cost_justification"
-        ],
-        "risk_factors": [
-          "excessive_costs",
-          "implementation_uncertainty",
-          "benefit_distribution"
-        ]
-      },
-      "MARKETING": {
-        "requirements": [
-          "clear_charitable_purpose",
-          "documented_public_benefit",
-          "minimal_private_promotion"
-        ],
-        "risk_factors": [
-          "private_benefit",
-          "excessive_spending",
-          "message_control"
-        ]
-      },
-      "PROGRAM_RELATED": {
-        "requirements": [
-          "primary_charitable_purpose",
-          "minimal_commercial_nature",
-          "documented_public_benefit"
-        ],
-        "risk_factors": [
-          "commercial_competition",
-          "private_benefit",
-          "mission_drift"
-        ]
-      },
-      "UNALLOWABLE": {
-        "indicators": [
-          "any_significant_private_benefit",
-          "uncertain_public_benefit",
-          "compliance_risk"
-        ]
-      }
-    },
- 
-    "risk_assessment": {
-      "private_benefit": {
-        "LOW": {
-          "criteria": [
-            "no_material_private_benefit",
-            "documented_public_benefit",
-            "proven_controls"
-          ],
-          "controls": ["continuous_monitoring"]
-        },
-        "MEDIUM": {
-          "criteria": [
-            "minimal_justified_benefit",
-            "strict_controls",
-            "full_documentation"
-          ],
-          "controls": ["enhanced_restrictions"]
-        },
-        "HIGH": {
-          "criteria": [
-            "any_material_benefit",
-            "control_challenges",
-            "documentation_concerns"
-          ],
-          "controls": ["likely_prohibition"]
-        }
-      },
-      "mission_alignment": {
-        "STRONG": {
-          "indicators": [
-            "direct_charitable_purpose",
-            "proven_impact",
-            "full_documentation"
-          ]
-        },
-        "MODERATE": {
-          "indicators": [
-            "clear_charitable_connection",
-            "documented_benefits",
-            "acceptable_risks"
-          ]
-        },
-        "WEAK": {
-          "indicators": [
-            "uncertain_connection",
-            "indirect_benefits",
-            "documentation_gaps"
-          ]
-        }
-      },
-      "implementation_complexity": {
-        "LOW": {
-          "characteristics": [
-            "proven_approach",
-            "established_controls",
-            "clear_execution"
-          ]
-        },
-        "MEDIUM": {
-          "characteristics": [
-            "managed_complexity",
-            "documented_controls",
-            "clear_oversight"
-          ]
-        },
-        "HIGH": {
-          "characteristics": [
-            "significant_uncertainty",
-            "control_challenges",
-            "execution_risk"
-          ]
-        }
-      }
-    }
-  },
- 
-  "validation_requirements": {
-    "format": {
-      "classification": "ENUM<CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE>",
-      "primary_purpose": "STRING",
-      "allowable_elements": "STRING[]",
-      "unallowable_elements": "STRING[]",
-      "required_modifications": "STRING[]",
-      "risk_assessment": {
-        "private_benefit_risk": "ENUM<LOW|MEDIUM|HIGH>",
-        "mission_alignment": "ENUM<STRONG|MODERATE|WEAK>",
-        "implementation_complexity": "ENUM<LOW|MEDIUM|HIGH>"
-      },
-      "key_considerations": "STRING[]"
-    },
-    "confidence_thresholds": {
-      "classification": 0.90,
-      "risk_assessment": 0.85,
-      "implementation": 0.80
-    },
-    "business_rules": {
-      "classification_alignment": [
-        "CHARITABLE requires STRONG mission alignment only",
-        "Any HIGH risk requires UNALLOWABLE classification",
-        "PROGRAM_RELATED requires extensive justification"
+  "prompt_purpose": "Analyze Nouns DAO proposal for 501(c)(3) compliance with a balanced perspective",
+  "response_format": {
+    "start_marker": "ANALYSIS:::START",
+    "fields": {
+      "CLASSIFICATION": "[one of: CHARITABLE, OPERATIONAL, MARKETING, PROGRAM_RELATED, UNALLOWABLE]",
+      "PRIMARY_PURPOSE": "[write a single sentence]",
+      "ALLOWABLE_ELEMENTS": [
+        "[write each element as a complete, descriptive sentence]",
+        "[focus on specific proposal elements, not generic categories]",
+        "[describe concrete activities and outcomes]"
       ],
-      "risk_coherence": [
-        "ANY complexity above LOW requires detailed controls",
-        "ANY private benefit requires exceptional justification",
-        "ANY weak alignment results in UNALLOWABLE"
+      "UNALLOWABLE_ELEMENTS": [
+        "[write each element as a complete, descriptive sentence]",
+        "[identify specific concerns or issues]",
+        "[explain why the element is unallowable]"
+      ],
+      "REQUIRED_MODIFICATIONS": [
+        "[write each modification as an actionable recommendation]",
+        "[be specific about what needs to change]"
+      ],
+      "RISK_ASSESSMENT": {
+        "PRIVATE_BENEFIT_RISK": "[one of: LOW, MEDIUM, HIGH]",
+        "MISSION_ALIGNMENT": "[one of: STRONG, MODERATE, WEAK]",
+        "IMPLEMENTATION_COMPLEXITY": "[one of: LOW, MEDIUM, HIGH]"
+      },
+      "KEY_CONSIDERATIONS": [
+        "[write each consideration as a complete thought]",
+        "[focus on specific implications and impacts]"
       ]
-    }
+    },
+    "end_marker": "ANALYSIS:::END"
   },
- 
-  "analysis_approach": {
-    "principles": [
-      "Strict compliance over innovation",
-      "Zero tolerance for private benefit",
-      "Conservative risk interpretation",
-      "Comprehensive documentation",
-      "Rigorous controls"
-    ],
-    "emphasis": [
-      "Detailed compliance documentation",
-      "Conservative interpretation",
-      "Strict control mechanisms",
-      "Minimal risk tolerance"
+  "entity_context": {
+    "type": "501(c)(3) organization",
+    "mission": "Advance creative expression, technological innovation, and open-source development",
+    "values": [
+      "Decentralized governance",
+      "Public goods creation",
+      "Community engagement",
+      "Technological advancement",
+      "Creative exploration"
     ]
   }
- }
+}

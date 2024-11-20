@@ -6,6 +6,9 @@ import { analyzeProposal } from '../utils/ai/analyzeProposal'
 import type { AIAnalysisResult } from '../types/graphql'
 import styles from './analyze.module.css'
 import Image from 'next/image'
+import { assessModifications } from '../src/validation/confidenceThresholds'
+import type { Components } from 'react-markdown'
+import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react'
 
 interface RawAnalysis {
   promptVersion: number
@@ -26,13 +29,13 @@ interface AnalysisStatus {
 }
 
 // Add this component for custom image rendering
-const MarkdownComponents = {
-  img: ({ node, ...props }: any) => {
+const MarkdownComponents: Components = {
+  img: function ImageComponent(props: DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>) {
     const [isError, setIsError] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     if (!props.src || isError) {
-      return null; // Don't render anything if src is missing or there's an error
+      return null;
     }
 
     return (
@@ -46,12 +49,12 @@ const MarkdownComponents = {
           unoptimized
           onError={() => setIsError(true)}
           onLoad={() => setIsLoading(false)}
-          priority={false}
+          priority
         />
         {isLoading && <div className={styles.imageLoader}>Loading...</div>}
       </div>
     );
-  },
+  }
 }
 
 const StatusIcon = ({ state }: { state: string }) => {
@@ -121,6 +124,47 @@ const getComplexityStyle = (complexity: 'LOW' | 'MEDIUM' | 'HIGH') => {
   }
 }
 
+// Add helper function to categorize allowable elements
+const categorizeAllowableElement = (element: string) => {
+  const categories = {
+    governance: [
+      'governance', 'oversight', 'voting', 'control', 'board',
+      'decision', 'authority', 'policy', 'leadership', 'stakeholder'
+    ],
+    financial: [
+      'budget', 'cost', 'fund', 'expense', 'revenue',
+      'payment', 'allocation', 'financial', 'monetary', 'treasury'
+    ],
+    operational: [
+      'process', 'implement', 'execute', 'manage', 'coordinate',
+      'organize', 'operate', 'conduct', 'perform', 'deliver'
+    ],
+    community: [
+      'community', 'member', 'participant', 'engagement', 'involvement',
+      'collaboration', 'participation', 'contribution', 'interaction', 'network'
+    ],
+    educational: [
+      'education', 'learning', 'training', 'knowledge', 'skill',
+      'development', 'workshop', 'teaching', 'instruction', 'awareness'
+    ],
+    technical: [
+      'technical', 'technology', 'software', 'platform', 'infrastructure',
+      'system', 'protocol', 'development', 'integration', 'implementation'
+    ],
+    creative: [
+      'creative', 'art', 'design', 'content', 'media',
+      'production', 'cultural', 'artistic', 'visual', 'creative'
+    ]
+  }
+
+  const elementLower = element.toLowerCase()
+  const matchedCategories = Object.entries(categories)
+    .filter(([_, keywords]) => keywords.some(word => elementLower.includes(word)))
+    .map(([category]) => category)
+
+  return matchedCategories.length > 0 ? matchedCategories : ['general']
+}
+
 export default function AnalyzePage() {
   const [proposalId, setProposalId] = useState('')
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultWithMeta[]>([])
@@ -131,6 +175,16 @@ export default function AnalyzePage() {
   const [showRawAnalysis, setShowRawAnalysis] = useState(false)
   const [selectedAnalysis, setSelectedAnalysis] = useState<RawAnalysis | null>(null)
   
+  // Add grading modal state inside component
+  const [showGradingModal, setShowGradingModal] = useState(false)
+  const [selectedGrading, setSelectedGrading] = useState<string | null>(null)
+
+  // Add handler function inside component
+  const handleViewGradingResponse = (gradingResponse: string) => {
+    setSelectedGrading(gradingResponse)
+    setShowGradingModal(true)
+  }
+
   const { 
     data: description,
     isLoading,
@@ -300,10 +354,20 @@ export default function AnalyzePage() {
             <td>Human Review Required</td>
             {results.map((result, index) => (
               <td key={index}>
-                {result.needs_human_review ? 
-                  <span className={styles.warningPill}>Required</span> : 
-                  <span className={styles.successPill}>Not Required</span>
-                }
+                <div className={styles.reviewStatus}>
+                  {result.needs_human_review ? 
+                    <>
+                      <span className={styles.warningPill}>Required</span>
+                      {result.reviewReasons?.map((reason, i) => (
+                        <span key={i} className={styles.reviewReason}>• {reason}</span>
+                      ))}
+                    </> : 
+                    <>
+                      <span className={styles.successPill}>Not Required</span>
+                      <span className={styles.reviewReason}>Automated review passed</span>
+                    </>
+                  }
+                </div>
               </td>
             ))}
           </tr>
@@ -343,7 +407,18 @@ export default function AnalyzePage() {
               <td key={index}>
                 <ul className={styles.elementList}>
                   {result.allowable_elements.map((element, i) => (
-                    <li key={i}>{element}</li>
+                    <li key={i} className={styles.elementItem}>
+                      <div className={styles.elementContent}>
+                        <div className={styles.elementCategories}>
+                          {categorizeAllowableElement(element).map(category => (
+                            <span key={category} className={styles.elementCategory}>
+                              {category}
+                            </span>
+                          ))}
+                        </div>
+                        <span className={styles.elementText}>{element}</span>
+                      </div>
+                    </li>
                   ))}
                 </ul>
               </td>
@@ -362,14 +437,41 @@ export default function AnalyzePage() {
             ))}
           </tr>
           <tr>
-            <td>Required Modifications</td>
+            <td>Suggested Modifications</td>
             {results.map((result, index) => (
               <td key={index}>
-                <ul className={styles.elementList}>
-                  {result.required_modifications.map((mod, i) => (
-                    <li key={i}>{mod}</li>
-                  ))}
-                </ul>
+                <div className={styles.modificationsSection}>
+                  <div className={styles.modificationHeader}>
+                    <span className={styles.severityValue}>
+                      {assessModifications(result.required_modifications).severity.toLowerCase()}
+                    </span>
+                  </div>
+                  <ul className={styles.elementList}>
+                    {result.required_modifications.map((mod, i) => {
+                      // Use the modText directly in the categories filter
+                      const categories = Object.entries(assessModifications([mod]).categories)
+                        .filter(([_, count]) => count > 0)
+                        .map(([category]) => category)
+
+                      return (
+                        <li key={i} className={styles.modificationItem}>
+                          <div className={styles.modificationContent}>
+                            {categories.length > 0 && (
+                              <div className={styles.modificationCategories}>
+                                {categories.map(cat => (
+                                  <span key={cat} className={styles.modificationCategory}>
+                                    {cat}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            <span className={styles.modificationText}>{mod}</span>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
               </td>
             ))}
           </tr>
@@ -386,13 +488,56 @@ export default function AnalyzePage() {
             ))}
           </tr>
           <tr>
-            <td>Confidence Scores</td>
+            <td>Claude&apos;s Confidence</td>
             {results.map((result, index) => (
               <td key={index}>
-                <div>Classification: {(result.confidence_scores.classification * 100).toFixed(1)}%</div>
-                <div>Private Benefit: {(result.confidence_scores.risk_assessment.private_benefit_risk * 100).toFixed(1)}%</div>
-                <div>Mission Alignment: {(result.confidence_scores.risk_assessment.mission_alignment * 100).toFixed(1)}%</div>
-                <div>Implementation: {(result.confidence_scores.risk_assessment.implementation_complexity * 100).toFixed(1)}%</div>
+                {result.native_confidence && result.native_confidence.rubric_scores ? (
+                  <div className={styles.confidenceScores}>
+                    <div className={styles.rubricScore}>
+                      <span className={styles.rubricLabel}>Classification:</span>
+                      <span className={styles.rubricValue}>
+                        {result.native_confidence.rubric_scores.classification}/5
+                      </span>
+                    </div>
+                    <div className={styles.rubricScore}>
+                      <span className={styles.rubricLabel}>Risk Assessment:</span>
+                      <span className={styles.rubricValue}>
+                        {result.native_confidence.rubric_scores.risk_assessment}/5
+                      </span>
+                    </div>
+                    <div className={styles.rubricScore}>
+                      <span className={styles.rubricLabel}>Modifications:</span>
+                      <span className={styles.rubricValue}>
+                        {result.native_confidence.rubric_scores.modifications}/5
+                      </span>
+                    </div>
+                    <div className={styles.rubricScore}>
+                      <span className={styles.rubricLabel}>Elements:</span>
+                      <span className={styles.rubricValue}>
+                        {result.native_confidence.rubric_scores.elements}/5
+                      </span>
+                    </div>
+                    <div className={styles.overallConfidence}>
+                      <span className={styles.rubricLabel}>Overall:</span>
+                      <span className={styles.rubricValue}>
+                        {((result.native_confidence.response_confidence || 0) * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                    {result.native_confidence.grading_response && (
+                      <div className={styles.gradingResponse}>
+                        <button 
+                          onClick={() => result.native_confidence?.grading_response && 
+                            handleViewGradingResponse(result.native_confidence.grading_response)}
+                          className={styles.viewGradingButton}
+                        >
+                          View Grading Details
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>Confidence metrics not available</div>
+                )}
               </td>
             ))}
           </tr>
@@ -524,6 +669,25 @@ export default function AnalyzePage() {
         </div>
       </div>
       <RawAnalysisModal />
+      
+      {showGradingModal && selectedGrading && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>Grading Details</h2>
+              <button 
+                onClick={() => setShowGradingModal(false)}
+                className={styles.closeButton}
+              >
+                ×
+              </button>
+            </div>
+            <pre className={styles.rawAnalysis}>
+              {selectedGrading}
+            </pre>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

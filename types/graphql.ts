@@ -58,13 +58,15 @@ export interface RiskAssessment {
   implementation_complexity: RiskLevel
 }
 
-export interface ConfidenceScores {
-  classification: number
-  risk_assessment: {
-    private_benefit_risk: number
-    mission_alignment: number
-    implementation_complexity: number
+export interface ClaudeConfidenceMetadata {
+  response_confidence?: number
+  rubric_scores?: {
+    classification: number
+    risk_assessment: number
+    modifications: number
+    elements: number
   }
+  grading_response?: string
 }
 
 export interface AIAnalysisResult {
@@ -75,10 +77,11 @@ export interface AIAnalysisResult {
   required_modifications: string[]
   risk_assessment: RiskAssessment
   key_considerations: string[]
-  confidence_scores: ConfidenceScores
   needs_human_review: boolean
   rawResponse?: string
   validationWarnings?: ValidationError[]
+  reviewReasons?: string[]
+  native_confidence?: ClaudeConfidenceMetadata
 }
 
 export interface ValidationError {

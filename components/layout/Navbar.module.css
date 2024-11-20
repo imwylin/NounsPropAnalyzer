@@ -49,29 +49,32 @@
   background-color: var(--hover-bg);
 }
 
-.darkModeButton {
+.themeButton {
   padding: 0.5rem;
-  background: none;
-  border: none;
+  background: var(--hover-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
 }
 
-.darkModeButton:hover {
-  background-color: var(--hover-bg);
+.themeButton:hover {
+  background: var(--border);
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.darkModeIcon {
+.themeButton svg {
   transition: transform 0.2s ease;
 }
 
-.darkModeButton:hover .darkModeIcon {
+.themeButton:hover svg {
   transform: scale(1.1);
 }
 
@@ -89,11 +92,11 @@
   background-color: var(--hover-bg);
 }
 
-:global(.dark) .darkModeButton {
+:global(.dark) .themeButton {
   color: var(--text-primary);
 }
 
-:global(.dark) .darkModeButton:hover {
+:global(.dark) .themeButton:hover {
   background-color: var(--hover-bg);
 }
 
@@ -113,9 +116,10 @@
     padding: 0.375rem 0.75rem;
   }
 
-  .darkModeButton {
+  .themeButton {
+    width: 32px;
+    height: 32px;
     padding: 0.375rem;
-    font-size: 1rem;
   }
 }
 

@@ -4,7 +4,8 @@ import type {
   AIAnalysisResult, 
   RiskLevel, 
   MissionAlignment,
-  RiskAssessment 
+  RiskAssessment,
+  ClaudeConfidenceMetadata 
 } from '../../types/graphql'
 import systemPrompt from '../../AIPrompts/systemprompt.json'
 import systemPrompt2 from '../../AIPrompts/systemprompt2.json'
@@ -54,6 +55,18 @@ function extractList(text: string, section: string): string[] {
   return ['[Not specified]']
 }
 
+// Add helper function to convert image markdown to descriptive text
+function convertImageMarkdownToText(description: string): string {
+  // Match markdown image syntax: ![alt text](url)
+  const imageRegex = /!\[(.*?)\]\((.*?)\)/g
+  
+  return description.replace(imageRegex, (match, altText, url) => {
+    // If alt text exists, use it, otherwise extract filename from URL
+    const description = altText || url.split('/').pop()?.split('.')[0] || 'image'
+    return `[Image description: ${description}]`
+  })
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
@@ -80,6 +93,9 @@ export default async function handler(
   }
 
   try {
+    // Preprocess description to make images readable
+    const processedDescription = convertImageMarkdownToText(description)
+
     const prompt = `You are analyzing a Nouns DAO proposal for 501(c)(3) compliance.
 
 ${JSON.stringify(selectedPrompt, null, 2)}
@@ -88,7 +104,6 @@ Your response MUST follow this EXACT format with no deviations:
 
 ANALYSIS:::START
 CLASSIFICATION: [one of: CHARITABLE, OPERATIONAL, MARKETING, PROGRAM_RELATED, UNALLOWABLE]
-CLASSIFICATION_CONFIDENCE: [number between 0 and 1]
 PRIMARY_PURPOSE: [write a single sentence]
 ALLOWABLE_ELEMENTS:
 - [write each element as a complete, descriptive sentence]
@@ -103,33 +118,36 @@ REQUIRED_MODIFICATIONS:
 - [be specific about what needs to change]
 RISK_ASSESSMENT:
 PRIVATE_BENEFIT_RISK: [one of: LOW, MEDIUM, HIGH]
-PRIVATE_BENEFIT_CONFIDENCE: [number between 0 and 1]
 MISSION_ALIGNMENT: [one of: STRONG, MODERATE, WEAK]
-MISSION_ALIGNMENT_CONFIDENCE: [number between 0 and 1]
 IMPLEMENTATION_COMPLEXITY: [one of: LOW, MEDIUM, HIGH]
-IMPLEMENTATION_CONFIDENCE: [number between 0 and 1]
 KEY_CONSIDERATIONS:
 - [write each consideration as a complete thought]
 - [focus on specific implications and impacts]
 ANALYSIS:::END
 
 Analyze this proposal:
-${description}
+${processedDescription}
 
 Remember: 
 1. Your response MUST start with ANALYSIS:::START and end with ANALYSIS:::END
 2. Use EXACT field names as shown above
 3. Write elements and modifications as complete, descriptive sentences
 4. Use ONLY the allowed values for classifications and risk levels
-5. Include confidence scores between 0 and 1 for each assessment
-6. Do not add any additional text or explanations outside the markers
-7. Do not copy categories directly from the prompt context`
+5. Do not add any additional text or explanations outside the markers
+6. Do not copy categories directly from the prompt context`
 
     const response = await anthropic.messages.create({
       model: 'claude-3-sonnet-20240229',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1
     })
+
+    // Initialize empty confidence metrics
+    let nativeConfidence: ClaudeConfidenceMetadata = {}
+
+    console.log('Claude response:', response)
+    console.log('Initial confidence metrics:', nativeConfidence)
 
     const content = response.content[0].text
     console.log('Raw AI response:', content)
@@ -185,53 +203,142 @@ Remember:
       allowable_elements: extractList(analysis, 'ALLOWABLE_ELEMENTS'),
       unallowable_elements: extractList(analysis, 'UNALLOWABLE_ELEMENTS'),
       required_modifications: extractList(analysis, 'REQUIRED_MODIFICATIONS'),
-      risk_assessment: { ...riskAssessment },  // Create a new object with all fields
-      key_considerations: extractList(analysis, 'KEY_CONSIDERATIONS')
-    }
-
-    console.log('STEP 8 - Result mission alignment:', result.risk_assessment.mission_alignment)
-
-    // Add confidence scores and needs_human_review
-    const resultWithConfidence = {
-      ...result,
-      confidence_scores: {
-        classification: parseFloat(content.match(/CLASSIFICATION_CONFIDENCE:\s*(0\.\d+)/i)?.[1] || '0.5'),
-        risk_assessment: {
-          private_benefit_risk: parseFloat(content.match(/PRIVATE_BENEFIT_CONFIDENCE:\s*(0\.\d+)/i)?.[1] || '0.5'),
-          mission_alignment: parseFloat(content.match(/MISSION_ALIGNMENT_CONFIDENCE:\s*(0\.\d+)/i)?.[1] || '0.5'),
-          implementation_complexity: parseFloat(content.match(/IMPLEMENTATION_CONFIDENCE:\s*(0\.\d+)/i)?.[1] || '0.5')
-        }
-      },
+      risk_assessment: { ...riskAssessment },
+      key_considerations: extractList(analysis, 'KEY_CONSIDERATIONS'),
+      native_confidence: nativeConfidence,
       needs_human_review: false
     } as AIAnalysisResult
 
-    console.log('STEP 9 - Result with confidence mission alignment:', resultWithConfidence.risk_assessment.mission_alignment)
+    console.log('STEP 8 - Result mission alignment:', result.risk_assessment.mission_alignment)
 
     // Validate business rules
-    const validationErrors = validateBusinessLogic(resultWithConfidence)
+    const validationErrors = validateBusinessLogic(result)
     const warnings = validationErrors.filter(e => e.severity === 'WARNING')
-    const criticalErrors = validationErrors.filter(e => e.severity === 'ERROR')
 
     // Validate confidence thresholds
-    const confidenceValidation = validateConfidence(resultWithConfidence, warnings)
+    const confidenceValidation = validateConfidence(result, warnings)
     
-    console.log('Mission alignment after validation:', resultWithConfidence.risk_assessment.mission_alignment)
+    console.log('Mission alignment after validation:', result.risk_assessment.mission_alignment)
 
     // Create final result with all validations
     const finalResult = {
-      ...resultWithConfidence,
+      ...result,
       needs_human_review: confidenceValidation.needs_human_review,
-      rawResponse: content
+      rawResponse: content,
+      reviewReasons: confidenceValidation.reviewReasons,
+      native_confidence: nativeConfidence
     } as AIAnalysisResult
 
     console.log('Final result mission alignment:', finalResult.risk_assessment.mission_alignment)
 
-    // Return successful result with any warnings and confidence violations
-    res.status(200).json({
-      result: finalResult,
-      validationWarnings: warnings,
-      confidenceViolations: confidenceValidation.violations
+    // After getting the initial analysis, add a grading step
+    const gradingPrompt = `Grade your analysis against these specific rubrics:
+
+    <rubrics>
+    1. CLASSIFICATION must be justified by specific elements in the proposal and match the following criteria:
+       - CHARITABLE: Direct public benefit, no substantial private benefit
+       - PROGRAM_RELATED: Mission-aligned activities with measurable outcomes
+       - OPERATIONAL: Internal functioning and governance
+       - MARKETING: Primarily promotional or branding
+       - UNALLOWABLE: Significant private benefit or non-exempt purposes
+
+    2. RISK_ASSESSMENT must cite concrete factors:
+       - PRIVATE_BENEFIT_RISK must identify specific beneficiaries and benefits
+       - MISSION_ALIGNMENT must reference specific mission elements
+       - IMPLEMENTATION_COMPLEXITY must list specific challenges
+
+    3. REQUIRED_MODIFICATIONS must be:
+       - Specific and actionable
+       - Directly address identified issues
+       - Include measurable outcomes
+
+    4. ELEMENTS must be:
+       - Complete sentences
+       - Specific to this proposal
+       - Include concrete details
+    </rubrics>
+
+    <analysis>
+    ${content}
+    </analysis>
+
+    Think through each rubric carefully, then output:
+    1. A score (1-5) for each rubric
+    2. Brief justification for each score
+    3. Overall confidence (0-100) in your analysis
+
+    Format your response as:
+    GRADE:::START
+    RUBRIC_1_SCORE: [1-5]
+    RUBRIC_1_REASON: [brief explanation]
+    RUBRIC_2_SCORE: [1-5]
+    RUBRIC_2_REASON: [brief explanation]
+    RUBRIC_3_SCORE: [1-5]
+    RUBRIC_3_REASON: [brief explanation]
+    RUBRIC_4_SCORE: [1-5]
+    RUBRIC_4_REASON: [brief explanation]
+    OVERALL_CONFIDENCE: [0-100]
+    GRADE:::END`
+
+    const gradingResponse = await anthropic.messages.create({
+      model: 'claude-3-sonnet-20240229',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: gradingPrompt }],
+      temperature: 0.1
     })
+
+    // After grading response, update confidence metrics
+    const gradeContent = gradingResponse.content[0].text
+    const gradeMatch = gradeContent.match(/GRADE:::START\n([\s\S]*)\nGRADE:::END/)
+
+    if (gradeMatch) {
+      const matchContent = gradeMatch[1]
+      
+      // Create confidence metrics with more precise parsing
+      nativeConfidence = {
+        response_confidence: parseFloat(matchContent.match(/OVERALL_CONFIDENCE:\s*(\d+)/)?.[1] || '0') / 100,
+        rubric_scores: {
+          classification: parseInt(matchContent.match(/RUBRIC_1_SCORE:\s*(\d+)/)?.[1] || '0'),
+          risk_assessment: parseInt(matchContent.match(/RUBRIC_2_SCORE:\s*(\d+)/)?.[1] || '0'),
+          modifications: parseInt(matchContent.match(/RUBRIC_3_SCORE:\s*(\d+)/)?.[1] || '0'),
+          elements: parseInt(matchContent.match(/RUBRIC_4_SCORE:\s*(\d+)/)?.[1] || '0')
+        },
+        grading_response: matchContent
+      }
+
+      // Update the final result to include the confidence metrics
+      const finalResult = {
+        ...result,
+        needs_human_review: confidenceValidation.needs_human_review,
+        rawResponse: content,
+        reviewReasons: confidenceValidation.reviewReasons,
+        native_confidence: nativeConfidence  // Make sure this is included
+      } as AIAnalysisResult
+
+      console.log('Final result with confidence:', finalResult)
+      console.log('Native confidence metrics:', nativeConfidence)
+
+      // Return successful result with confidence metrics included
+      res.status(200).json({
+        result: finalResult,
+        validationWarnings: warnings,
+        confidenceViolations: confidenceValidation.violations
+      })
+    } else {
+      console.warn('Failed to parse grading response')
+      
+      // Return result without confidence metrics
+      res.status(200).json({
+        result: {
+          ...result,
+          needs_human_review: confidenceValidation.needs_human_review,
+          rawResponse: content,
+          reviewReasons: confidenceValidation.reviewReasons
+        },
+        validationWarnings: warnings,
+        confidenceViolations: confidenceValidation.violations
+      })
+    }
   } catch (error) {
     console.error('Analysis failed:', error)
     
