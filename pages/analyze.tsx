@@ -57,7 +57,7 @@ const MarkdownComponents: Components = {
   }
 }
 
-const StatusIcon = ({ state, error }: { state: string; error?: string }) => {
+const StatusIcon = ({ state }: { state: string }) => {
   switch (state) {
     case 'pending':
       return (
@@ -644,7 +644,7 @@ export default function AnalyzePage() {
                   key={index} 
                   className={`${styles.statusPill} ${styles[status.state]}`}
                 >
-                  <StatusIcon state={status.state} error={status.error} />
+                  <StatusIcon state={status.state} />
                   <div className={styles.statusInfo}>
                     <span className={styles.statusTitle}>
                       {getPromptName(selectedPrompts[index])} Analysis
