@@ -49,7 +49,7 @@ const MarkdownComponents: Components = {
           unoptimized
           onError={() => setIsError(true)}
           onLoad={() => setIsLoading(false)}
-          priority
+          priority={true}
         />
         {isLoading && <div className={styles.imageLoader}>Loading...</div>}
       </div>
@@ -163,6 +163,11 @@ const categorizeAllowableElement = (element: string) => {
     .map(([category]) => category)
 
   return matchedCategories.length > 0 ? matchedCategories : ['general']
+}
+
+// Add this helper function near the other formatting helpers
+const formatClassification = (classification: string) => {
+  return classification.replace('_', ' ')
 }
 
 export default function AnalyzePage() {
@@ -341,7 +346,7 @@ export default function AnalyzePage() {
           <tr>
             <td>Classification</td>
             {results.map((result, index) => (
-              <td key={index}>{result.classification}</td>
+              <td key={index}>{formatClassification(result.classification)}</td>
             ))}
           </tr>
           <tr>
