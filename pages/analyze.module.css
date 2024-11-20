@@ -200,6 +200,7 @@
   border: 1px solid var(--border);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: top;
+  min-height: 80px;
 }
 
 .fadeOut .statusPill {
@@ -231,6 +232,7 @@
   color: white;
   border: none;
   box-shadow: 0 0 0 1px #991b1b;
+  min-height: 80px;
 }
 
 /* Dark mode adjustments */
@@ -265,6 +267,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-height: 48px;
+  justify-content: center;
 }
 
 .statusTitle {
@@ -1010,7 +1014,7 @@
 .errorDetail {
   color: #fee2e2;
   font-size: 0.75rem;
-  display: block;
+  line-height: 1.4;
   margin-top: 0.25rem;
 }
 
@@ -1041,4 +1045,11 @@
 /* Dark mode adjustment */
 :global(.dark) .noneSection {
   background: #8ab5aa;  /* Brighter green for dark mode */
+}
+
+.emptyCell {
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 1.5rem !important;
+  text-align: center;
 }

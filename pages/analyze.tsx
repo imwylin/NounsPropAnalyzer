@@ -319,7 +319,7 @@ export default function AnalyzePage() {
       <table className={styles.comparisonTable}>
         <thead>
           <tr>
-            <th>Aspect</th>
+            <th></th>
             {results.map((result, index) => (
               <th key={index}>
                 <div className={styles.columnHeader}>
@@ -722,7 +722,11 @@ export default function AnalyzePage() {
                       {status.state === 'success' && 'Complete'}
                       {status.state === 'error' && (
                         <span className={styles.errorDetail}>
-                          Failed: {status.error || 'Unknown error'}
+                          {status.error?.includes('token') ? 'Response too long' :
+                           status.error?.includes('rate limit') ? 'Rate limit exceeded' :
+                           status.error?.includes('timed out') ? 'Analysis timed out' :
+                           status.error?.includes('format') ? 'Invalid response format' :
+                           status.error || 'Unknown error'}
                         </span>
                       )}
                     </span>
@@ -732,13 +736,44 @@ export default function AnalyzePage() {
             </div>
           )}
 
-          {analysisResults.length > 0 && (
-            <div className={styles.results}>
-              <div className={styles.comparisonGrid}>
-                {renderComparisonTable(analysisResults)}
-              </div>
+          <div className={styles.results}>
+            <div className={styles.comparisonGrid}>
+              {analysisResults.length > 0 ? (
+                renderComparisonTable(analysisResults)
+              ) : (
+                <table className={styles.comparisonTable}>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Moderate Analysis</th>
+                      <th>Innovative Analysis</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      'Classification',
+                      'Primary Purpose',
+                      'Human Review Required',
+                      'Private Benefit Risk',
+                      'Mission Alignment',
+                      'Implementation Complexity',
+                      'Allowable Elements',
+                      'Unallowable Elements',
+                      'Suggested Modifications',
+                      'Key Considerations',
+                      'Claude\'s Confidence'
+                    ].map(aspect => (
+                      <tr key={aspect}>
+                        <td>{aspect}</td>
+                        <td className={styles.emptyCell}>Awaiting analysis...</td>
+                        <td className={styles.emptyCell}>Awaiting analysis...</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
       <RawAnalysisModal />

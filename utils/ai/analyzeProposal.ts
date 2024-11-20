@@ -40,13 +40,22 @@ export async function analyzeProposal(description: string, promptVersion: number
 
     const data: AnalyzeResponse = await response.json()
     console.log('Raw API Response:', data)
-    console.log('Native confidence metrics:', data.result?.native_confidence)
 
     if (!response.ok) {
-      throw new Error(JSON.stringify({
-        error: data.error,
-        details: data.details
-      }))
+      const errorMessage = data.error || 'Unknown error';
+      let detailedError = errorMessage;
+
+      if (response.status === 429) {
+        detailedError = 'Rate limit exceeded. Please wait a moment before trying again.';
+      } else if (response.status === 500) {
+        detailedError = `Analysis engine error: ${errorMessage}`;
+      } else if (data.details?.field === 'format') {
+        detailedError = `Format error: ${data.details.message}`;
+      } else if (data.details?.message?.includes('token')) {
+        detailedError = 'Response too long. Try a shorter proposal description.';
+      }
+
+      throw new Error(detailedError);
     }
 
     if (data.validationWarnings?.length) {
@@ -76,7 +85,7 @@ export async function analyzeProposal(description: string, promptVersion: number
   } catch (error) {
     console.error('Analysis error:', error)
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Request timed out after 120 seconds')
+      throw new Error('Analysis timed out after 120 seconds. Please try again.')
     }
     throw error
   } finally {
