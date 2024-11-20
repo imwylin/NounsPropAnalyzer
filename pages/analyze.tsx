@@ -57,7 +57,7 @@ const MarkdownComponents: Components = {
   }
 }
 
-const StatusIcon = ({ state }: { state: string }) => {
+const StatusIcon = ({ state, error }: { state: string; error?: string }) => {
   switch (state) {
     case 'pending':
       return (
@@ -83,7 +83,7 @@ const StatusIcon = ({ state }: { state: string }) => {
       return (
         <svg className={styles.statusIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-          <path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M12 8v5M12 16v.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       )
     default:
@@ -638,20 +638,26 @@ export default function AnalyzePage() {
           </div>
           
           {analysisStatus.length > 0 && showStatus && (
-            <div className={`${styles.statusBar} ${!isAnalyzing && styles.fadeOut}`}>
+            <div className={`${styles.statusBar} ${!isAnalyzing && !analysisStatus.some(s => s.state === 'error') && styles.fadeOut}`}>
               {analysisStatus.map((status, index) => (
                 <div 
                   key={index} 
                   className={`${styles.statusPill} ${styles[status.state]}`}
                 >
-                  <StatusIcon state={status.state} />
+                  <StatusIcon state={status.state} error={status.error} />
                   <div className={styles.statusInfo}>
-                    <span className={styles.statusTitle}>Analysis {index + 1}</span>
+                    <span className={styles.statusTitle}>
+                      {getPromptName(selectedPrompts[index])} Analysis
+                    </span>
                     <span className={styles.statusLabel}>
                       {status.state === 'pending' && 'Queued'}
                       {status.state === 'running' && 'In Progress'}
                       {status.state === 'success' && 'Complete'}
-                      {status.state === 'error' && 'Failed'}
+                      {status.state === 'error' && (
+                        <span className={styles.errorDetail}>
+                          Failed: {status.error || 'Unknown error'}
+                        </span>
+                      )}
                     </span>
                   </div>
                 </div>

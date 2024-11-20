@@ -175,7 +175,7 @@
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 1;
   max-height: 100px;
-  margin-bottom: 0;
+  margin-bottom: 1rem;
 }
 
 .statusBar.fadeOut {
@@ -186,6 +186,7 @@
   margin-bottom: 0;
   border-bottom-color: transparent;
   pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .statusPill {
@@ -226,10 +227,10 @@
 }
 
 .statusPill.error {
-  background: #b66360;  /* Brighter terracotta */
+  background: #b91c1c;
   color: white;
   border: none;
-  box-shadow: 0 0 0 1px #b66360;
+  box-shadow: 0 0 0 1px #991b1b;
 }
 
 /* Dark mode adjustments */
@@ -249,8 +250,8 @@
 }
 
 :global(.dark) .statusPill.error {
-  background: #c87471;  /* Brightest terracotta for dark mode */
-  box-shadow: 0 0 0 1px #c87471;
+  background: #dc2626;
+  box-shadow: 0 0 0 1px #b91c1c;
 }
 
 /* Status icons */
@@ -1004,4 +1005,11 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.errorDetail {
+  color: #fee2e2;
+  font-size: 0.75rem;
+  display: block;
+  margin-top: 0.25rem;
 }
