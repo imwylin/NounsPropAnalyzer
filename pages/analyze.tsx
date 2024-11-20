@@ -474,7 +474,21 @@ export default function AnalyzePage() {
             <td>Suggested Modifications</td>
             {results.map((result, index) => (
               <td key={index}>
-                {result.required_modifications.length > 0 ? (
+                {result.required_modifications.some(mod => {
+                  const lowerMod = mod.toLowerCase();
+                  const negativeIndicators = [
+                    'no ', 
+                    'none ', 
+                    'not ', 
+                    'no significant',
+                    'no modifications',
+                    'no changes',
+                    'aligns with',
+                    'proposal is compliant',
+                    'no required'
+                  ];
+                  return !negativeIndicators.some(indicator => lowerMod.includes(indicator));
+                }) ? (
                   <div className={styles.modificationsSection}>
                     <div className={styles.modificationHeader}>
                       <span className={styles.severityValue}>
@@ -482,37 +496,48 @@ export default function AnalyzePage() {
                       </span>
                     </div>
                     <ul className={styles.elementList}>
-                      {result.required_modifications.map((mod, i) => {
-                        // Use the modText directly in the categories filter
-                        const categories = Object.entries(assessModifications([mod]).categories)
-                          .filter(([_, count]) => count > 0)
-                          .map(([category]) => category)
+                      {result.required_modifications
+                        .filter(mod => {
+                          const lowerMod = mod.toLowerCase();
+                          const negativeIndicators = [
+                            'no ', 
+                            'none ', 
+                            'not ', 
+                            'no significant',
+                            'no modifications',
+                            'no changes',
+                            'aligns with',
+                            'proposal is compliant',
+                            'no required'
+                          ];
+                          return !negativeIndicators.some(indicator => lowerMod.includes(indicator));
+                        })
+                        .map((mod, i) => {
+                          const categories = Object.entries(assessModifications([mod]).categories)
+                            .filter(([_, count]) => count > 0)
+                            .map(([category]) => category)
 
-                        return (
-                          <li key={i} className={styles.modificationItem}>
-                            <div className={styles.modificationContent}>
-                              {categories.length > 0 && (
-                                <div className={styles.modificationCategories}>
-                                  {categories.map(cat => (
-                                    <span key={cat} className={styles.modificationCategory}>
-                                      {cat}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                              <span className={styles.modificationText}>{mod}</span>
-                            </div>
-                          </li>
-                        )
-                      })}
+                          return (
+                            <li key={i} className={styles.modificationItem}>
+                              <div className={styles.modificationContent}>
+                                {categories.length > 0 && (
+                                  <div className={styles.modificationCategories}>
+                                    {categories.map(cat => (
+                                      <span key={cat} className={styles.modificationCategory}>
+                                        {cat}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                <span className={styles.modificationText}>{mod}</span>
+                              </div>
+                            </li>
+                          )
+                        })}
                     </ul>
                   </div>
                 ) : (
-                  <div className={styles.modificationsSection}>
-                    <div className={styles.modificationHeader}>
-                      <span className={styles.severityValue}>None</span>
-                    </div>
-                  </div>
+                  <div className={styles.noneSection}>None</div>
                 )}
               </td>
             ))}

@@ -103,26 +103,34 @@ ${JSON.stringify(selectedPrompt, null, 2)}
 Your response MUST follow this EXACT format with no deviations:
 
 ANALYSIS:::START
+
 CLASSIFICATION: [one of: CHARITABLE, OPERATIONAL, MARKETING, PROGRAM_RELATED, UNALLOWABLE]
+
 PRIMARY_PURPOSE: [write a single sentence]
+
 ALLOWABLE_ELEMENTS:
 - [write each element as a complete, descriptive sentence]
 - [focus on specific proposal elements, not generic categories]
 - [describe concrete activities and outcomes]
+
 UNALLOWABLE_ELEMENTS:
 - [write each element as a complete, descriptive sentence]
 - [identify specific concerns or issues]
 - [explain why the element is unallowable]
+
 REQUIRED_MODIFICATIONS:
 - [write each modification as an actionable recommendation]
 - [be specific about what needs to change]
+
 RISK_ASSESSMENT:
 PRIVATE_BENEFIT_RISK: [one of: LOW, MEDIUM, HIGH]
 MISSION_ALIGNMENT: [one of: STRONG, MODERATE, WEAK]
 IMPLEMENTATION_COMPLEXITY: [one of: LOW, MEDIUM, HIGH]
+
 KEY_CONSIDERATIONS:
 - [write each consideration as a complete thought]
 - [focus on specific implications and impacts]
+
 ANALYSIS:::END
 
 Analyze this proposal:
