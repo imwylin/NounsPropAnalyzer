@@ -428,11 +428,45 @@ export default function AnalyzePage() {
             <td>Unallowable Elements</td>
             {results.map((result, index) => (
               <td key={index}>
-                <ul className={styles.elementList}>
-                  {result.unallowable_elements.map((element, i) => (
-                    <li key={i}>{element}</li>
-                  ))}
-                </ul>
+                {result.unallowable_elements.some(element => {
+                  const lowerElement = element.toLowerCase();
+                  const negativeIndicators = [
+                    'no ', 
+                    'none ', 
+                    'not ', 
+                    'there are no',
+                    'none identified',
+                    'no concerning',
+                    'no specific',
+                    'does not',
+                    'not explicitly'
+                  ];
+                  return !negativeIndicators.some(indicator => lowerElement.includes(indicator));
+                }) ? (
+                  <ul className={styles.elementList}>
+                    {result.unallowable_elements
+                      .filter(element => {
+                        const lowerElement = element.toLowerCase();
+                        const negativeIndicators = [
+                          'no ', 
+                          'none ', 
+                          'not ', 
+                          'there are no',
+                          'none identified',
+                          'no concerning',
+                          'no specific',
+                          'does not',
+                          'not explicitly'
+                        ];
+                        return !negativeIndicators.some(indicator => lowerElement.includes(indicator));
+                      })
+                      .map((element, i) => (
+                        <li key={i}>{element}</li>
+                      ))}
+                  </ul>
+                ) : (
+                  <div className={styles.noneSection}>None</div>
+                )}
               </td>
             ))}
           </tr>
@@ -440,38 +474,46 @@ export default function AnalyzePage() {
             <td>Suggested Modifications</td>
             {results.map((result, index) => (
               <td key={index}>
-                <div className={styles.modificationsSection}>
-                  <div className={styles.modificationHeader}>
-                    <span className={styles.severityValue}>
-                      {assessModifications(result.required_modifications).severity.toLowerCase()}
-                    </span>
-                  </div>
-                  <ul className={styles.elementList}>
-                    {result.required_modifications.map((mod, i) => {
-                      // Use the modText directly in the categories filter
-                      const categories = Object.entries(assessModifications([mod]).categories)
-                        .filter(([_, count]) => count > 0)
-                        .map(([category]) => category)
+                {result.required_modifications.length > 0 ? (
+                  <div className={styles.modificationsSection}>
+                    <div className={styles.modificationHeader}>
+                      <span className={styles.severityValue}>
+                        {assessModifications(result.required_modifications).severity.toLowerCase()}
+                      </span>
+                    </div>
+                    <ul className={styles.elementList}>
+                      {result.required_modifications.map((mod, i) => {
+                        // Use the modText directly in the categories filter
+                        const categories = Object.entries(assessModifications([mod]).categories)
+                          .filter(([_, count]) => count > 0)
+                          .map(([category]) => category)
 
-                      return (
-                        <li key={i} className={styles.modificationItem}>
-                          <div className={styles.modificationContent}>
-                            {categories.length > 0 && (
-                              <div className={styles.modificationCategories}>
-                                {categories.map(cat => (
-                                  <span key={cat} className={styles.modificationCategory}>
-                                    {cat}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                            <span className={styles.modificationText}>{mod}</span>
-                          </div>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
+                        return (
+                          <li key={i} className={styles.modificationItem}>
+                            <div className={styles.modificationContent}>
+                              {categories.length > 0 && (
+                                <div className={styles.modificationCategories}>
+                                  {categories.map(cat => (
+                                    <span key={cat} className={styles.modificationCategory}>
+                                      {cat}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                              <span className={styles.modificationText}>{mod}</span>
+                            </div>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                ) : (
+                  <div className={styles.modificationsSection}>
+                    <div className={styles.modificationHeader}>
+                      <span className={styles.severityValue}>None</span>
+                    </div>
+                  </div>
+                )}
               </td>
             ))}
           </tr>
