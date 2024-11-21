@@ -267,7 +267,11 @@ export default function AnalyzePage() {
     } catch (error) {
       console.error('Analysis failed:', error)
       setAnalysisStatus(prev => prev.map(status => 
-        status.state === 'running' ? { ...status, state: 'error', error: 'Analysis failed' } : status
+        status.state === 'running' ? { 
+          ...status, 
+          state: 'error', 
+          error: error instanceof Error ? error.message : 'Analysis failed'
+        } : status
       ))
     } finally {
       setIsAnalyzing(false)
@@ -727,12 +731,12 @@ export default function AnalyzePage() {
                       {status.state === 'success' && 'Complete'}
                       {status.state === 'error' && (
                         <span className={styles.errorDetail}>
-                          {status.error?.includes('rate limit') ? 'Claude needs a short break' :
-                           status.error?.includes('token limit') ? 'Proposal too long' :
-                           status.error?.includes('format') ? 'Invalid response format' :
-                           status.error?.includes('encountered an error') ? 'Claude had an issue' :
-                           status.error?.includes('timed out') ? 'Analysis took too long' :
-                           'Analysis failed - try again'}
+                          {status.error?.includes('Rate limit') ? 'Rate limited - wait 60s' :
+                           status.error?.includes('too long') ? 'Proposal too long' :
+                           status.error?.includes('malformed') ? 'Bad response - try again' :
+                           status.error?.includes('parse') ? 'Response error - try again' :
+                           status.error?.includes('timed out') ? 'Timed out' :
+                           status.error || 'Analysis failed'}
                         </span>
                       )}
                     </span>

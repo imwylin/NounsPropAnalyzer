@@ -266,9 +266,9 @@
 .statusInfo {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  min-height: 48px;
   justify-content: center;
+  min-height: 48px;
+  width: 100%;
 }
 
 .statusTitle {
@@ -1013,9 +1013,11 @@
 
 .errorDetail {
   color: #fee2e2;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   line-height: 1.4;
   margin-top: 0.25rem;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .noneValue {

@@ -46,18 +46,28 @@ export async function analyzeProposal(description: string, promptVersion: number
       let detailedError = errorMessage;
 
       if (response.status === 429) {
-        detailedError = 'Rate limit exceeded - Claude needs a short break';
+        detailedError = 'Rate limited - wait 60s';
       } else if (response.status === 500) {
-        detailedError = data.details?.message?.includes('format') 
-          ? 'Claude returned an invalid response format'
-          : data.details?.message?.includes('token')
-          ? 'Proposal is too long for Claude to process'
-          : `Claude encountered an error: ${errorMessage}`;
+        if (data.details?.message?.includes('format')) {
+          detailedError = 'Claude returned malformed response - try again';
+        } else if (data.details?.message?.includes('token')) {
+          detailedError = 'Proposal too long';
+        } else if (data.details?.message?.includes('timeout')) {
+          detailedError = 'Analysis timed out';
+        } else {
+          detailedError = `Analysis error: ${errorMessage}`;
+        }
       } else if (data.details?.field === 'format') {
-        detailedError = 'Failed to parse Claude\'s response format';
+        detailedError = 'Failed to parse Claude\'s response - try again';
       } else if (data.details?.message?.includes('token')) {
-        detailedError = 'Proposal exceeds Claude\'s token limit';
+        detailedError = 'Exceeds token limit';
       }
+
+      console.error('Analysis error details:', {
+        status: response.status,
+        error: errorMessage,
+        details: data.details
+      });
 
       throw new Error(detailedError);
     }
