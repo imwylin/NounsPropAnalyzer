@@ -48,7 +48,9 @@ export async function analyzeProposal(description: string, promptVersion: number
       if (response.status === 429) {
         detailedError = 'Rate limited - wait 60s';
       } else if (response.status === 500) {
-        if (data.details?.message?.includes('format')) {
+        if (data.details?.message?.includes('pattern')) {
+          detailedError = 'Claude response format error - try again';
+        } else if (data.details?.message?.includes('format')) {
           detailedError = 'Claude returned malformed response - try again';
         } else if (data.details?.message?.includes('token')) {
           detailedError = 'Proposal too long';
@@ -66,7 +68,8 @@ export async function analyzeProposal(description: string, promptVersion: number
       console.error('Analysis error details:', {
         status: response.status,
         error: errorMessage,
-        details: data.details
+        details: data.details,
+        rawResponse: data.result?.rawResponse
       });
 
       throw new Error(detailedError);
