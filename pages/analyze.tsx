@@ -727,11 +727,12 @@ export default function AnalyzePage() {
                       {status.state === 'success' && 'Complete'}
                       {status.state === 'error' && (
                         <span className={styles.errorDetail}>
-                          {status.error?.includes('token') ? 'Response too long' :
-                           status.error?.includes('rate limit') ? 'Rate limit exceeded' :
-                           status.error?.includes('timed out') ? 'Analysis timed out' :
+                          {status.error?.includes('rate limit') ? 'Claude needs a short break' :
+                           status.error?.includes('token limit') ? 'Proposal too long' :
                            status.error?.includes('format') ? 'Invalid response format' :
-                           status.error || 'Unknown error'}
+                           status.error?.includes('encountered an error') ? 'Claude had an issue' :
+                           status.error?.includes('timed out') ? 'Analysis took too long' :
+                           'Analysis failed - try again'}
                         </span>
                       )}
                     </span>

@@ -56,8 +56,8 @@ export function Navbar() {
           alt="Home" 
           width={32} 
           height={32}
+          priority
           unoptimized
-          loading="eager"
         />
       </Link>
       <div className={styles.links}>
