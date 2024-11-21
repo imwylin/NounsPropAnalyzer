@@ -49,9 +49,9 @@ export async function analyzeProposal(description: string, promptVersion: number
         detailedError = 'Rate limited - wait 60s';
       } else if (response.status === 500) {
         if (data.details?.message?.includes('pattern')) {
-          detailedError = 'Claude response format error - try again';
+          detailedError = 'Response parsing failed - try again';
         } else if (data.details?.message?.includes('format')) {
-          detailedError = 'Claude returned malformed response - try again';
+          detailedError = 'Invalid response format - try again';
         } else if (data.details?.message?.includes('token')) {
           detailedError = 'Proposal too long';
         } else if (data.details?.message?.includes('timeout')) {
@@ -60,7 +60,7 @@ export async function analyzeProposal(description: string, promptVersion: number
           detailedError = `Analysis error: ${errorMessage}`;
         }
       } else if (data.details?.field === 'format') {
-        detailedError = 'Failed to parse Claude\'s response - try again';
+        detailedError = 'Response format error - try again';
       } else if (data.details?.message?.includes('token')) {
         detailedError = 'Exceeds token limit';
       }
@@ -69,7 +69,8 @@ export async function analyzeProposal(description: string, promptVersion: number
         status: response.status,
         error: errorMessage,
         details: data.details,
-        rawResponse: data.result?.rawResponse
+        rawResponse: data.result?.rawResponse,
+        pattern: data.details?.message?.includes('pattern') ? 'Pattern match failed' : undefined
       });
 
       throw new Error(detailedError);

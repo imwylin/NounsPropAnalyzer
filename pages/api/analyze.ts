@@ -67,6 +67,49 @@ function convertImageMarkdownToText(description: string): string {
   })
 }
 
+// Add export to the extractAnalysis function
+export const extractAnalysis = (rawResponse: string) => {
+  // Remove any leading/trailing whitespace and normalize newlines
+  const cleanResponse = rawResponse.trim().replace(/\r\n/g, '\n')
+
+  const startMarker = 'ANALYSIS:::START'
+  const endMarker = 'ANALYSIS:::END'
+
+  const startIndex = cleanResponse.indexOf(startMarker)
+  const endIndex = cleanResponse.indexOf(endMarker)
+
+  if (startIndex === -1 || endIndex === -1) {
+    throw new Error('Invalid response format - missing markers')
+  }
+
+  // Extract content between markers and normalize whitespace
+  const analysisContent = cleanResponse
+    .slice(startIndex + startMarker.length, endIndex)
+    .trim()
+    .replace(/\n{3,}/g, '\n\n') // Replace 3+ newlines with 2
+    .replace(/[ \t]+/g, ' ') // Normalize horizontal whitespace
+
+  // Validate required sections with more flexible matching
+  const requiredSections = [
+    'CLASSIFICATION:',
+    'PRIMARY_PURPOSE:',
+    'ALLOWABLE_ELEMENTS:',
+    'UNALLOWABLE_ELEMENTS:',
+    'REQUIRED_MODIFICATIONS:',
+    'RISK_ASSESSMENT:',
+    'KEY_CONSIDERATIONS:'
+  ]
+
+  const normalizedContent = analysisContent.toUpperCase()
+  for (const section of requiredSections) {
+    if (!normalizedContent.includes(section)) {
+      throw new Error(`Invalid response format - missing ${section} section`)
+    }
+  }
+
+  return analysisContent
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
