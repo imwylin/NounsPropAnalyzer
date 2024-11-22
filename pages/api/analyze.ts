@@ -67,7 +67,7 @@ function convertImageMarkdownToText(description: string): string {
   })
 }
 
-// Add export to the extractAnalysis function
+// Update the pattern matching function to be more resilient
 export const extractAnalysis = (rawResponse: string) => {
   // Remove any leading/trailing whitespace and normalize newlines
   const cleanResponse = rawResponse.trim().replace(/\r\n/g, '\n')
@@ -86,24 +86,23 @@ export const extractAnalysis = (rawResponse: string) => {
   const analysisContent = cleanResponse
     .slice(startIndex + startMarker.length, endIndex)
     .trim()
-    .replace(/\n{3,}/g, '\n\n') // Replace 3+ newlines with 2
-    .replace(/[ \t]+/g, ' ') // Normalize horizontal whitespace
 
   // Validate required sections with more flexible matching
   const requiredSections = [
-    'CLASSIFICATION:',
-    'PRIMARY_PURPOSE:',
-    'ALLOWABLE_ELEMENTS:',
-    'UNALLOWABLE_ELEMENTS:',
-    'REQUIRED_MODIFICATIONS:',
-    'RISK_ASSESSMENT:',
-    'KEY_CONSIDERATIONS:'
+    { name: 'CLASSIFICATION:', pattern: /CLASSIFICATION:\s*(CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE)/i },
+    { name: 'PRIMARY_PURPOSE:', pattern: /PRIMARY_PURPOSE:\s*.+/i },
+    { name: 'ALLOWABLE_ELEMENTS:', pattern: /ALLOWABLE_ELEMENTS:\s*(?:[-•*+]\s*.+\s*)+/i },
+    { name: 'UNALLOWABLE_ELEMENTS:', pattern: /UNALLOWABLE_ELEMENTS:\s*(?:[-•*+]\s*.+\s*)+/i },
+    { name: 'REQUIRED_MODIFICATIONS:', pattern: /REQUIRED_MODIFICATIONS:\s*(?:[-•*+]\s*.+\s*)+/i },
+    { name: 'RISK_ASSESSMENT:', pattern: /RISK_ASSESSMENT:\s*PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)\s*MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)\s*IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i },
+    { name: 'KEY_CONSIDERATIONS:', pattern: /KEY_CONSIDERATIONS:\s*(?:[-•*+]\s*.+\s*)+/i }
   ]
 
-  const normalizedContent = analysisContent.toUpperCase()
   for (const section of requiredSections) {
-    if (!normalizedContent.includes(section)) {
-      throw new Error(`Invalid response format - missing ${section} section`)
+    if (!section.pattern.test(analysisContent)) {
+      console.error(`Failed to match pattern for section: ${section.name}`)
+      console.error('Content:', analysisContent)
+      throw new Error(`Invalid response format - ${section.name} section does not match expected pattern`)
     }
   }
 
