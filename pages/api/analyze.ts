@@ -67,7 +67,7 @@ function convertImageMarkdownToText(description: string): string {
   })
 }
 
-// Update the pattern matching function to be more flexible with line breaks and whitespace
+// Update the pattern matching function to be more lenient
 export const extractAnalysis = (rawResponse: string) => {
   // Remove any leading/trailing whitespace and normalize newlines
   const cleanResponse = rawResponse.trim().replace(/\r\n/g, '\n')
@@ -87,15 +87,36 @@ export const extractAnalysis = (rawResponse: string) => {
     .slice(startIndex + startMarker.length, endIndex)
     .trim()
 
-  // Validate required sections with more flexible matching
+  // Validate required sections with more lenient matching
   const requiredSections = [
-    { name: 'CLASSIFICATION:', pattern: /CLASSIFICATION:\s*(CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE)/i },
-    { name: 'PRIMARY_PURPOSE:', pattern: /PRIMARY_PURPOSE:\s*.+/i },
-    { name: 'ALLOWABLE_ELEMENTS:', pattern: /ALLOWABLE_ELEMENTS:[\s\S]*?(?=(UNALLOWABLE_ELEMENTS:|$))/i },
-    { name: 'UNALLOWABLE_ELEMENTS:', pattern: /UNALLOWABLE_ELEMENTS:[\s\S]*?(?=(REQUIRED_MODIFICATIONS:|$))/i },
-    { name: 'REQUIRED_MODIFICATIONS:', pattern: /REQUIRED_MODIFICATIONS:[\s\S]*?(?=(RISK_ASSESSMENT:|$))/i },
-    { name: 'RISK_ASSESSMENT:', pattern: /RISK_ASSESSMENT:[\s\S]*?(PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH))[\s\S]*?(MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK))[\s\S]*?(IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH))/i },
-    { name: 'KEY_CONSIDERATIONS:', pattern: /KEY_CONSIDERATIONS:[\s\S]*?(?=(ANALYSIS:::END|$))/i }
+    { 
+      name: 'CLASSIFICATION:', 
+      pattern: /CLASSIFICATION:[\s\S]*?(CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE)/i 
+    },
+    { 
+      name: 'PRIMARY_PURPOSE:', 
+      pattern: /PRIMARY_PURPOSE:[\s\S]*?(?=ALLOWABLE_ELEMENTS:|$)/i 
+    },
+    { 
+      name: 'ALLOWABLE_ELEMENTS:', 
+      pattern: /ALLOWABLE_ELEMENTS:[\s\S]*?(?=UNALLOWABLE_ELEMENTS:|$)/i 
+    },
+    { 
+      name: 'UNALLOWABLE_ELEMENTS:', 
+      pattern: /UNALLOWABLE_ELEMENTS:[\s\S]*?(?=REQUIRED_MODIFICATIONS:|$)/i 
+    },
+    { 
+      name: 'REQUIRED_MODIFICATIONS:', 
+      pattern: /REQUIRED_MODIFICATIONS:[\s\S]*?(?=RISK_ASSESSMENT:|$)/i 
+    },
+    { 
+      name: 'RISK_ASSESSMENT:', 
+      pattern: /RISK_ASSESSMENT:[\s\S]*?(?:PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH))[\s\S]*?(?:MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK))[\s\S]*?(?:IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH))/i 
+    },
+    { 
+      name: 'KEY_CONSIDERATIONS:', 
+      pattern: /KEY_CONSIDERATIONS:[\s\S]*?(?=ANALYSIS:::END|$)/i 
+    }
   ]
 
   const normalizedContent = analysisContent.replace(/\r\n/g, '\n')
