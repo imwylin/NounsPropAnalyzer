@@ -67,7 +67,7 @@ function convertImageMarkdownToText(description: string): string {
   })
 }
 
-// Update the pattern matching function to be more resilient
+// Update the pattern matching function to be more flexible with bullet points and whitespace
 export const extractAnalysis = (rawResponse: string) => {
   // Remove any leading/trailing whitespace and normalize newlines
   const cleanResponse = rawResponse.trim().replace(/\r\n/g, '\n')
@@ -91,17 +91,19 @@ export const extractAnalysis = (rawResponse: string) => {
   const requiredSections = [
     { name: 'CLASSIFICATION:', pattern: /CLASSIFICATION:\s*(CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE)/i },
     { name: 'PRIMARY_PURPOSE:', pattern: /PRIMARY_PURPOSE:\s*.+/i },
-    { name: 'ALLOWABLE_ELEMENTS:', pattern: /ALLOWABLE_ELEMENTS:\s*(?:[-•*+]\s*.+\s*)+/i },
-    { name: 'UNALLOWABLE_ELEMENTS:', pattern: /UNALLOWABLE_ELEMENTS:\s*(?:[-•*+]\s*.+\s*)+/i },
-    { name: 'REQUIRED_MODIFICATIONS:', pattern: /REQUIRED_MODIFICATIONS:\s*(?:[-•*+]\s*.+\s*)+/i },
-    { name: 'RISK_ASSESSMENT:', pattern: /RISK_ASSESSMENT:\s*PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)\s*MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)\s*IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i },
-    { name: 'KEY_CONSIDERATIONS:', pattern: /KEY_CONSIDERATIONS:\s*(?:[-•*+]\s*.+\s*)+/i }
+    { name: 'ALLOWABLE_ELEMENTS:', pattern: /ALLOWABLE_ELEMENTS:[\s\S]*?(?=UNALLOWABLE_ELEMENTS:)/i },
+    { name: 'UNALLOWABLE_ELEMENTS:', pattern: /UNALLOWABLE_ELEMENTS:[\s\S]*?(?=REQUIRED_MODIFICATIONS:)/i },
+    { name: 'REQUIRED_MODIFICATIONS:', pattern: /REQUIRED_MODIFICATIONS:[\s\S]*?(?=RISK_ASSESSMENT:)/i },
+    { name: 'RISK_ASSESSMENT:', pattern: /RISK_ASSESSMENT:[\s\S]*?PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)[\s\S]*?MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)[\s\S]*?IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i },
+    { name: 'KEY_CONSIDERATIONS:', pattern: /KEY_CONSIDERATIONS:[\s\S]*?(?=ANALYSIS:::END|$)/i }
   ]
 
+  const normalizedContent = analysisContent.replace(/\r\n/g, '\n')
+  
   for (const section of requiredSections) {
-    if (!section.pattern.test(analysisContent)) {
+    if (!section.pattern.test(normalizedContent)) {
       console.error(`Failed to match pattern for section: ${section.name}`)
-      console.error('Content:', analysisContent)
+      console.error('Content:', normalizedContent)
       throw new Error(`Invalid response format - ${section.name} section does not match expected pattern`)
     }
   }
