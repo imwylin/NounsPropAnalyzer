@@ -67,7 +67,7 @@ function convertImageMarkdownToText(description: string): string {
   })
 }
 
-// Update the pattern matching function to be more resilient
+// Update the pattern matching function to use direct section parsing
 export const extractAnalysis = (rawResponse: string) => {
   // Remove any leading/trailing whitespace and normalize newlines
   const cleanResponse = rawResponse.trim().replace(/\r\n/g, '\n')
@@ -82,67 +82,62 @@ export const extractAnalysis = (rawResponse: string) => {
     throw new Error('Invalid response format - missing markers')
   }
 
-  // Extract content between markers and normalize whitespace
+  // Extract content between markers
   const analysisContent = cleanResponse
     .slice(startIndex + startMarker.length, endIndex)
     .trim()
 
-  // Validate required sections with more lenient matching
+  // Split into sections
+  const sections = analysisContent.split('\n\n')
+
+  // Validate required sections
   const requiredSections = [
-    { 
-      name: 'CLASSIFICATION:', 
-      pattern: /CLASSIFICATION:[\s\S]*?(CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE)/i 
+    {
+      name: 'CLASSIFICATION',
+      validate: (text: string) => {
+        const match = text.match(/CLASSIFICATION:\s*(CHARITABLE|OPERATIONAL|MARKETING|PROGRAM_RELATED|UNALLOWABLE)/i)
+        return match?.[1]?.toUpperCase()
+      }
     },
-    { 
-      name: 'PRIMARY_PURPOSE:', 
-      pattern: /PRIMARY_PURPOSE:[\s\S]*?(?=ALLOWABLE_ELEMENTS:|$)/i 
+    {
+      name: 'PRIMARY_PURPOSE',
+      validate: (text: string) => text.includes('PRIMARY_PURPOSE:')
     },
-    { 
-      name: 'ALLOWABLE_ELEMENTS:', 
-      pattern: /ALLOWABLE_ELEMENTS:[\s\S]*?(?=UNALLOWABLE_ELEMENTS:|$)/i 
+    {
+      name: 'ALLOWABLE_ELEMENTS',
+      validate: (text: string) => text.includes('ALLOWABLE_ELEMENTS:')
     },
-    { 
-      name: 'UNALLOWABLE_ELEMENTS:', 
-      pattern: /UNALLOWABLE_ELEMENTS:[\s\S]*?(?=REQUIRED_MODIFICATIONS:|$)/i 
+    {
+      name: 'UNALLOWABLE_ELEMENTS',
+      validate: (text: string) => text.includes('UNALLOWABLE_ELEMENTS:')
     },
-    { 
-      name: 'REQUIRED_MODIFICATIONS:', 
-      pattern: /REQUIRED_MODIFICATIONS:[\s\S]*?(?=RISK_ASSESSMENT:|$)/i 
+    {
+      name: 'REQUIRED_MODIFICATIONS',
+      validate: (text: string) => text.includes('REQUIRED_MODIFICATIONS:')
     },
-    { 
-      name: 'RISK_ASSESSMENT:', 
-      pattern: /RISK_ASSESSMENT:[\s\S]*?(?:PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH))[\s\S]*?(?:MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK))[\s\S]*?(?:IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH))/i 
+    {
+      name: 'RISK_ASSESSMENT',
+      validate: (text: string) => {
+        const privateRisk = text.match(/PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)/i)?.[1]?.toUpperCase()
+        const missionAlign = text.match(/MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)/i)?.[1]?.toUpperCase()
+        const complexity = text.match(/IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i)?.[1]?.toUpperCase()
+        return privateRisk && missionAlign && complexity
+      }
     },
-    { 
-      name: 'KEY_CONSIDERATIONS:', 
-      pattern: /KEY_CONSIDERATIONS:[\s\S]*?(?=ANALYSIS:::END|$)/i 
+    {
+      name: 'KEY_CONSIDERATIONS',
+      validate: (text: string) => text.includes('KEY_CONSIDERATIONS:')
     }
   ]
 
-  // Log the content being tested and which pattern fails
+  // Validate each section
   for (const section of requiredSections) {
-    const match = section.pattern.test(analysisContent)
-    if (!match) {
-      console.error(`Failed to match pattern for section: ${section.name}`)
-      console.error('Pattern:', section.pattern.source)
-      console.error('Content:', analysisContent)
-      console.error('Section content:', analysisContent.match(new RegExp(`${section.name}[\\s\\S]*?(?=\\n\\n|$)`))?.[0] || 'Not found')
-      console.error('Raw response:', rawResponse)
-      throw new Error(`Invalid response format - ${section.name} section does not match expected pattern`)
-    }
-  }
-
-  // Add extra validation for risk assessment values
-  const riskMatch = analysisContent.match(/RISK_ASSESSMENT:[\s\S]*?(?=KEY_CONSIDERATIONS:|$)/i)?.[0]
-  if (riskMatch) {
-    const privateRisk = riskMatch.match(/PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)/i)?.[1]?.toUpperCase()
-    const missionAlign = riskMatch.match(/MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)/i)?.[1]?.toUpperCase()
-    const complexity = riskMatch.match(/IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i)?.[1]?.toUpperCase()
-
-    if (!privateRisk || !missionAlign || !complexity) {
-      console.error('Risk assessment values invalid:', { privateRisk, missionAlign, complexity })
-      console.error('Risk section:', riskMatch)
-      throw new Error('Invalid risk assessment values')
+    const sectionContent = sections.find(s => s.includes(`${section.name}:`))
+    if (!sectionContent || !section.validate(sectionContent)) {
+      console.error(`Failed to validate section: ${section.name}`)
+      console.error('Section content:', sectionContent || 'Not found')
+      console.error('Full content:', analysisContent)
+      throw new Error(`Invalid response format - ${section.name} section is invalid or missing`)
     }
   }
 
