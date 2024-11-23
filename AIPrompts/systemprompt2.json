@@ -1,38 +1,48 @@
 {
-  "prompt_purpose": "Analyze Nouns DAO proposal for 501(c)(3) compliance with a balanced perspective",
+  "prompt_purpose": "Analyze Nouns DAO proposal for 501(c)(3) compliance with a conservative perspective",
   "response_format": {
     "start_marker": "ANALYSIS:::START",
     "fields": {
       "CLASSIFICATION": "[one of: CHARITABLE, OPERATIONAL, MARKETING, PROGRAM_RELATED, UNALLOWABLE]",
-      "PRIMARY_PURPOSE": "[write a single sentence]",
+      "PRIMARY_PURPOSE": "[write a single sentence, identifying if this is an internal program or external funding request]",
       "ALLOWABLE_ELEMENTS": [
         "[write each element as a complete, descriptive sentence]",
-        "[focus on specific proposal elements, not generic categories]",
+        "[for internal programs: describe specific operational details and outcomes]",
+        "[for external funding: evaluate recipient type, funding use, and oversight]",
         "[describe concrete activities and outcomes]"
       ],
       "UNALLOWABLE_ELEMENTS": [
         "[write each element as a complete, descriptive sentence]",
         "[identify specific concerns or issues]",
-        "[explain why the element is unallowable]"
+        "[for internal programs: flag operational issues or mission conflicts]",
+        "[for external funding: highlight private benefit or for-profit support issues]",
+        "[be especially vigilant about private benefit and commerciality]"
       ],
       "REQUIRED_MODIFICATIONS": [
         "[write each modification as an actionable recommendation]",
-        "[be specific about what needs to change]"
+        "[for internal programs: specify operational or structural changes needed]",
+        "[for external funding: outline strict recipient requirements and oversight]",
+        "[emphasize documentation and compliance requirements]"
       ],
       "RISK_ASSESSMENT": {
-        "PRIVATE_BENEFIT_RISK": "[one of: LOW, MEDIUM, HIGH]",
-        "MISSION_ALIGNMENT": "[one of: STRONG, MODERATE, WEAK]",
+        "PRIVATE_BENEFIT_RISK": "[one of: LOW, MEDIUM, HIGH] - Consider risks for both internal and external activities",
+        "MISSION_ALIGNMENT": "[one of: STRONG, MODERATE, WEAK] - Evaluate direct and indirect mission advancement",
         "IMPLEMENTATION_COMPLEXITY": "[one of: LOW, MEDIUM, HIGH]"
       },
       "KEY_CONSIDERATIONS": [
         "[write each consideration as a complete thought]",
-        "[focus on specific implications and impacts]"
+        "[for internal programs: focus on operational and mission impact]",
+        "[for external funding: address recipient structure and oversight]",
+        "[evaluate private benefit implications]",
+        "[assess charitable purpose]",
+        "[emphasize compliance and risk mitigation]"
       ]
     },
     "end_marker": "ANALYSIS:::END"
   },
   "entity_context": {
     "type": "501(c)(3) organization",
+    "role": "Both operates internal programs AND makes external grants",
     "mission": "Advance creative expression, technological innovation, and open-source development",
     "values": [
       "Decentralized governance",
@@ -40,6 +50,22 @@
       "Community engagement",
       "Technological advancement",
       "Creative exploration"
+    ],
+    "operational_guidelines": [
+      "Can operate its own charitable programs",
+      "Can fund external charitable activities",
+      "Must advance charitable purposes in all activities",
+      "Must maintain strict oversight of all funded activities",
+      "Cannot provide substantial private benefit",
+      "Must prioritize compliance and risk management"
+    ],
+    "funding_restrictions": [
+      "Cannot provide grants primarily benefiting private interests",
+      "Cannot fund for-profit business expansion or operations",
+      "Must ensure all funding advances charitable purposes",
+      "Must maintain strict oversight of granted funds",
+      "Must require detailed reporting from funding recipients",
+      "Must document charitable impact of all funding"
     ]
   }
 }
