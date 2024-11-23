@@ -67,7 +67,7 @@ function convertImageMarkdownToText(description: string): string {
   })
 }
 
-// Update the pattern matching function to be more flexible
+// Update the pattern matching function to be more resilient
 export const extractAnalysis = (rawResponse: string) => {
   // Remove any leading/trailing whitespace and normalize newlines
   const cleanResponse = rawResponse.trim().replace(/\r\n/g, '\n')
@@ -111,7 +111,7 @@ export const extractAnalysis = (rawResponse: string) => {
     },
     { 
       name: 'RISK_ASSESSMENT:', 
-      pattern: /RISK_ASSESSMENT:[\s\S]*?(?:PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH))[\s\S]*?(?:MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK))[\s\S]*?(?:IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH))/i 
+      pattern: /RISK_ASSESSMENT:[\s\S]*?PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)[\s\S]*?MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)[\s\S]*?IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i 
     },
     { 
       name: 'KEY_CONSIDERATIONS:', 
@@ -125,10 +125,8 @@ export const extractAnalysis = (rawResponse: string) => {
     if (!match) {
       console.error(`Failed to match pattern for section: ${section.name}`)
       console.error('Pattern:', section.pattern.source)
-      console.error('Content section:', analysisContent.substring(
-        Math.max(0, analysisContent.indexOf(section.name) - 50),
-        Math.min(analysisContent.length, analysisContent.indexOf(section.name) + 200)
-      ))
+      console.error('Content:', analysisContent)
+      console.error('Section content:', analysisContent.match(new RegExp(`${section.name}[\\s\\S]*?(?=\\n\\n|$)`))?.[0] || 'Not found')
       throw new Error(`Invalid response format - ${section.name} section does not match expected pattern`)
     }
   }
