@@ -111,7 +111,7 @@ export const extractAnalysis = (rawResponse: string) => {
     },
     { 
       name: 'RISK_ASSESSMENT:', 
-      pattern: /RISK_ASSESSMENT:[\s\S]*?PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)[\s\S]*?MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)[\s\S]*?IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i 
+      pattern: /RISK_ASSESSMENT:[\s\S]*?(?:PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH))[\s\S]*?(?:MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK))[\s\S]*?(?:IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH))/i 
     },
     { 
       name: 'KEY_CONSIDERATIONS:', 
@@ -127,7 +127,22 @@ export const extractAnalysis = (rawResponse: string) => {
       console.error('Pattern:', section.pattern.source)
       console.error('Content:', analysisContent)
       console.error('Section content:', analysisContent.match(new RegExp(`${section.name}[\\s\\S]*?(?=\\n\\n|$)`))?.[0] || 'Not found')
+      console.error('Raw response:', rawResponse)
       throw new Error(`Invalid response format - ${section.name} section does not match expected pattern`)
+    }
+  }
+
+  // Add extra validation for risk assessment values
+  const riskMatch = analysisContent.match(/RISK_ASSESSMENT:[\s\S]*?(?=KEY_CONSIDERATIONS:|$)/i)?.[0]
+  if (riskMatch) {
+    const privateRisk = riskMatch.match(/PRIVATE_BENEFIT_RISK:\s*(LOW|MEDIUM|HIGH)/i)?.[1]?.toUpperCase()
+    const missionAlign = riskMatch.match(/MISSION_ALIGNMENT:\s*(STRONG|MODERATE|WEAK)/i)?.[1]?.toUpperCase()
+    const complexity = riskMatch.match(/IMPLEMENTATION_COMPLEXITY:\s*(LOW|MEDIUM|HIGH)/i)?.[1]?.toUpperCase()
+
+    if (!privateRisk || !missionAlign || !complexity) {
+      console.error('Risk assessment values invalid:', { privateRisk, missionAlign, complexity })
+      console.error('Risk section:', riskMatch)
+      throw new Error('Invalid risk assessment values')
     }
   }
 
