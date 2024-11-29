@@ -1,71 +1,180 @@
-import { Transaction, NativeTransfer, NFTTransfer, ERC20Transfer } from './types';
-import { ADDRESSES, getContractDetails } from './contracts';
+import { formatUnits } from 'ethers';
+import { 
+  TreasuryData, 
+  EnhancedTransaction, 
+  NounTransaction, 
+  USDCTransaction,
+  Transaction 
+} from './types';
+import { MONITORED_CONTRACTS } from './contracts';
 
-export function processTransaction(tx: any, type: 'auction' | 'treasury' | 'tokenBuyer' | 'usdcPayer') {
-  const isNounsTransfer = tx.nft_transfers?.some((transfer: NFTTransfer) => 
-    transfer.token_address.toLowerCase() === ADDRESSES.NOUNS_TOKEN.toLowerCase()
-  );
+// Contract addresses
+const CONTRACTS = {
+  NOUNS_TOKEN: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03'.toLowerCase(),
+  AUCTION_HOUSE: '0x830BD73E4184ceF73443C15111a1DF14e495C706'.toLowerCase(),
+  ZERO_ADDRESS: '0x0000000000000000000000000000000000000000'.toLowerCase(),
+  NOUNDER: '0x2573C60a6D127755aA2DC85e342F7da2378a0Cc5'.toLowerCase(),
+  USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase()
+} as const;
 
-  const hasEthTransfer = tx.native_transfers && tx.native_transfers.length > 0;
-  const hasErc20Transfer = tx.erc20_transfers && tx.erc20_transfers.length > 0;
-  const ethAmount = hasEthTransfer ? tx.native_transfers[0].value_formatted : null;
+// Transaction type identifiers
+const TRANSACTION_TYPES = {
+  NOUN_TRANSFER: 'NOUN_TRANSFER',
+  NOUN_MINT: 'MINT',
+  NOUNDER_TRANSFER: 'NOUNDER_TRANSFER',
+  USDC_TRANSFER: 'USDC_TRANSFER',
+  ETH_TRANSFER: 'ETH_TRANSFER'
+} as const;
 
-  let category = 'Contract Interaction';
-  let description = 'Contract Interaction';
-  let contractDetails = '';
-  let direction = '';
+function getCombinedTransactions(data: TreasuryData): EnhancedTransaction[] {
+  // Just combine and sort all transactions, no filtering
+  const allTransactions = [
+    ...data.ethTransactions,
+    ...data.usdcTransactions,
+    ...data.nounTransactions
+  ];
 
-  // Determine direction for ETH and ERC-20 transfers
-  if ((type === 'treasury' || type === 'usdcPayer' || type === 'tokenBuyer') && (hasEthTransfer || hasErc20Transfer)) {
-    const contractAddress = type === 'treasury' 
-      ? ADDRESSES.TREASURY 
-      : type === 'usdcPayer'
-        ? ADDRESSES.USDC_PAYER
-        : ADDRESSES.TOKEN_BUYER;
+  // Sort by timestamp, newest first
+  return allTransactions.sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp));
+}
 
-    if (hasEthTransfer) {
-      const fromContract = tx.native_transfers[0].from_address.toLowerCase() === contractAddress.toLowerCase();
-      direction = fromContract ? 'Outbound' : 'Inbound';
-    } else if (hasErc20Transfer) {
-      const fromContract = tx.erc20_transfers[0].from_address.toLowerCase() === contractAddress.toLowerCase();
-      direction = fromContract ? 'Outbound' : 'Inbound';
-    }
+function getContractName(address: string): string {
+  return MONITORED_CONTRACTS.find(c => 
+    c.address.toLowerCase() === address.toLowerCase()
+  )?.name || 'Unknown Contract';
+}
+
+function safeFormatAmount(value: string | null | undefined, decimals: number): string {
+  if (!value || value === '0x' || value === 'null') {
+    return '0';
   }
-
-  // Get contract details
-  if (tx.to_address) {
-    contractDetails = getContractDetails(tx.to_address);
-    if (contractDetails !== 'Unknown Contract') {
-      description = `Interaction with ${contractDetails}`;
-    }
+  try {
+    return formatUnits(value, decimals);
+  } catch (error) {
+    console.error('Error formatting amount:', error, { value, decimals });
+    return '0';
   }
+}
 
-  // Categorize transaction
-  if (isNounsTransfer) {
-    const nftTransfer = tx.nft_transfers.find((t: NFTTransfer) => 
-      t.token_address.toLowerCase() === ADDRESSES.NOUNS_TOKEN.toLowerCase()
+function isBidTransaction(tx: EnhancedTransaction): boolean {
+  const BID_METHODS = ['0x96b5a755', '0x4b43ed12'];
+  return BID_METHODS.includes(tx.methodId) || 
+         tx.functionName?.toLowerCase().includes('createbid') ||
+         tx.functionName?.toLowerCase().includes('bid');
+}
+
+function getTransactionType(tx: EnhancedTransaction): typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES] {
+  if ('nounId' in tx) {
+    const nounTx = tx as NounTransaction;
+    if (nounTx.isNounderNoun) {
+      return TRANSACTION_TYPES.NOUNDER_TRANSFER;
+    }
+    if (nounTx.isMint) {
+      return TRANSACTION_TYPES.NOUN_MINT;
+    }
+    return TRANSACTION_TYPES.NOUN_TRANSFER;
+  }
+  
+  if ('amount' in tx) {
+    return TRANSACTION_TYPES.USDC_TRANSFER;
+  }
+  
+  return TRANSACTION_TYPES.ETH_TRANSFER;
+}
+
+function getTransactionDisplay(tx: EnhancedTransaction): string {
+  // Simple display logic - just show what type of transfer it is
+  if (tx.tokenID) {
+    return `NOUN #${tx.tokenID}`;
+  }
+  if (tx.tokenSymbol) {
+    return `${tx.tokenSymbol} Transfer`;
+  }
+  return 'ETH Transfer';
+}
+
+function isTransactionSuccessful(tx: Transaction): boolean {
+  return tx.isError === '0';
+}
+
+export function processTransactions(
+  rawData: Record<string, any>, 
+  query?: { contractTypes?: ('treasury' | 'token_buyer' | 'payer' | 'auction')[] }
+): TreasuryData {
+  const processedData: TreasuryData = {
+    nounTransactions: [],
+    usdcTransactions: [],
+    ethTransactions: [],
+    balances: { eth: '0', usdc: '0' }
+  };
+
+  // Filter contracts based on query
+  const relevantContracts = query?.contractTypes 
+    ? MONITORED_CONTRACTS.filter(c => query.contractTypes?.includes(c.type))
+    : MONITORED_CONTRACTS;
+
+  // Process each contract's data
+  relevantContracts.forEach(contract => {
+    const contractData = rawData[contract.address];
+    if (!contractData) return;
+
+    // Add balances
+    processedData.balances.eth = addBigInts(
+      processedData.balances.eth,
+      contractData.balances?.eth || '0'
     );
-    category = 'NFT Transfer';
-    description = `Noun #${nftTransfer.token_id} Transfer`;
-  } else if (type === 'auction' && hasEthTransfer) {
-    category = 'Auction Bid';
-    description = `Bid ${ethAmount} ETH`;
-  } else if (hasEthTransfer) {
-    category = 'ETH Transfer';
-    description = `${ethAmount} ETH`;
-  } else if (hasErc20Transfer) {
-    const erc20Transfer = tx.erc20_transfers[0];
-    category = 'Token Transfer';
-    description = `${erc20Transfer.value_formatted} ${erc20Transfer.token_symbol}`;
-  }
+    processedData.balances.usdc = addBigInts(
+      processedData.balances.usdc,
+      contractData.balances?.usdc || '0'
+    );
 
-  return {
-    ...tx,
-    type,
-    category,
-    description,
-    source: type,
-    contractDetails,
-    direction
-  } as Transaction;
-} 
+    // Process transactions
+    const transactions = contractData.transactions || [];
+    transactions.forEach((tx: Transaction) => {
+      const enhancedTx: EnhancedTransaction = {
+        ...tx,
+        contractAddress: contract.address,
+        contractName: contract.name
+      };
+
+      // Categorize transaction
+      if (tx.tokenID) {
+        const nounTx: NounTransaction = {
+          ...enhancedTx,
+          nounId: tx.tokenID,
+          isNounderNoun: tx.from.toLowerCase() === CONTRACTS.NOUNDER.toLowerCase(),
+          isMint: tx.from.toLowerCase() === CONTRACTS.ZERO_ADDRESS.toLowerCase()
+        };
+        processedData.nounTransactions.push(nounTx);
+      } else if (tx.tokenSymbol === 'USDC') {
+        const usdcTx: USDCTransaction = {
+          ...enhancedTx,
+          amount: tx.value,
+          decimals: 6
+        };
+        processedData.usdcTransactions.push(usdcTx);
+      } else {
+        processedData.ethTransactions.push(enhancedTx);
+      }
+    });
+  });
+
+  return processedData;
+}
+
+// Helper function for adding big integers stored as strings
+function addBigInts(a: string, b: string): string {
+  return (BigInt(a || '0') + BigInt(b || '0')).toString();
+}
+
+// Export everything at once
+export {
+  CONTRACTS,
+  TRANSACTION_TYPES,
+  getCombinedTransactions,
+  getContractName,
+  safeFormatAmount,
+  isBidTransaction,
+  getTransactionDisplay,
+  isTransactionSuccessful
+}; 

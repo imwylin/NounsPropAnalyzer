@@ -1,32 +1,302 @@
+/* Layout */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  padding: var(--spacing-lg);
+  min-height: calc(100vh - 64px); /* Account for navbar */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+/* Header Styling */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
-  text-align: center;
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
-.comingSoon {
-  text-align: center;
-  padding: 4rem 2rem;
-  background: var(--card-bg);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.comingSoon h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-.comingSoon p {
+.subtitle {
   color: var(--text-secondary);
-  font-size: 1.1rem;
-} 
+  font-size: var(--font-size-md);
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.viewToggle {
+  display: flex;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.viewButton {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewButton.active {
+  background: var(--accent);
+  color: white;
+}
+
+.refreshButton {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refreshButton:hover {
+  background: var(--hover-bg);
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-xl);
+  height: 100%;
+}
+
+/* Section Styling */
+.treasurySection,
+.auctionSection {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionHeader {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectionHeader h2 {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Transaction Feed */
+.transactionsFeed {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+.transactionsTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-sm);
+}
+
+.transactionsTable th {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  padding: var(--spacing-md);
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  z-index: 1;
+}
+
+.transactionsTable td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Transaction Row Styling */
+.transactionRow {
+  transition: background-color 0.2s ease;
+}
+
+.transactionRow:hover {
+  background: var(--hover-bg);
+}
+
+.timestamp {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.directionBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  min-width: 60px;
+}
+
+.directionBadge.in {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.directionBadge.out {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+/* Balance Display */
+.balanceGroup {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.balanceItem {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .viewToggle {
+    width: 100%;
+  }
+
+  .viewButton {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* Auction House Styles */
+.auctionFeed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.auctionStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.statItem {
+  background: var(--hover-bg);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.statLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.statValue {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.auctionTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-sm);
+}
+
+.auctionTable th {
+  padding: var(--spacing-md);
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+.auctionTable td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.auctionRow {
+  transition: background-color 0.2s ease;
+}
+
+.auctionRow:hover {
+  background: var(--hover-bg);
+}
+
+.action {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+  

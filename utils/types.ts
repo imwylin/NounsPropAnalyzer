@@ -1,129 +1,70 @@
-export interface MoralisBalance {
-  token_address: string;
-  symbol: string;
-  name: string;
-  logo: string | null;
-  decimals: string;
-  balance: string;
-  balance_formatted: string;
-  possible_spam: boolean;
-  verified_contract: boolean;
-  native_token: boolean;
-  token_price?: {
-    usd_price?: string;
-    native_price?: string;
+import { Transaction as EtherscanTransaction } from './etherscan';
+import { ContractConfig } from './contracts';
+
+// Base types
+export type Transaction = EtherscanTransaction;
+
+// Raw data streams
+export interface RawContractData {
+  transactions: Transaction[];
+  balances: {
+    eth: string;
+    usdc: string;
   };
 }
 
-export interface EvmTokenBalanceWithPrice {
-  token_address: string;
-  symbol: string;
-  name: string;
-  logo: string | null;
-  decimals: string;
-  balance: string;
-  balance_formatted: string;
-  possible_spam: boolean;
-  verified_contract: boolean;
-  native_token: boolean;
-  token_price: {
-    usd_price: string;
-    native_price: string;
-  };
+export interface RawTreasuryData {
+  [contractAddress: string]: RawContractData;
 }
 
-export interface NativeTransfer {
-  from_address: string;
-  to_address: string;
-  value: string;
-  value_formatted: string;
+// Enhanced transaction types
+export interface EnhancedTransaction extends Transaction {
+  contractAddress: string;
+  contractName: string;
 }
 
-export interface NFTTransfer {
-  token_address: string;
-  token_id: string;
-  from_address: string;
-  to_address: string;
+export interface NounTransaction extends EnhancedTransaction {
+  nounId: string;
+  isNounderNoun?: boolean;
+  isMint?: boolean;
+}
+
+export interface USDCTransaction extends EnhancedTransaction {
   amount: string;
-  contract_type: string;
-}
-
-export interface ERC20Transfer {
-  token_address: string;
-  token_symbol: string;
-  value: string;
-  value_formatted: string;
-  from_address: string;
-}
-
-export interface Transaction {
-  hash: string;
-  from_address: string;
-  to_address: string;
-  block_timestamp: string;
-  value: string;
-  native_transfers?: NativeTransfer[];
-  nft_transfers?: NFTTransfer[];
-  erc20_transfers?: ERC20Transfer[];
-  type?: 'auction' | 'treasury' | 'tokenBuyer' | 'usdcPayer';
-  category?: string;
-  description?: string;
-  contractDetails?: string;
-  direction?: string;
-  source?: string;
-  isAuctionSettlement?: boolean;
-}
-
-export interface ProcessedTransaction extends Transaction {
-  type: 'auction' | 'treasury' | 'tokenBuyer' | 'usdcPayer';
-  category: string;
-  description: string;
-  source: string;
-  value: string;
-}
-
-export interface MoralisTokenBalance {
-  token_address: string;
-  symbol: string;
-  name: string;
-  logo: string | null;
-  decimals: string;
-  balance: string;
-  balance_formatted: string;
-  possible_spam: boolean;
-  verified_contract: boolean;
-  native_token: boolean;
-  usd_price?: string;
-}
-
-export interface TokenBalance {
-  token_address: string;
-  symbol: string;
-  name: string;
-  logo: string | null;
   decimals: number;
-  balance: string;
-  balance_formatted: string;
-  usd_price: number | null;
-  usd_value: number | null;
-  possible_spam: boolean;
-  verified_contract: boolean;
-  native_token: boolean;
 }
 
-export interface MoralisTokenBalanceResponse {
-  token_address: string;
-  symbol: string;
-  name: string;
-  logo: string | null;
-  decimals: string;
-  balance: string;
-  balance_formatted: string;
-  possible_spam: boolean;
-  verified_contract: boolean;
-  native_token: boolean;
-  token_price?: {
-    usd_price?: string;
-    native_price?: string;
+// Processed data structure
+export interface TreasuryData {
+  nounTransactions: NounTransaction[];
+  usdcTransactions: USDCTransaction[];
+  ethTransactions: EnhancedTransaction[];
+  balances: {
+    eth: string;
+    usdc: string;
   };
+}
+
+// Query types for filtering
+export interface TransactionQuery {
+  timeRange?: 'day' | 'week' | 'month' | 'year' | 'all';
+  contractTypes?: ('treasury' | 'token_buyer' | 'payer' | 'auction')[];
+  transactionTypes?: ('eth' | 'usdc' | 'noun')[];
+  status?: 'success' | 'failed' | 'all';
+}
+
+// Add to your existing types
+export interface CachedData {
+  transactions: Transaction[];
+  balances: {
+    eth: string;
+    usdc: string;
+  };
+  contractType: 'treasury' | 'token_buyer' | 'payer' | 'auction';
+  contractName: string;
+  lastUpdated: number;
+}
+
+export interface EdgeConfigData {
+  [key: string]: CachedData;
 } 

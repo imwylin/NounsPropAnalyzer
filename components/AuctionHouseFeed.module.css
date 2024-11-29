@@ -1,0 +1,110 @@
+.auctionFeed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.auctionStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.statItem {
+  background: var(--hover-bg);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.statLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.statValue {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.auctionList {
+  overflow-x: auto;
+}
+
+.auctionTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-sm);
+}
+
+.auctionTable th {
+  padding: var(--spacing-md);
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+.auctionTable td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.auctionRow {
+  transition: background-color 0.2s ease;
+}
+
+.auctionRow:hover {
+  background: var(--hover-bg);
+}
+
+.timestamp {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.action {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.amount {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.address a {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.address a:hover {
+  color: var(--accent);
+}
+
+.rightAlign {
+  text-align: right;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .auctionStats {
+    grid-template-columns: 1fr;
+  }
+
+  .auctionFeed {
+    padding: var(--spacing-md);
+  }
+} 
