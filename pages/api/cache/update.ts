@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('Starting cache update...');
     const updates: Record<string, string> = {};
 
     // Fetch and cache treasury data
@@ -33,7 +34,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ['treasury', 'token_buyer', 'payer'].includes(c.type)
     );
 
+    console.log('Treasury contracts to process:', treasuryContracts.length);
+
     for (const contract of treasuryContracts) {
+      console.log(`Processing contract: ${contract.name}`);
       const [transactions, balances] = await Promise.all([
         getContractTransactions(contract.address, 'all'),
         getContractBalances(contract.address)
@@ -49,6 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const cacheKey = `treasury:${contract.address}:all`;
       updates[cacheKey] = JSON.stringify(data);
+
+      console.log(`Cached data for ${contract.name}:`, data);
     }
 
     // Fetch and cache auction data
@@ -74,12 +80,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       updates[cacheKey] = JSON.stringify(data);
     }
 
+    // Log the updates before sending
+    console.log('Updates to send:', Object.keys(updates));
+    
     // Update Edge Config with all the data at once
-    await updateEdgeConfig(updates);
+    const result = await updateEdgeConfig(updates);
+    console.log('Edge Config update result:', result);
 
-    res.status(200).json({ success: true });
-  } catch (error) {
+    res.status(200).json({ success: true, updates: Object.keys(updates) });
+  } catch (error: unknown) {
     console.error('Cache update failed:', error);
-    res.status(500).json({ error: 'Failed to update cache' });
+    if (error instanceof Error) {
+      res.status(500).json({ error: 'Failed to update cache', details: error.message });
+    } else {
+      res.status(500).json({ error: 'Failed to update cache', details: 'Unknown error' });
+    }
   }
 } 
