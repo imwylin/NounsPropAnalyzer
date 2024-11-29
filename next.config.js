@@ -4,6 +4,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  env: {
+    EDGE_CONFIG: process.env.EDGE_CONFIG,
+  },
 }
 
 module.exports = nextConfig 

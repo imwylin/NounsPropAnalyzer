@@ -1,51 +1,43 @@
-# 501c3 Analysis Process
+# AI Analysis System Documentation
 
-## Classification Criteria
+## Overview
 
-Proposals are classified into:
+The AI analysis system provides multi-perspective evaluation of Nouns DAO proposals using different prompt strategies.
 
-- CHARITABLE: Direct public benefit activities
-- OPERATIONAL: Internal management/maintenance
-- MARKETING: Community growth and awareness
-- PROGRAM_RELATED: Mission-aligned revenue activities
-- UNALLOWABLE: Activities incompatible with 501c3
+## Analysis Types
 
-## Risk Assessment Framework
+### Moderate Analysis (Prompt Version 1)
+- Balanced evaluation approach
+- Focus on compliance and feasibility
+- Standard risk assessment
 
-### Private Benefit Risk
-- LOW: Minimal private benefit, clear public benefit
-- MEDIUM: Some private benefit, requires controls
-- HIGH: Significant private benefit concerns
+### Hawkish Analysis (Prompt Version 2)
+- Strict interpretation of rules
+- Enhanced risk detection
+- Detailed compliance checking
 
-### Mission Alignment
-- STRONG: Directly advances charitable mission
-- MODERATE: Indirectly supports mission
-- WEAK: Tenuous connection to mission
-
-### Implementation Complexity
-- LOW: Straightforward execution
-- MEDIUM: Requires moderate oversight
-- HIGH: Complex implementation needs
+### Innovative Analysis (Prompt Version 3)
+- Forward-thinking perspective
+- Focus on potential and innovation
+- Community impact assessment
 
 ## Analysis Components
 
-1. Primary Purpose Assessment
-2. Allowable Elements Identification
-3. Unallowable Elements Detection
-4. Required Modifications
-5. Risk Assessment
-6. Key Considerations
+1. **Classification**
+   - Proposal type identification
+   - Primary purpose detection
+   - Category assignment
 
-## Compliance Guidelines
+2. **Risk Assessment**
+   - Private benefit evaluation
+   - Mission alignment scoring
+   - Implementation complexity rating
 
-- Interpret 'DAO' as the nonprofit entity
-- Address references indicate payment activities
-- Evaluate third-party revenue for private benefit
-- Maintain blockchain/crypto components
-- Focus on charitable purpose and public benefit
-- Consider acceptable incidental private benefit
-- Assess operational sustainability
+3. **Compliance Checking**
+   - Allowable elements identification
+   - Unallowable elements detection
+   - Modification suggestions
 
-## Disclaimer
+## Usage Guidelines
 
-This analysis represents an informed opinion on 501c3 compatibility and is not legal advice. 
+[Additional content for analysis.md...] 

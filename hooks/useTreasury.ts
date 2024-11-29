@@ -1,21 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getContractTransactions, getContractBalances } from '../utils/etherscan';
 import { MONITORED_CONTRACTS } from '../utils/contracts';
-import { get } from '@vercel/edge-config';
-
-const CACHE_TTL = 60 * 60; // 1 hour in seconds
-
-const debugCache = async (key: string, action: 'get' | 'set', data?: any) => {
-  console.log(`Edge Config ${action}:`, key, data ? 'with data' : 'no data');
-};
-
-const serializeData = (data: any) => {
-  return JSON.stringify(data);
-};
-
-const deserializeData = (data: string | null) => {
-  return data ? JSON.parse(data) : null;
-};
 
 export function useTreasury(
   timeRange: 'day' | 'week' | 'month' | 'year' | 'all' = 'month',
@@ -42,36 +27,8 @@ export function useTreasury(
       const newData: Record<string, any> = {};
       
       for (const contract of relevantContracts) {
-        const cacheKey = `treasury:${contract.address}:${timeRange}`;
-        
         try {
-          await debugCache(cacheKey, 'get');
-          const cachedData = await get(cacheKey);
-          let data = cachedData ? deserializeData(cachedData as string) : null;
-          
-          if (!data) {
-            console.log('Cache miss, fetching from Etherscan:', contract.name);
-            const [transactions, balances] = await Promise.all([
-              getContractTransactions(contract.address, timeRange),
-              getContractBalances(contract.address)
-            ]);
-            
-            data = {
-              transactions,
-              balances,
-              contractType: contract.type,
-              contractName: contract.name,
-              lastUpdated: Date.now()
-            };
-            
-            await debugCache(cacheKey, 'set', data);
-          } else {
-            console.log('Cache hit for:', contract.name);
-          }
-          
-          newData[contract.address] = data;
-        } catch (configError) {
-          console.error('Edge Config operation failed:', configError);
+          // Fetch fresh data
           const [transactions, balances] = await Promise.all([
             getContractTransactions(contract.address, timeRange),
             getContractBalances(contract.address)
@@ -84,6 +41,9 @@ export function useTreasury(
             contractName: contract.name,
             lastUpdated: Date.now()
           };
+        } catch (contractError) {
+          console.error(`Error processing contract ${contract.address}:`, contractError);
+          // Continue with other contracts even if one fails
         }
       }
       
@@ -100,10 +60,5 @@ export function useTreasury(
     refreshData();
   }, [timeRange, options?.contractTypes?.join(',')]);
 
-  return {
-    rawData,
-    isLoading,
-    error,
-    refreshData
-  };
+  return { rawData, isLoading, error, refreshData };
 } 

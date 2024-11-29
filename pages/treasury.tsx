@@ -2,6 +2,7 @@ import { useTreasury } from '../hooks/useTreasury';
 import { useAuctionData } from '../hooks/useAuctionData';
 import { TreasuryFeed } from '../components/TreasuryFeed';
 import { AuctionHouseFeed } from '../components/AuctionHouseFeed';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import styles from './treasury.module.css';
 import { EnhancedTransaction } from '../utils/types';
 import { useTreasuryData } from '../hooks/useTreasuryData';
@@ -10,7 +11,8 @@ export default function Treasury() {
   const { 
     rawData,
     refreshData, 
-    isLoading 
+    isLoading,
+    error
   } = useTreasury('all', {
     contractTypes: ['treasury', 'token_buyer', 'payer']
   });
@@ -46,33 +48,37 @@ export default function Treasury() {
             </div>
 
             <div className={styles.transactionsFeed}>
-              <table className={styles.transactionsTable}>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Contract</th>
-                    <th>Type</th>
-                    <th className={styles.rightAlign}>Amount</th>
-                    <th>Direction</th>
-                    <th>Counterparty</th>
-                    <th className={styles.centerAlign}>Hash</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...treasuryData.ethTransactions, ...treasuryData.usdcTransactions]
-                    .sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp))
-                    .map((tx: EnhancedTransaction) => {
-                      const uniqueKey = `${tx.hash}-${tx.timeStamp}-${tx.tokenSymbol || 'ETH'}-${tx.value}`;
-                      return (
-                        <TreasuryFeed 
-                          key={uniqueKey}
-                          transaction={tx}
-                          contractName={tx.contractName}
-                        />
-                      );
-                    })}
-                </tbody>
-              </table>
+              {isLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <table className={styles.transactionsTable}>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Contract</th>
+                      <th>Type</th>
+                      <th className={styles.rightAlign}>Amount</th>
+                      <th>Direction</th>
+                      <th>Counterparty</th>
+                      <th className={styles.centerAlign}>Hash</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...treasuryData.ethTransactions, ...treasuryData.usdcTransactions]
+                      .sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp))
+                      .map((tx: EnhancedTransaction) => {
+                        const uniqueKey = `${tx.hash}-${tx.timeStamp}-${tx.tokenSymbol || 'ETH'}-${tx.value}`;
+                        return (
+                          <TreasuryFeed 
+                            key={uniqueKey}
+                            transaction={tx}
+                            contractName={tx.contractName}
+                          />
+                        );
+                      })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </section>
 
@@ -85,6 +91,12 @@ export default function Treasury() {
           </section>
         </div>
       </main>
+
+      {error && (
+        <div className={styles.errorMessage}>
+          Failed to load treasury data: {error.message}
+        </div>
+      )}
     </div>
   );
 }

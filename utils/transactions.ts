@@ -4,7 +4,7 @@ import {
   EnhancedTransaction, 
   NounTransaction, 
   USDCTransaction,
-  Transaction 
+  EtherscanTransaction 
 } from './types';
 import { MONITORED_CONTRACTS } from './contracts';
 
@@ -58,9 +58,17 @@ function safeFormatAmount(value: string | null | undefined, decimals: number): s
 
 function isBidTransaction(tx: EnhancedTransaction): boolean {
   const BID_METHODS = ['0x96b5a755', '0x4b43ed12'];
-  return BID_METHODS.includes(tx.methodId) || 
-         tx.functionName?.toLowerCase().includes('createbid') ||
-         tx.functionName?.toLowerCase().includes('bid');
+  
+  // Handle optional methodId
+  const hasMatchingMethodId = tx.methodId ? BID_METHODS.includes(tx.methodId) : false;
+  
+  // Handle optional functionName
+  const hasMatchingFunctionName = tx.functionName ? (
+    tx.functionName.toLowerCase().includes('createbid') ||
+    tx.functionName.toLowerCase().includes('bid')
+  ) : false;
+  
+  return hasMatchingMethodId || hasMatchingFunctionName;
 }
 
 function getTransactionType(tx: EnhancedTransaction): typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES] {
@@ -93,7 +101,7 @@ function getTransactionDisplay(tx: EnhancedTransaction): string {
   return 'ETH Transfer';
 }
 
-function isTransactionSuccessful(tx: Transaction): boolean {
+function isTransactionSuccessful(tx: EtherscanTransaction): boolean {
   return tx.isError === '0';
 }
 
@@ -130,7 +138,7 @@ export function processTransactions(
 
     // Process transactions
     const transactions = contractData.transactions || [];
-    transactions.forEach((tx: Transaction) => {
+    transactions.forEach((tx: EtherscanTransaction) => {
       const enhancedTx: EnhancedTransaction = {
         ...tx,
         contractAddress: contract.address,

@@ -1,39 +1,14 @@
 import axios from 'axios';
 import { sleep } from './helpers';
+import { EtherscanTransaction } from './types';
+import { contractCache } from '../services/cache';
 
 const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY;
 const ETHERSCAN_BASE_URL = 'https://api.etherscan.io/api';
 
-// USDC contract address on Ethereum mainnet
+// Constants
 export const USDC_CONTRACT = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-export const NOUNS_TOKEN_CONTRACT = '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03'; // Nouns NFT contract
-
-export interface Transaction {
-  hash: string;
-  timeStamp: string;
-  from: string;
-  to: string;
-  value: string;
-  gasPrice: string;
-  gasUsed: string;
-  methodId: string;
-  functionName: string;
-  tokenSymbol?: string;
-  tokenDecimal?: string;
-  contractAddress?: string;
-  tokenName?: string;
-  transactionType?: 'normal' | 'token' | 'internal' | 'nft';
-  type?: string;
-  tokenID?: string;
-  isError?: string;
-  txreceipt_status?: string;
-}
-
-// Add our custom transaction type that includes contract info
-export interface EnhancedTransaction extends Transaction {
-  contractAddress: string;  // Make required
-  contractName: string;     // Add contract name
-}
+export const NOUNS_TOKEN_CONTRACT = '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03';
 
 // Add this function to get block number for a timestamp
 async function getBlockNumberAtTimestamp(timestamp: number): Promise<number> {
@@ -59,14 +34,16 @@ async function getBlockNumberAtTimestamp(timestamp: number): Promise<number> {
 }
 
 // Add a helper function for timestamp handling
-function normalizeTransaction(tx: Transaction): Transaction {
+function normalizeTransaction(tx: Partial<EtherscanTransaction>): EtherscanTransaction {
   return {
     ...tx,
     // Ensure timeStamp is consistently a Unix timestamp in seconds
     timeStamp: tx.timeStamp 
       ? (tx.timeStamp.length > 10 ? Math.floor(parseInt(tx.timeStamp) / 1000).toString() : tx.timeStamp)
       : (Math.floor(Date.now() / 1000)).toString(),
-  };
+    // Ensure transactionType is set
+    transactionType: tx.transactionType || 'normal'
+  } as EtherscanTransaction;
 }
 
 async function rateLimitedCall<T>(fn: () => Promise<T>): Promise<T> {
@@ -85,7 +62,11 @@ async function rateLimitedCall<T>(fn: () => Promise<T>): Promise<T> {
 export async function getContractTransactions(
   contractAddress: string,
   timeRange: 'day' | 'week' | 'month' | 'year' | 'all' = 'month'
-): Promise<Transaction[]> {
+): Promise<EtherscanTransaction[]> {
+  // Check cache first
+  const cached = await contractCache.getTransactions(contractAddress);
+  if (cached.length > 0) return cached;
+
   try {
     // Get normal ETH transactions
     const [ethTxResponse, tokenTxResponse, nftTxResponse] = await Promise.all([
@@ -120,22 +101,22 @@ export async function getContractTransactions(
 
     // Normalize and combine all transactions
     const ethTxs = (ethTxResponse.data.status === '1' ? ethTxResponse.data.result : [])
-      .map((tx: Partial<Transaction>) => ({ 
-        ...normalizeTransaction(tx as Transaction), 
+      .map((tx: Partial<EtherscanTransaction>) => ({ 
+        ...normalizeTransaction(tx), 
         transactionType: 'normal',
-        tokenSymbol: 'ETH'  // Add ETH as token symbol for normal transactions
+        tokenSymbol: 'ETH'
       }));
     
     const tokenTxs = (tokenTxResponse.data.status === '1' ? tokenTxResponse.data.result : [])
-      .map((tx: Partial<Transaction>) => ({ 
-        ...normalizeTransaction(tx as Transaction), 
+      .map((tx: Partial<EtherscanTransaction>) => ({ 
+        ...normalizeTransaction(tx), 
         transactionType: 'token',
-        tokenSymbol: tx.tokenSymbol || 'UNKNOWN'  // Ensure token symbol is set
+        tokenSymbol: tx.tokenSymbol || 'UNKNOWN'
       }));
     
     const nftTxs = (nftTxResponse.data.status === '1' ? nftTxResponse.data.result : [])
-      .map((tx: Partial<Transaction>) => ({ 
-        ...normalizeTransaction(tx as Transaction), 
+      .map((tx: Partial<EtherscanTransaction>) => ({ 
+        ...normalizeTransaction(tx), 
         transactionType: 'nft'
       }));
 
@@ -143,20 +124,21 @@ export async function getContractTransactions(
     const allTxs = [...ethTxs, ...tokenTxs, ...nftTxs]
       .sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp));
 
+    // Cache the results
+    await contractCache.setTransactions(contractAddress, allTxs);
+    
     return allTxs;
   } catch (error) {
     console.error('Error fetching transactions:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('API Response:', error.response?.data);
-    }
     return [];
   }
 }
 
-export async function getContractBalances(contractAddress: string): Promise<{
-  eth: string;
-  usdc: string;
-}> {
+export async function getContractBalances(contractAddress: string) {
+  // Check cache first
+  const cached = await contractCache.getBalances(contractAddress);
+  if (cached.eth !== '0' || cached.usdc !== '0') return cached;
+
   try {
     // Get ETH balance
     const ethBalanceResponse = await axios.get(ETHERSCAN_BASE_URL, {
@@ -185,26 +167,28 @@ export async function getContractBalances(contractAddress: string): Promise<{
     console.log('ETH Balance Response:', ethBalanceResponse.data);
     console.log('USDC Balance Response:', usdcBalanceResponse.data);
 
-    return {
+    const balances = {
       eth: ethBalanceResponse.data.status === '1' ? ethBalanceResponse.data.result : '0',
       usdc: usdcBalanceResponse.data.status === '1' ? usdcBalanceResponse.data.result : '0',
     };
+
+    // Cache the results
+    contractCache.setBalances(contractAddress, balances);
+    
+    return balances;
   } catch (error) {
     console.error('Error fetching balances:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('API Response:', error.response?.data);
-    }
     return { eth: '0', usdc: '0' };
   }
 }
 
 // Helper function to identify token transactions
-export function isTokenTransaction(tx: Transaction): boolean {
+export function isTokenTransaction(tx: EtherscanTransaction): boolean {
   return !!tx.tokenSymbol;
 }
 
 // Helper function to get token decimals
-export function getTokenDecimals(tx: Transaction): number {
+export function getTokenDecimals(tx: EtherscanTransaction): number {
   if (tx.tokenSymbol === 'USDC') {
     return 6;
   }
@@ -212,7 +196,7 @@ export function getTokenDecimals(tx: Transaction): number {
 }
 
 // Update the transaction type helper
-function getTransactionType(tx: Transaction): string {
+function getTransactionType(tx: EtherscanTransaction): string {
   if (tx.tokenID && tx.contractAddress?.toLowerCase() === NOUNS_TOKEN_CONTRACT.toLowerCase()) {
     return `Noun #${tx.tokenID} Transfer`;
   }
@@ -229,4 +213,11 @@ function getTransactionType(tx: Transaction): string {
     return 'Internal ETH Transfer';
   }
   return 'ETH Transfer';
-} 
+}
+
+// Change function names to match imports
+export const fetchTransactions = getContractTransactions;
+export const fetchBalance = async (address: string, tokenType: 'ETH' | 'USDC') => {
+  const balances = await getContractBalances(address);
+  return tokenType === 'ETH' ? balances.eth : balances.usdc;
+}; 

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTreasury } from './useTreasury';
-import { EnhancedTransaction, NounTransaction, Transaction } from '../utils/types';
+import { EnhancedTransaction, NounTransaction, EtherscanTransaction } from '../utils/types';
 
 export function useAuctionData() {
   const { rawData } = useTreasury('all', {
@@ -26,13 +26,13 @@ export function useAuctionData() {
         if (!contractData?.transactions) return acc;
         
         const enhancedTransactions = contractData.transactions
-          .filter((tx: Transaction) => {
+          .filter((tx: EtherscanTransaction) => {
             // Only include transactions we haven't seen before
             if (processedHashes.has(tx.hash)) return false;
             processedHashes.add(tx.hash);
             return true;
           })
-          .map((tx: Transaction) => ({
+          .map((tx: EtherscanTransaction) => ({
             ...tx,
             contractAddress: address,
             contractName: contractData.contractName

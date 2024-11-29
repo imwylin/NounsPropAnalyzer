@@ -299,4 +299,14 @@
   font-weight: 500;
   color: var(--text-primary);
 }
+
+/* Add this to your existing CSS */
+.errorMessage {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--error-light);
+  color: var(--error);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
   
