@@ -14,7 +14,7 @@ if (!process.env.NEXT_PUBLIC_RPC_URL) {
 // Configure wagmi client
 export const config = getDefaultConfig({
   appName: 'Nouns 501c3 Analysis',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID,
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID!,
   chains: [mainnet],
   transports: {
     [mainnet.id]: http(`https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_RPC_URL}`)

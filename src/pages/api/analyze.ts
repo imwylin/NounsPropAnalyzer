@@ -213,7 +213,11 @@ Remember:
     console.log('Claude response:', response)
     console.log('Initial confidence metrics:', nativeConfidence)
 
-    const content = response.content[0].text
+    // Handle new response structure
+    const content = response.content[0].type === 'text' 
+      ? response.content[0].text 
+      : ''
+      
     console.log('Raw AI response:', content)
     
     // First try exact format
@@ -352,7 +356,9 @@ Remember:
     })
 
     // After grading response, update confidence metrics
-    const gradeContent = gradingResponse.content[0].text
+    const gradeContent = gradingResponse.content[0].type === 'text'
+      ? gradingResponse.content[0].text
+      : ''
     const gradeMatch = gradeContent.match(/GRADE:::START\n([\s\S]*)\nGRADE:::END/)
 
     if (gradeMatch) {
