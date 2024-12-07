@@ -1,0 +1,522 @@
+/* Column-specific widths */
+.table th:nth-child(1), /* Date */
+.table td:nth-child(1) {
+  width: 90px;
+  min-width: 90px;
+}
+
+.table th:nth-child(2), /* Type */
+.table td:nth-child(2) {
+  width: 80px;
+  min-width: 80px;
+}
+
+.table th:nth-child(3), /* From */
+.table td:nth-child(3),
+.table th:nth-child(4), /* To */
+.table td:nth-child(4) {
+  width: 140px;
+  min-width: 140px;
+}
+
+.table th:nth-child(5), /* Value */
+.table td:nth-child(5) {
+  width: 120px;
+  min-width: 120px;
+}
+
+.table th:nth-child(6), /* Gas */
+.table td:nth-child(6) {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+}
+
+.table th:nth-child(7), /* Function */
+.table td:nth-child(7) {
+  width: 180px;
+  min-width: 180px;
+}
+
+.table th:nth-child(8), /* Block */
+.table td:nth-child(8) {
+  width: 80px;
+  min-width: 80px;
+}
+
+.activitySection {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.activitySection h3 {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  margin: 0 -1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-xs);
+  min-width: 1100px;
+}
+
+.table th {
+  background: var(--hover-bg);
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.txRow {
+  transition: background-color 0.2s ease;
+}
+
+.txRow:hover td {
+  background: var(--hover-bg);
+}
+
+.txDate {
+  white-space: nowrap;
+}
+
+.dateStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dateValue {
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.timeValue {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.contractPillWrapper {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.contractPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--accent-success);
+  border: none;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  max-width: 140px;
+}
+
+.contractPill:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contractName {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.addressLink {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 2px 4px;
+}
+
+.addressLink:hover {
+  color: var(--accent-primary);
+  background: var(--hover-bg);
+}
+
+/* Transaction type pills */
+.txType {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+  color: white;
+}
+
+.typeEth {
+  background: var(--eth-bg);
+}
+
+.typeContract {
+  background: var(--accent-primary);
+}
+
+.typeInternal {
+  background: var(--accent-success);
+}
+
+.typeErc20 {
+  background: var(--usdc-bg);
+}
+
+.typeErc721 {
+  background: var(--accent-warning);
+}
+
+.typeErc1155 {
+  background: var(--accent-warning);
+}
+
+.typeDefault {
+  background: var(--text-secondary);
+}
+
+.txValue {
+  text-align: right;
+  white-space: nowrap;
+  font-feature-settings: "tnum" on, "lnum" on;
+}
+
+.amount {
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.symbol {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  margin-left: var(--spacing-xs);
+}
+
+.loadMoreButton {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.loadMoreButton:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .contractPill {
+    background: var(--accent-success);
+  }
+  
+  .contractPill:hover {
+    filter: brightness(1.15);
+  }
+
+  .addressLink:hover {
+    background: var(--hover-bg);
+  }
+}
+
+.valueStack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.usdValue {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono, monospace);
+  line-height: 1.2;
+}
+
+.blockLink {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-mono, monospace);
+  font-size: var(--font-size-xs);
+  text-align: right;
+  display: block;
+}
+
+.blockLink:hover {
+  color: var(--accent-primary);
+}
+
+.typeWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.tokenId {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-family: var(--font-mono, monospace);
+}
+
+.functionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.functionNameWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.functionName {
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.functionParams {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.8;
+  max-width: 100%;
+}
+
+.methodId {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  opacity: 0.7;
+  font-family: var(--font-mono);
+}
+
+.noFunction {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  font-family: var(--font-mono);
+}
+
+.status,
+.success,
+.error {
+  display: none;
+}
+
+.functionCell {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  max-width: 200px;
+  padding: 4px 8px;
+  line-height: 1.4;
+}
+
+.txLink {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.txLink:hover {
+  color: var(--accent-primary);
+}
+
+.blockLink {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  transition: color 0.2s ease;
+}
+
+.blockLink:hover {
+  color: var(--accent-primary);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.loadMore {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.loadMore:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Section Layout */
+.section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.headerContent h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.transactionCount {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  padding: 2px 8px;
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+}
+
+.toggleButton {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--hover-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.toggleButton.expanded {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+}
+
+.toggleButton.expanded:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.container {
+  border-top: 1px solid var(--border);
+}
+
+/* Gas Pills */
+.gasPills {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-width: 240px;
+}
+
+.gasPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  background: var(--hover-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+ 

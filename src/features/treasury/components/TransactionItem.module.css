@@ -1,0 +1,41 @@
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.incoming {
+  color: var(--status-low);
+}
+
+.outgoing {
+  color: var(--status-high);
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.link:hover {
+  text-decoration: underline;
+} 

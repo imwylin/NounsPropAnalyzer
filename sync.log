@@ -1,0 +1,47 @@
+
+> nouns-501c3-analysis@0.1.0 dev
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+   - Environments: .env.development.local, .env.local
+
+ ✓ Ready in 2.2s
+ ✓ Compiled /api/treasury/cached in 306ms (106 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1329ms (2513 modules)
+ ○ Compiling /treasury ...
+ ✓ Compiled /treasury in 573ms (2549 modules)
+ ○ Compiling /api/treasury/contract/[address] ...
+ ✓ Compiled /api/treasury/contract/[address] in 549ms (2551 modules)
+ ✓ Compiled /api/treasury/sync in 265ms (129 modules)
+Starting sync for contract 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71
+Fetching balances for contract 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71
+Successfully fetched balances for 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71: { balance: '582902305690000859297', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0x0BC3807Ec262cB779b38D65b38158acC3bfedE10
+Fetching balances for contract 0x0BC3807Ec262cB779b38D65b38158acC3bfedE10
+Successfully fetched balances for 0x0BC3807Ec262cB779b38D65b38158acC3bfedE10: { balance: '1041389950010000000', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0x6f3E6272A167e8AcCb32072d08E0957F9c79223d
+Fetching balances for contract 0x6f3E6272A167e8AcCb32072d08E0957F9c79223d
+Successfully fetched balances for 0x6f3E6272A167e8AcCb32072d08E0957F9c79223d: { balance: '10388684756217009141', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0x4f2acdc74f6941390d9b1804fabc3e780388cfe5
+Fetching balances for contract 0x4f2acdc74f6941390d9b1804fabc3e780388cfe5
+Successfully fetched balances for 0x4f2acdc74f6941390d9b1804fabc3e780388cfe5: { balance: '17401108647281012', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0xd97Bcd9f47cEe35c0a9ec1dc40C1269afc9E8E1D
+Fetching balances for contract 0xd97Bcd9f47cEe35c0a9ec1dc40C1269afc9E8E1D
+Successfully fetched balances for 0xd97Bcd9f47cEe35c0a9ec1dc40C1269afc9E8E1D: { balance: '0', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0x830BD73E4184ceF73443C15111a1DF14e495C706
+Fetching balances for contract 0x830BD73E4184ceF73443C15111a1DF14e495C706
+Successfully fetched balances for 0x830BD73E4184ceF73443C15111a1DF14e495C706: { balance: '1694200000000000000', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03
+Fetching balances for contract 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03
+Successfully fetched balances for 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03: { balance: '0', tokenCount: 5, nftCount: 1 }
+Starting sync for contract 0x0fd206FC7A7dBcD5661157eDCb1FFDD0D02A61ff
+Fetching balances for contract 0x0fd206FC7A7dBcD5661157eDCb1FFDD0D02A61ff
+Successfully fetched balances for 0x0fd206FC7A7dBcD5661157eDCb1FFDD0D02A61ff: { balance: '0', tokenCount: 5, nftCount: 1 }
+ ✓ Compiled in 55ms (124 modules)
+ ✓ Compiled /api/treasury/sync in 89ms (128 modules)
+Starting sync for contract 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71
+Fetching balances for contract 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71
+Successfully fetched balances for 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71: { balance: '582902305690000859297', tokenCount: 5, nftCount: 1 }
+ ✓ Compiled in 68ms (128 modules)

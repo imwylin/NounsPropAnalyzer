@@ -1,0 +1,13 @@
+.balances {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.balance {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+} 

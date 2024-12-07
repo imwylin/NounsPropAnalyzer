@@ -1,8 +1,22 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "crons": [
+    {
+      "path": "/api/treasury/sync/scheduler",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/treasury/sync/cleanup",
+      "schedule": "0 0 * * *"
     }
   ]
 } 
